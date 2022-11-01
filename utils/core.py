@@ -348,4 +348,6 @@ def structFuncNameMatch(func_string, struct, trait, func, path, llvm_path=None, 
             return func_string.endswith(path.split('/')[-1].split('.')[0] + '::' + func)
         if trait == None or trait == '':
             return func_string.endswith(struct + '::' + func) or func_string.endswith(struct + '>::' + func)
-        return func_string.endswith('::' + func) and ('::' + struct + ' as' in func_string) and ('::' + trait + '>' in func_string)
+        return func_string.endswith('::' + func) and \
+            (('::' + struct + ' as' in func_string) and ('::' + trait + '>' in func_string) or
+             ('::' + trait + ' for' in func_string) and ('::' + struct + '>' in func_string))
