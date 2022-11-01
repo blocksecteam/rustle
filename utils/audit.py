@@ -208,66 +208,104 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
             if structFuncNameMatch(re_line[0], func['struct'], func['struct_trait'], func_name, path, re_line[1]):
                 note_issue += 'possible reentrancy; '
                 break
+
+        hasPrint = False
         for cl_name in call_loop_set:
             if structFuncNameMatch(cl_name[0], func['struct'], func['struct_trait'], func_name, path, cl_name[1]):
-                note_info += 'loop with complex logic at ' + str(cl_name[2]) + '; '
-                break
+                note_issue += ('' if hasPrint else 'loop with complex logic at <') + 'L' + str(cl_name[2]) + ' '
+                hasPrint = True
+        if hasPrint:
+            note_issue.rstrip()
+            note_issue = note_issue.rstrip() + '>; '
+
+        hasPrint = False
         for tf_name in transfer_set:
             if structFuncNameMatch(tf_name[0], func['struct'], func['struct_trait'], func_name, path, tf_name[1]):
-                note_info += 'transfer at ' + str(tf_name[2]) + '; '
-                break
+                note_issue += ('' if hasPrint else 'transfer at <') + 'L' + str(tf_name[2]) + ' '
+                hasPrint = True
+        if hasPrint:
+            note_issue = note_issue.rstrip() + '>; '
+
+        hasPrint = False
         for rd_name in round_set:
             if structFuncNameMatch(rd_name[0], func['struct'], func['struct_trait'], func_name, path, rd_name[1]):
-                note_info += 'rounding at ' + str(rd_name[2]) + '; '
-                break
+                note_issue += ('' if hasPrint else 'rounding at <') + 'L' + str(rd_name[2]) + ' '
+                hasPrint = True
+        if hasPrint:
+            note_issue = note_issue.rstrip() + '>; '
+
+        hasPrint = False
         for dbm_name_line in div_before_mul_set:
             if structFuncNameMatch(dbm_name_line[0], func['struct'], func['struct_trait'], func_name, path, dbm_name_line[1]):
-                note_issue += 'div-before-mul at ' + str(dbm_name_line[2]) + '; '
-                break
+                note_issue += ('' if hasPrint else 'div-before-mul at <') + 'L' + str(dbm_name_line[2]) + ' '
+                hasPrint = True
+        if hasPrint:
+            note_issue = note_issue.rstrip() + '>; '
+
+        hasPrint = False
         for sm_name_line in unsafe_math_set:
             if structFuncNameMatch(sm_name_line[0], func['struct'], func['struct_trait'], func_name, path, sm_name_line[1]):
-                note_issue += 'unsafe math at ' + str(sm_name_line[2]) + '; '
-                break
+                note_issue += ('' if hasPrint else 'unsafe math at <') + 'L' + str(sm_name_line[2]) + ' '
+                hasPrint = True
+        if hasPrint:
+            note_issue = note_issue.rstrip() + '>; '
+
+        hasPrint = False
         for ts_name_line in timestamp_set:
             if structFuncNameMatch(ts_name_line[0], func['struct'], func['struct_trait'], func_name, path, ts_name_line[1]):
-                note_info += 'timestamp use at ' + str(ts_name_line[2]) + '; '
-                break
+                note_info += ('' if hasPrint else 'timestamp use at <') + 'L' + str(ts_name_line[2]) + ' '
+                hasPrint = True
+        if hasPrint:
+            note_issue = note_issue.rstrip() + '>; '
+
         for uf_name_line in upgrade_func_set:
             if structFuncNameMatch(uf_name_line[0], func['struct'], func['struct_trait'], func_name, path, uf_name_line[1]):
                 note_info += 'upgrade func; '
                 break
+
         for st_name_line in self_transfer_set:
             if st_name_line[1] == False and structFuncNameMatch(st_name_line[0], func['struct'], func['struct_trait'], func_name, path):
                 note_issue += 'require self-transfer check; '
                 break
+
         for pg_name_line in prepaid_gas_set:
             if pg_name_line[1] == False and structFuncNameMatch(pg_name_line[0], func['struct'], func['struct_trait'], func_name, path):
                 note_issue += 'require prepaid_gas check; '
                 break
+
+        hasPrint = False
         for up_line in unhandled_promise_set:
             if structFuncNameMatch(up_line[0], func['struct'], func['struct_trait'], func_name, path, up_line[1]):
-                note_issue += 'unhandled promise at ' + str(up_line[2]) + '; '
-                break
+                note_issue += ('' if hasPrint else 'unhandled promise at <') + 'L' + str(up_line[2]) + ' '
+                hasPrint = True
+        if hasPrint:
+            note_issue = note_issue.rstrip() + '>; '
+
         for ya_line in yocto_attach_set:
             if structFuncNameMatch(ya_line[0], func['struct'], func['struct_trait'], func_name, path, ya_line[1]):
                 note_issue += 'require assert_one_yocto check for privilege function; '
                 break
+
         for lc_line in lock_callback_set:
             if structFuncNameMatch(lc_line[0], func['struct'], func['struct_trait'], func_name, path, lc_line[1], rustle_format=True):
                 note_issue += 'assert in callback function may lock contract when failed; '
                 break
+
         for line in non_cb_private_set:
             if structFuncNameMatch(line[0], func['struct'], func['struct_trait'], func_name, path, line[1], rustle_format=True):
                 note_issue += 'macro #[private] used in non-callback function; '
                 break
+
         for line in non_pri_callback_set:
             if structFuncNameMatch(line[0], func['struct'], func['struct_trait'], func_name, path, line[1], rustle_format=True):
                 note_issue += 'missing #[private] macro for callback function; '
                 break
+
         for line in incorrect_json_set:
             if structFuncNameMatch(line[0], func['struct'], func['struct_trait'], func_name, path, line[1], rustle_format=True):
                 note_issue += line[2]
                 break
+
         # for dc_name_line in deadcode_set:
         #     if structFuncNameMach(dc_name_line[0], func['struct'], func['struct_trait'], func_name, path):
         #         note_issue += 'dead code at ' + str(dc_name_line[1]) + '; '
@@ -278,7 +316,7 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
                 note_issue += 'call to <'
                 for line, callee in unused_ret_dict[caller]:
                     note_issue += callee + '(L' + line + ') '
-                note_issue += '> with unused return value; '
+                note_issue = note_issue.rstrip() + '> with unused return value; '
                 break
         with open(path, 'r') as file:
             string = re.sub('//[^\n]+\n', '\n', file.read())
