@@ -166,14 +166,14 @@ def findFunc(filename, ignoreTest=False) -> list:
     impls = findImpl(filename, includeMod=True)
     results = []
 
-    # function defination
+    # function definition
     with open(filename, 'r') as file:
         string = re.sub(r' +//[^\n]+\n', '\n', file.read()).replace('#[allow(unused)]', '')
-        while '\n\n\n' in string:
-            string = re.sub(r'\n\s+\n', r'\n\n', string)
+        # while '\n\n\n' in string:
+        #     string = re.sub(r'\n\s+\n', r'\n\n', string)
         string = re.sub(r'#\[cfg\(test\)\]\n+mod\s+\w+\s*\{(.|\s)+\n\}', '', string)
 
-        pattern = r'(?P<macro>(#\[[^\]]+\]\s*)+\n)?(?P<indent>\s*)(?P<vis>pub)?(?P<hasCrate>\(crate\))?\s*(extern\s+"C")?\s*(async)?\s*fn\s+(?P<name>\w+)\s*(?P<trait><[^>]+>)?\s*\((?P<args>[^\)]*)\)\s*(->\s*(?P<return>[^\{\;]+))?\s*(where[^\{]*)?\s*\{'
+        pattern = r'(?P<macro>(#\[[^\]]+\]\s*)+\n)?(?P<indent> *)(?P<vis>pub)?(?P<hasCrate>\(crate\))?\s*(extern\s+"C")?\s*(async)?\s*fn\s+(?P<name>\w+)\s*(?P<trait><[^>]+>)?\s*\((?P<args>[^\)]*)\)\s*(->\s*(?P<return>[^\{\;]+))?\s*(where[^\{]*)?\s*\{'
 
         matches = re.compile(pattern, re.MULTILINE | re.DOTALL)
         for match in matches.finditer(string):
