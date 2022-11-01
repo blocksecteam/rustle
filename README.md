@@ -1,6 +1,6 @@
 # Rustle
 
-<img src="./logo.svg" alt="Rustle" width="500"/>
+<img src="./logo.png" alt="Rustle" width="500"/>
 
 An automatic static analyzer for NEAR smart contract in Rust
 
