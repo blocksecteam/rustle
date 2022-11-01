@@ -48,10 +48,10 @@ cargo install rustfilt
 
 Note: if the target bit code (`.bc` binary) built by cargo is not in the `$src_dir`, use `-t|--tg_dir` to set the target's directory, or it will be set to `$src_dir` by default.
 
-The command below shows an example of analyzing the ref-exchange.
+The command below shows an example of analyzing the LiNEAR.
 
 ```bash
-# clone ref-contracts
+# clone LiNEAR
 git clone https://github.com/linear-protocol/LiNEAR.git ~/near-repo/LiNEAR
 
 # run Rustle
