@@ -101,15 +101,15 @@ def findPub(filename) -> dict:
 def line2func(line, results) -> str:
     '''Convert line number to function name
     '''
-    cloestDist = sys.maxsize
-    cloestFuncName = ''
+    closestDist = sys.maxsize
+    closestFuncName = ''
     for func in results:
         if line > func['line_number']:
             dist = line - func['line_number']
-            if dist < cloestDist:
-                cloestDist = dist
-                cloestFuncName = func['name']
-    return cloestFuncName
+            if dist < closestDist:
+                closestDist = dist
+                closestFuncName = func['name']
+    return closestFuncName
 
 
 def _name2index(name, results) -> int:
@@ -122,15 +122,15 @@ def _name2index(name, results) -> int:
 
 
 def lineToStruct(line, impls) -> str:
-    cloestDist = sys.maxsize
-    cloestStruct = {'struct': '', 'trait': ''}
+    closestDist = sys.maxsize
+    closestStruct = {'struct': '', 'trait': ''}
     for impl in impls:
         if line >= impl['line_number']:
             dist = line - impl['line_number']
-            if dist < cloestDist:
-                cloestDist = dist
-                cloestStruct = impl
-    return cloestStruct
+            if dist < closestDist:
+                closestDist = dist
+                closestStruct = impl
+    return closestStruct
 
 
 def findImpl(filename, includeMod=False) -> list:
