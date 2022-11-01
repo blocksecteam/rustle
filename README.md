@@ -3,7 +3,7 @@
 <img src="./logo.png" alt="Rustle" width="500"/>
 
 Rustle is an automatic static analyzer for NEAR smart contract in Rust. It can help to locate tens of different vulnerabilities in NEAR smart contract. 
-According to [DefiLlama](https://defillama.com/chain/Near), among the top 10 DApps in NEAR, 8 are audited by BlockSec. With the rich audit experience and deep understanding on NEAR protocol, we build this tool and share it with the community
+According to [DefiLlama](https://defillama.com/chain/Near), among the top 10 DApps in NEAR, 8 are audited by BlockSec. With the rich audit experience and deep understanding on NEAR protocol, we build this tool and share it with the community.
 
 ## Get started
 
