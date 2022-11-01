@@ -8,7 +8,7 @@ An automatic static analyzer for NEAR smart contract in Rust
 
 ### Prerequisite
 
-Install the required toolkits with the following commands for **Rustle**. Commands are tested in Ubuntu 20.04 LTS, 
+Install the required toolkits with the following commands for **Rustle**. Commands are tested in Ubuntu 20.04 LTS.
 
 ```bash
 # install Rust Toolchain
