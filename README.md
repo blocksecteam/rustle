@@ -51,10 +51,13 @@ The command below shows an example of analyzing the ref-exchange.
 
 ```bash
 # clone ref-contracts
-git clone https://github.com/ref-finance/ref-contracts ~/near-repo/ref-contracts
+git clone https://github.com/linear-protocol/LiNEAR.git ~/near-repo/LiNEAR
 
 # run Rustle
-./rustle -t ~/near-repo/ref-contracts ~/near-repo/ref-contracts/ref-exchange
+./rustle -t ~/near-repo/LiNEAR ~/near-repo/LiNEAR/contracts/linear
+
+# [optional] run Rustle on specified detectors or severity groups
+./rustle -t ~/near-repo/LiNEAR ~/near-repo/LiNEAR/contracts/linear -d high,medium,complex-loop
 ```
 
 A CSV-format report will be generated in the directory "./audit-result".
