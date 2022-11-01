@@ -1,0 +1,22 @@
+* text=auto
+
+.gitattributes text
+.gitignore text
+*.txt text
+rustle text diff=shell
+*.md text diff=markdown
+*.cpp text diff=cpp
+*.h text diff=cpp
+*.rs text diff=rust
+*.toml text diff=toml
+*.ts text diff=typescripy
+Cargo.lock text
+
+docs/** linguist-documentation
+
+demo/** -linguist-documentation
+
+*.md -linguist-detectable
+*.json -linguist-detectable
+*.toml -linguist-detectable
+*.lock -linguist-detectable

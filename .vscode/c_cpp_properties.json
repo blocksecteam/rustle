@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "name": "LLVM-14",
+            "compilerPath": "/usr/bin/clang-14",
+            "includePath": [
+                "/usr/lib/llvm-14/include",
+                "detectors"
+            ],
+            "compilerArgs": [
+                "-fno-exceptions",
+                "-L/usr/lib/llvm-14/lib"
+            ],
+            "cppStandard": "c++14",
+            "defines": [
+                "_GNU_SOURCE",
+                "__STDC_CONSTANT_MACROS",
+                "__STDC_FORMAT_MACROS",
+                "__STDC_LIMIT_MACROS"
+            ]
+        }
+    ],
+    "version": 4
+}

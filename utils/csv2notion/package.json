@@ -1,0 +1,17 @@
+{
+    "name": "notion-audit",
+    "version": "1.0.0",
+    "description": "",
+    "main": "import.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "import": "node import.js ../../audit-result/summary.csv $(ls ../../audit-result/near_audit*.csv)"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@notionhq/client": "^0.4.11",
+        "commander": "^8.3.0",
+        "https-proxy-agent": "^5.0.0"
+    }
+}
