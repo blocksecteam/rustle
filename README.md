@@ -21,11 +21,11 @@ chmod +x llvm.sh
 sudo ./llvm.sh 14
 rm llvm.sh
 
-# install Python Toolchain
+# install Python toolchain
 sudo apt install python3 python3-pip python3-tk   
-pip3 install -r utils/requirements.txt
+pip3 install -r utils/requirements.txt  # you need to clone this repo first
 
-# install Wasm Toolchain
+# add WASM target
 rustup target add wasm32-unknown-unknown
 
 # install other components
