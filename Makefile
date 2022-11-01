@@ -1,6 +1,6 @@
-.PHONY: pass analysis echo tg_ir \
+.PHONY: pass analysis echo tg_ir audit audit-report \
 	transfer div-before-mul shared-var-get-shared shared-var-get-invoke unsafe-math reentrancy round variable struct-member admin-func public-func tautology lock-callback non-callback-private non-private-callback incorrect-json-type complex-loop \
-	clean clean_pass clean_demo clean_tg
+	clean clean_pass clean_demo clean_tg clean_tmp
 
 SHELL := /bin/bash # Use bash syntax
 
@@ -268,6 +268,9 @@ audit: promise-result reentrancy transfer timestamp div-before-mul unsafe-math r
 	tautology unused-ret inconsistency lock-callback non-callback-private non-private-callback incorrect-json-type
 	@python3 ./utils/audit.py ${NEAR_SRC_DIR}
 
+audit-report:
+	@python3 ./utils/audit.py ${NEAR_SRC_DIR}
+
 clean: clean_pass clean_tg
 clean_pass:
 	make -C detectors clean
@@ -276,6 +279,9 @@ clean_tg:
 	@for i in ${TG_MANIFESTS} ; do \
 		cargo clean --manifest-path=$$i ; \
 	done
+
+clean_tmp:
+	rm -rf ${TMP_DIR}
 
 compile_commands.json: clean_pass
 	if [[ $(shell bear --version | cut -d' ' -f2) = 2.4.* ]] ; then \

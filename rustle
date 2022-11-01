@@ -151,29 +151,31 @@ do
 done
 
 # expand severity level
+_arg_detector=$(echo $_arg_detector | sed 's/all/high,medium,low,info/g')
 _arg_detector=$(echo $_arg_detector | sed 's/high/unhandled-promise,non-private-callback,reentrancy,unsafe-math,self-transfer,incorrect-json-type/g')
 _arg_detector=$(echo $_arg_detector | sed 's/medium/div-before-mul,round,lock-callback,yocto-attach/g')
 _arg_detector=$(echo $_arg_detector | sed 's/low/prepaid-gas,non-callback-private,unused-ret,upgrade-func,tautology,inconsistency/g')
 _arg_detector=$(echo $_arg_detector | sed 's/info/timestamp,ext-call,promise-result,transfer,complex-loop/g')
 
 # run audit
-if [[ "$_arg_detector" == "all" ]]
-then
-    make -C $TOP audit
-else
-    IFS=',' read -ra input_detectors <<< "$_arg_detector"
-    for i in "${input_detectors[@]}"
-    do
-        if [[ "$i" != "" ]]
+
+make -C $TOP clean_tmp
+
+IFS=',' read -ra input_detectors <<< "$_arg_detector"
+for i in "${input_detectors[@]}"
+do
+    if [[ "$i" != "" ]]
+    then
+        if [[ ${builtin_detectors[$i]} -eq 1 ]]
         then
-            if [[ ${builtin_detectors[$i]} -eq 1 ]]
-            then
-                make -C $TOP $i
-                builtin_detectors[$i]=0 # mark as used
-            else
-                echo -e "\e[31m[!] Invalid or repeated detector type: $i\e[0m"  # ]]
-            fi
+            make -C $TOP $i
+            builtin_detectors[$i]=0 # mark as used
+        else
+            echo -e "\e[31m[!] Invalid or repeated detector type: $i\e[0m"  # ]]
         fi
-    done
-fi
+    fi
+done
+
+make -C $TOP audit-report
+
 # ] <-- needed because of Argbash
