@@ -17,7 +17,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 # install LLVM 14
 wget https://apt.llvm.org/llvm.sh
-chmod +x llvm.shx
+chmod +x llvm.sh
 sudo ./llvm.sh 14
 rm llvm.sh
 
