@@ -215,16 +215,15 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
                 note_issue += ('' if hasPrint else 'loop with complex logic at <') + 'L' + str(cl_name[2]) + ' '
                 hasPrint = True
         if hasPrint:
-            note_issue.rstrip()
             note_issue = note_issue.rstrip() + '>; '
 
         hasPrint = False
         for tf_name in transfer_set:
             if structFuncNameMatch(tf_name[0], func['struct'], func['struct_trait'], func_name, path, tf_name[1]):
-                note_issue += ('' if hasPrint else 'transfer at <') + 'L' + str(tf_name[2]) + ' '
+                note_info += ('' if hasPrint else 'transfer at <') + 'L' + str(tf_name[2]) + ' '
                 hasPrint = True
         if hasPrint:
-            note_issue = note_issue.rstrip() + '>; '
+            note_info = note_info.rstrip() + '>; '
 
         hasPrint = False
         for rd_name in round_set:
@@ -256,7 +255,7 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
                 note_info += ('' if hasPrint else 'timestamp use at <') + 'L' + str(ts_name_line[2]) + ' '
                 hasPrint = True
         if hasPrint:
-            note_issue = note_issue.rstrip() + '>; '
+            note_info = note_info.rstrip() + '>; '
 
         for uf_name_line in upgrade_func_set:
             if structFuncNameMatch(uf_name_line[0], func['struct'], func['struct_trait'], func_name, path, uf_name_line[1]):
