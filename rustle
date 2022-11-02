@@ -6,6 +6,7 @@
 # ARG_OPTIONAL_SINGLE([tg_dir],[t],[path to the contract build target, only used when it's different from],[])
 # ARG_OPTIONAL_SINGLE([detector],[d],[detector list, pass multiple detectors seperated by ',', pass 'all' to support all detectors],[all])
 # ARG_POSITIONAL_SINGLE([src_dir],[path to the contract source],[])
+# ARG_OPTIONAL_SINGLE([output],[o],[location of audit report, defualts to "./audit-resutl"],[./audit-result])
 # ARG_HELP([The general script's help msg])
 # ARGBASH_GO()
 # needed because of Argbash --> m4_ignore([
@@ -26,7 +27,7 @@ die()
 
 begins_with_short_option()
 {
-	local first_option all_short_options='tdh'
+	local first_option all_short_options='tdoh'
 	first_option="${1:0:1}"
 	test "$all_short_options" = "${all_short_options/$first_option/}" && return 1 || return 0
 }
@@ -36,15 +37,17 @@ _positionals=()
 # THE DEFAULTS INITIALIZATION - OPTIONALS
 _arg_tg_dir=
 _arg_detector="all"
+_arg_output="./audit-result"
 
 
 print_help()
 {
 	printf '%s\n' "The general script's help msg"
-	printf 'Usage: %s [-t|--tg_dir <arg>] [-d|--detector <arg>] [-h|--help] <src_dir>\n' "$0"
+	printf 'Usage: %s [-t|--tg_dir <arg>] [-d|--detector <arg>] [-o|--output <arg>] [-h|--help] <src_dir>\n' "$0"
 	printf '\t%s\n' "<src_dir>: path to the contract source"
 	printf '\t%s\n' "-t, --tg_dir: path to the contract build target, only used when it's different from (no default)"
 	printf '\t%s\n' "-d, --detector: detector list, pass multiple detectors seperated by ',', pass 'all' to support all detectors (default: 'all')"
+	printf '\t%s\n' "-o, --output: location of audit report, defualts to \"./audit-resutl\" (default: './audit-result')"
 	printf '\t%s\n' "-h, --help: Prints help"
 }
 
@@ -77,6 +80,17 @@ parse_commandline()
 				;;
 			-d*)
 				_arg_detector="${_key##-d}"
+				;;
+			-o|--output)
+				test $# -lt 2 && die "Missing value for the optional argument '$_key'." 1
+				_arg_output="$2"
+				shift
+				;;
+			--output=*)
+				_arg_output="${_key##--output=}"
+				;;
+			-o*)
+				_arg_output="${_key##-o}"
 				;;
 			-h|--help)
 				print_help
@@ -139,6 +153,7 @@ then
 else
     export NEAR_TG_DIR=$(realpath $_arg_src_dir)
 fi
+export CSV_PATH=$(realpath $_arg_output)
 
 make -C $TOP echo
 

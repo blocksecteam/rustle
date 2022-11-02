@@ -8,6 +8,8 @@ import os
 import json
 
 CSV_PATH = './audit-result'
+if 'CSV_PATH' in os.environ.keys():
+    CSV_PATH = os.environ['CSV_PATH']
 
 PROJ_PATH = os.environ['NEAR_SRC_DIR']
 if len(sys.argv) == 1:
