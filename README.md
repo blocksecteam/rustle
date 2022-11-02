@@ -107,7 +107,7 @@ All vulnerabilities **Rustle** can find.
 | `promise-result`       | [find all uses of promise result](docs/detectors/promise-result.md)                         | Info     |
 | `transfer`             | [find all transfer actions](docs/detectors/transfer.md)                                     | Info     |
 
-## How to contribute
+## Add new detector
 
 1. Fork this repo to your account.
 2. Put the new detector under [/detectors](/detectors/) (for the LLVM detector written in C++, add a build target in [detectors/Makefile](/detectors/Makefile)).
