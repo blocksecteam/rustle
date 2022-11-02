@@ -1,12 +1,3 @@
-# Generating temporary csv files
-
-```bash
-pip3 install -r near/requirements.txt
-python3 near/audit.py <path to rust project>
-```
-
-CSV files will be saved to "audit-result" directory, set `CSV_PATH` in "audit.py" to change this.
-
 # CSV to Notion
 
 Simply export contract functions and variables to selected Notion page.
