@@ -40,12 +40,12 @@ cargo install rustfilt
 ```
 
 * `src_dir`: Path to the contract source.
-* `tg_dir`: Path to the contract build target.
+* `tg_dir`: Path to the contract build target. Defaults to be same as `src_dir`.
 * `detector`: The detector list. It can be used to pass multiple *detectors* or *groups* separated by `,`. Defaults to `all`.
     * pass `all` *group* to enable all detectors.
     * pass `high`, `medium`, `low` and `info` *groups* to enable detector groups with different severity
     * pass *detector ids* in the [table](#detectors) to enable those detectors
-* `output`: Path where audit reports will be generated in.
+* `output`: Path where audit reports will be generated in. Defaults to `./audit-result`.
 
 Note: if the target bit code (`.bc` binary) built by cargo is not in the `$src_dir`, use `-t|--tg_dir` to set the target's directory, or it will be set to `$src_dir` by default.
 
