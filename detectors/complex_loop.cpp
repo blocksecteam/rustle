@@ -37,19 +37,32 @@ namespace {
         }
         ~HeavyLoop() { os->close(); }
 
-        // int functionInstNum(llvm::Function *F) {
-        //     using namespace llvm;
-        //     if (!F)
-        //         return 0;
-        //     if (Rustle::regexForLibFunc.match(F->getName()))
-        //         return 0;
+        /**
+         * @brief count functionInstNum with at most `depth` recursion
+         *
+         */
+        int functionInstNum(llvm::Function *F, unsigned short depth = 2) {
+            using namespace llvm;
 
-        //     int count = 0;
-        //     for (BasicBlock &BB : *F) {
-        //         count += BB.sizeWithoutDebug();
-        //     }
-        //     return count;
-        // }
+            if (depth == 0)
+                return 0;
+
+            if (!F)
+                return 0;
+            if (Rustle::regexForLibFunc.match(F->getName()))
+                return 0;
+
+            int count = 0;
+            for (BasicBlock &BB : *F) {
+                for (Instruction &I : BB) {
+                    if (auto callInst = dyn_cast<CallBase>(&I)) {
+                        count += functionInstNum(callInst->getCalledFunction(), depth - 1);
+                    } else
+                        count++;
+                }
+            }
+            return count;
+        }
 
         bool runOnLoop(llvm::Loop *L, llvm::LPPassManager &LPM) override {
             using namespace llvm;
@@ -61,17 +74,21 @@ namespace {
                 Rustle::Logger().Debug("Checking loop <", L->getName(), "> at ", L->getStartLoc());
             }
 
-            auto blockVec     = L->getBlocksVector();
-            auto loopInstSize = std::accumulate(blockVec.begin(), blockVec.end(), 0, [](auto num, BasicBlock *&bb) { return num + bb->sizeWithoutDebug(); });
-            // int loopInstSize = 0;
-            // for (BasicBlock *BB : L->getBlocks()) {
-            //     for (Instruction &I : *BB) {
-            //         if (auto callInst = dyn_cast<CallBase>(&I)) {
-            //             loopInstSize += functionInstNum(callInst->getCalledFunction());
-            //         } else
-            //             loopInstSize++;
-            //     }
-            // }
+            auto blockVec = L->getBlocksVector();
+
+            // [option1] only consider current loop
+            // auto loopInstSize = std::accumulate(blockVec.begin(), blockVec.end(), 0, [](auto num, BasicBlock *&bb) { return num + bb->sizeWithoutDebug(); });
+
+            // [Option2] take sub function into consider
+            int loopInstSize = 0;
+            for (BasicBlock *BB : L->getBlocks()) {
+                for (Instruction &I : *BB) {
+                    if (auto callInst = dyn_cast<CallBase>(&I)) {
+                        loopInstSize += functionInstNum(callInst->getCalledFunction());
+                    } else
+                        loopInstSize++;
+                }
+            }
 
             if (loopInstSize > Rustle::MIN_INST_NUM_FOR_LOOP) {
                 Rustle::Logger().Warning("Loop with ", loopInstSize, " LLVM Instructions found at ", L->getStartLoc());
