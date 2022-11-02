@@ -36,7 +36,7 @@ cargo install rustfilt
 ### Usage
 
 ```bash
-./rustle [-t|--tg_dir <tg_dir>] [-d|--detector <detector_list>] [-h|--help] <src_dir>
+./rustle [-t|--tg_dir <tg_dir>] [-d|--detector <detector_list>] [-o|--output <output_dir>] [-h|--help] <src_dir>
 ```
 
 * `src_dir`: Path to the contract source.
@@ -45,6 +45,7 @@ cargo install rustfilt
     * pass `all` *group* to enable all detectors.
     * pass `high`, `medium`, `low` and `info` *groups* to enable detector groups with different severity
     * pass *detector ids* in the [table](#detectors) to enable those detectors
+* `output`: Path where audit reports will be generated in.
 
 Note: if the target bit code (`.bc` binary) built by cargo is not in the `$src_dir`, use `-t|--tg_dir` to set the target's directory, or it will be set to `$src_dir` by default.
 
@@ -57,8 +58,8 @@ git clone https://github.com/linear-protocol/LiNEAR.git ~/near-repo/LiNEAR
 # run Rustle
 ./rustle -t ~/near-repo/LiNEAR ~/near-repo/LiNEAR/contracts/linear
 
-# [optional] run Rustle on specified detectors or severity groups
-./rustle -t ~/near-repo/LiNEAR ~/near-repo/LiNEAR/contracts/linear -d high,medium,complex-loop
+# [optional] run Rustle on specified detectors or severity groups and save audit reports in `~/linear-report`
+./rustle -t ~/near-repo/LiNEAR ~/near-repo/LiNEAR/contracts/linear -d high,medium,complex-loop -o ~/linear-report
 ```
 
 A CSV-format report will be generated in the directory "./audit-result".
