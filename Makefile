@@ -29,7 +29,8 @@ ifndef TMP_DIR
 	TMP_DIR=${TOP}/.tmp/
 endif
 
-TG_MANIFESTS = $(shell find ${NEAR_SRC_DIR} -name "Cargo.toml" -not -path "**/node_modules/*")
+export TG_MANIFESTS = $(shell find ${NEAR_SRC_DIR} -name "Cargo.toml" -not -path "**/node_modules/*")
+# export TG_BITCODES  =
 
 echo:
 	@echo "NEAR_SRC_DIR = ${NEAR_SRC_DIR}"
@@ -44,6 +45,12 @@ tg_ir:
 		cargo rustc --target wasm32-unknown-unknown --manifest-path $$i -- -Awarnings --emit=llvm-ir,llvm-bc ; \
 	done
 	@mkdir -p ${TMP_DIR}
+	@make -C ${TOP} get-packages-name
+	@cat ${TMP_DIR}/.packages-name.tmp | xargs -i find ${NEAR_TG_DIR} -name '{}.bc' > ${TMP_DIR}/.bitcodes.tmp
+	
+
+get-packages-name:
+	@python3 ./utils/getPackagesName.py
 
 analysis: unsafe-math round reentrancy div-before-mul transfer timestamp promise-result upgrade-func self-transfer prepaid-gas unhandled-promise yocto-attach complex-loop \
 	tautology unused-ret inconsistency lock-callback non-callback-private non-private-callback incorrect-json-type
@@ -51,174 +58,174 @@ analysis: unsafe-math round reentrancy div-before-mul transfer timestamp promise
 callback: tg_ir
 	@rm -f ${TMP_DIR}/.callback.tmp
 	@make -C detectors callback.so
-	@find ${NEAR_TG_DIR}// -name '*.bc' | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/callback.so -callback {} -o /dev/null
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/callback.so -callback {} -o /dev/null
 
 ext-call-trait: tg_ir
 	@rm -f ${TMP_DIR}/.ext-call.tmp
 	@make -C detectors ext_call_trait.so
-	@find ${NEAR_TG_DIR}// -name '*.bc' | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/ext_call_trait.so -ext-call-trait {} -o /dev/null
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/ext_call_trait.so -ext-call-trait {} -o /dev/null
 
 ext-call: tg_ir
 	@make -C detectors ext_call.so
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.bc' | wc -c) -gt 0 ; then \
+	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi
-	@find ${NEAR_TG_DIR}// -name '*.bc' | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/ext_call.so -ext-call {} -o /dev/null
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/ext_call.so -ext-call {} -o /dev/null
 
 complex-loop: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors complex_loop.so
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.bc' | wc -c) -gt 0 ; then \
+	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi
-	@find ${NEAR_TG_DIR}// -name '*.bc' | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/complex_loop.so -complex-loop {} -o /dev/null
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/complex_loop.so -complex-loop {} -o /dev/null
 
 unsafe-math: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp ${TMP_DIR}/.$@-toml.tmp
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.bc' | wc -c) -gt 0 ; then \
+	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi
 	@python3 ./detectors/unsafe-math-toml.py ${NEAR_SRC_DIR}
 	@make -C detectors unsafe_math.so
-	@find ${NEAR_TG_DIR}// -name '*.bc' | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/unsafe_math.so -unsafe-math {} -o /dev/null
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/unsafe_math.so -unsafe-math {} -o /dev/null
 
 round: tg_ir
 	@make -C detectors round.so
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.bc' | wc -c) -gt 0 ; then \
+	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi
-	@find ${NEAR_TG_DIR}// -name '*.bc' | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/round.so -round {} -o /dev/null
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/round.so -round {} -o /dev/null
 
 struct-member: tg_ir find-struct
 	@make -C detectors struct_member.so
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.bc' | wc -c) -gt 0 ; then \
+	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi
-	@find ${NEAR_TG_DIR}// -name '*.bc' | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/struct_member.so -struct-member {} -o /dev/null
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/struct_member.so -struct-member {} -o /dev/null
 
 reentrancy: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors reentrancy.so
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.bc' | wc -c) -gt 0 ; then \
+	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi
-	@find ${NEAR_TG_DIR}// -name '*.bc' | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/reentrancy.so -reentrancy {} -o /dev/null
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/reentrancy.so -reentrancy {} -o /dev/null
 
 div-before-mul: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors div_before_mul.so
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.bc' | wc -c) -gt 0 ; then \
+	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi
-	@find ${NEAR_TG_DIR}// -name '*.bc' | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/div_before_mul.so -div-before-mul {} -o /dev/null
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/div_before_mul.so -div-before-mul {} -o /dev/null
 
 transfer: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors transfer.so
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.bc' | wc -c) -gt 0 ; then \
+	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi
-	@find ${NEAR_TG_DIR}// -name '*.bc' | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/transfer.so -transfer {} -o /dev/null
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/transfer.so -transfer {} -o /dev/null
 
 timestamp: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors timestamp.so
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.bc' | wc -c) -gt 0 ; then \
+	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi
-	@find ${NEAR_TG_DIR}// -name '*.bc' | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/timestamp.so -timestamp {} -o /dev/null
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/timestamp.so -timestamp {} -o /dev/null
 
 promise-result: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors promise_result.so
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.bc' | wc -c) -gt 0 ; then \
+	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi
-	@find ${NEAR_TG_DIR}// -name '*.bc' | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/promise_result.so -promise-result {} -o /dev/null
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/promise_result.so -promise-result {} -o /dev/null
 
 upgrade-func: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors upgrade_func.so
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.bc' | wc -c) -gt 0 ; then \
+	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi
-	@find ${NEAR_TG_DIR}// -name '*.bc' | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/upgrade_func.so -upgrade-func {} -o /dev/null
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/upgrade_func.so -upgrade-func {} -o /dev/null
 	@test -s .tmp/.upgrade-func.tmp || echo -e "\e[33m[!] Upgrade func not found\e[0m"
 
 self-transfer: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors self_transfer.so
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.bc' | wc -c) -gt 0 ; then \
+	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi
-	@find ${NEAR_TG_DIR}// -name '*.bc' | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/self_transfer.so -self-transfer {} -o /dev/null
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/self_transfer.so -self-transfer {} -o /dev/null
 
 prepaid-gas: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors prepaid_gas.so
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.bc' | wc -c) -gt 0 ; then \
+	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi
-	@find ${NEAR_TG_DIR}// -name '*.bc' | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/prepaid_gas.so -prepaid-gas {} -o /dev/null
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/prepaid_gas.so -prepaid-gas {} -o /dev/null
 
 all-call: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors all_call.so
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.bc' | wc -c) -gt 0 ; then \
+	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi
-	@find ${NEAR_TG_DIR}// -name '*.bc' | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/all_call.so -all-call {} -o /dev/null
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/all_call.so -all-call {} -o /dev/null
 
 unhandled-promise: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors unhandled_promise.so
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.bc' | wc -c) -gt 0 ; then \
+	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi
-	@find ${NEAR_TG_DIR}// -name '*.bc' | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/unhandled_promise.so -unhandled-promise {} -o /dev/null
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/unhandled_promise.so -unhandled-promise {} -o /dev/null
 
 yocto-attach: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors yocto_attach.so
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.bc' | wc -c) -gt 0 ; then \
+	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi
-	@find ${NEAR_TG_DIR}// -name '*.bc' | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/yocto_attach.so -yocto-attach {} -o /dev/null
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/yocto_attach.so -yocto-attach {} -o /dev/null
 
 tautology:
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.bc' | wc -c) -gt 0 ; then \
+	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
