@@ -35,7 +35,7 @@ for i in os.listdir(CSV_PATH):
 
 promise_results_set = set()    # func, file, line
 reentrancy_set = set()         # func, file, line
-call_loop_set = set()          # func, file, line
+complex_loop_set = set()          # func, file, line
 transfer_set = set()           # func, file, line
 round_set = set()              # func, file, line
 div_before_mul_set = set()     # func, file, line
@@ -88,7 +88,7 @@ try:
     with open(TMP_PATH + '/.complex-loop.tmp', 'r') as f:
         for line in f:
             func, file, line = line.strip().split('@')
-            call_loop_set.add((func, file, int(line)))
+            complex_loop_set.add((func, file, int(line)))
 except Exception as e:
     print("Tmp log not found: ", e)
 try:
@@ -231,9 +231,9 @@ except Exception as e:
 
 
 summary_writer = pytablewriter.CsvTableWriter()
-summary_writer.headers = ["file", "name", "issue", "info"]
+summary_writer.headers = ["file", "name", "high", "medium", "low", "info"]
 json_summary_writer = pytablewriter.JsonTableWriter()
-json_summary_writer.headers = ["file", "name", "issue", "info"]
+json_summary_writer.headers = ["file", "name", "high", "medium", "low", "info"]
 
 '''
 TODO
@@ -244,7 +244,7 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
         continue
     writer = pytablewriter.CsvTableWriter()
     writer.headers = [
-        "name", "struct", "description", "modifier", "macro", "visibility", "status", "type", "issue", "info"
+        "name", "struct", "description", "modifier", "macro", "visibility", "status", "type", "high", "medium", "low", "info"
     ]
     results = findFunc(path)
     # print(results)
@@ -255,7 +255,9 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
 
         # func_type = 'Function' + (' (callback)' if func['return'] and 'PromiseResult' in func['return'] else '')
         func_type = 'Function'
-        note_issue = ''
+        note_high = ''
+        note_medium = ''
+        note_low = ''
         note_info = ''
         for cb_name in callback_func_set:
             if structFuncNameMatch(cb_name[0], func['struct'], func['struct_trait'], func_name, path):
@@ -268,16 +270,16 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
 
         for re_line in reentrancy_set:
             if structFuncNameMatch(re_line[0], func['struct'], func['struct_trait'], func_name, path, re_line[1]):
-                note_issue += 'possible reentrancy; '
+                note_high += 'possible reentrancy; '
                 break
 
         hasPrint = False
-        for cl_name in call_loop_set:
+        for cl_name in complex_loop_set:
             if structFuncNameMatch(cl_name[0], func['struct'], func['struct_trait'], func_name, path, cl_name[1]):
-                note_issue += ('' if hasPrint else 'loop with complex logic at <') + 'L' + str(cl_name[2]) + ' '
+                note_info += ('' if hasPrint else 'loop with complex logic at <') + 'L' + str(cl_name[2]) + ' '
                 hasPrint = True
         if hasPrint:
-            note_issue = note_issue.rstrip() + '>; '
+            note_info = note_info.rstrip() + '>; '
 
         hasPrint = False
         for tf_name in transfer_set:
@@ -290,26 +292,26 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
         hasPrint = False
         for rd_name in round_set:
             if structFuncNameMatch(rd_name[0], func['struct'], func['struct_trait'], func_name, path, rd_name[1]):
-                note_issue += ('' if hasPrint else 'rounding at <') + 'L' + str(rd_name[2]) + ' '
+                note_medium += ('' if hasPrint else 'rounding at <') + 'L' + str(rd_name[2]) + ' '
                 hasPrint = True
         if hasPrint:
-            note_issue = note_issue.rstrip() + '>; '
+            note_medium = note_medium.rstrip() + '>; '
 
         hasPrint = False
         for dbm_name_line in div_before_mul_set:
             if structFuncNameMatch(dbm_name_line[0], func['struct'], func['struct_trait'], func_name, path, dbm_name_line[1]):
-                note_issue += ('' if hasPrint else 'div-before-mul at <') + 'L' + str(dbm_name_line[2]) + ' '
+                note_medium += ('' if hasPrint else 'div-before-mul at <') + 'L' + str(dbm_name_line[2]) + ' '
                 hasPrint = True
         if hasPrint:
-            note_issue = note_issue.rstrip() + '>; '
+            note_medium = note_medium.rstrip() + '>; '
 
         hasPrint = False
         for sm_name_line in unsafe_math_set:
             if structFuncNameMatch(sm_name_line[0], func['struct'], func['struct_trait'], func_name, path, sm_name_line[1]):
-                note_issue += ('' if hasPrint else 'unsafe math at <') + 'L' + str(sm_name_line[2]) + ' '
+                note_high += ('' if hasPrint else 'unsafe math at <') + 'L' + str(sm_name_line[2]) + ' '
                 hasPrint = True
         if hasPrint:
-            note_issue = note_issue.rstrip() + '>; '
+            note_high = note_high.rstrip() + '>; '
 
         hasPrint = False
         for ts_name_line in timestamp_set:
@@ -326,58 +328,58 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
 
         for st_name_line in self_transfer_set:
             if st_name_line[1] == False and structFuncNameMatch(st_name_line[0], func['struct'], func['struct_trait'], func_name, path):
-                note_issue += 'require self-transfer check; '
+                note_high += 'require self-transfer check; '
                 break
 
         for pg_name_line in prepaid_gas_set:
             if pg_name_line[1] == False and structFuncNameMatch(pg_name_line[0], func['struct'], func['struct_trait'], func_name, path):
-                note_issue += 'require prepaid_gas check; '
+                note_low += 'require prepaid_gas check; '
                 break
 
         hasPrint = False
         for up_line in unhandled_promise_set:
             if structFuncNameMatch(up_line[0], func['struct'], func['struct_trait'], func_name, path, up_line[1]):
-                note_issue += ('' if hasPrint else 'unhandled promise at <') + 'L' + str(up_line[2]) + ' '
+                note_high += ('' if hasPrint else 'unhandled promise at <') + 'L' + str(up_line[2]) + ' '
                 hasPrint = True
         if hasPrint:
-            note_issue = note_issue.rstrip() + '>; '
+            note_high = note_high.rstrip() + '>; '
 
         for ya_line in yocto_attach_set:
             if structFuncNameMatch(ya_line[0], func['struct'], func['struct_trait'], func_name, path, ya_line[1]):
-                note_issue += 'require assert_one_yocto check for privilege function; '
+                note_medium += 'require assert_one_yocto check for privilege function; '
                 break
 
         for lc_line in lock_callback_set:
             if structFuncNameMatch(lc_line[0], func['struct'], func['struct_trait'], func_name, path, lc_line[1], rustle_format=True):
-                note_issue += 'assert in callback function may lock contract when failed; '
+                note_medium += 'assert in callback function may lock contract when failed; '
                 break
 
         for line in non_cb_private_set:
             if structFuncNameMatch(line[0], func['struct'], func['struct_trait'], func_name, path, line[1], rustle_format=True):
-                note_issue += 'macro #[private] used in non-callback function; '
+                note_low += 'macro #[private] used in non-callback function; '
                 break
 
         for line in non_pri_callback_set:
             if structFuncNameMatch(line[0], func['struct'], func['struct_trait'], func_name, path, line[1], rustle_format=True):
-                note_issue += 'missing #[private] macro for callback function; '
+                note_high += 'missing #[private] macro for callback function; '
                 break
 
         for line in incorrect_json_set:
             if structFuncNameMatch(line[0], func['struct'], func['struct_trait'], func_name, path, line[1], rustle_format=True):
-                note_issue += line[2]
+                note_high += line[2]
                 break
 
         # for dc_name_line in deadcode_set:
         #     if structFuncNameMach(dc_name_line[0], func['struct'], func['struct_trait'], func_name, path):
-        #         note_issue += 'dead code at ' + str(dc_name_line[1]) + '; '
+        #         note_info += 'dead code at ' + str(dc_name_line[1]) + '; '
         #         break
 
         for caller in unused_ret_dict.keys():
             if structFuncNameMatch(caller, func['struct'], func['struct_trait'], func_name, path, None, rustle_format=True):
-                note_issue += 'call to <'
+                note_low += 'call to <'
                 for line, callee in unused_ret_dict[caller]:
-                    note_issue += callee + '(L' + line + ') '
-                note_issue = note_issue.rstrip() + '> with unused return value; '
+                    note_low += callee + '(L' + line + ') '
+                note_low = note_low.rstrip() + '> with unused return value; '
                 break
         with open(path, 'r') as file:
             string = re.sub('//[^\n]+\n', '\n', file.read())
@@ -390,16 +392,15 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
                         str(line_no) + ' may be conflict with ' + str(inconsistency_dict[inconsistent_key]).replace("'", '') + '; '
 
         writer.value_matrix.append([func_name, func['struct'], '', func['modifier'], func['macro'],
-                                   func['visibility'], 'working', func_type, note_issue, note_info])
-        if note_issue != '' or note_info != '':
-            summary_writer.value_matrix.append([path[len(PROJ_PATH):].lstrip('/'), func_name, note_issue, note_info])
-            json_summary_writer.value_matrix.append(
-                [path[len(PROJ_PATH):].lstrip('/'), func_name, note_issue, note_info])
+                                   func['visibility'], 'working', func_type, note_high, note_medium, note_low, note_info])
+        if note_high != '' or note_medium != '' or note_low != '' or note_info != '':
+            summary_writer.value_matrix.append([path[len(PROJ_PATH):].lstrip('/'), func_name, note_high, note_medium, note_low, note_info])
+            json_summary_writer.value_matrix.append([path[len(PROJ_PATH):].lstrip('/'), func_name, note_high, note_medium, note_low, note_info])
 
     var_results = findGlobalVar(path)
     for func_name in var_results.keys():
         writer.value_matrix.append([func_name, '', '', 'N/A', 'N/A', var_results[func_name]['visibility'],
-                                   'working', var_results[func_name]['type'], '', ''])
+                                   'working', var_results[func_name]['type'], '', '', '', ''])
 
     # writer.write_table()
     with open(CSV_PATH + '/near_audit-' + path.replace(PROJ_PATH, '').lstrip('/').replace('/', '-') + '.csv', 'w') as file:
@@ -407,7 +408,7 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
         writer.write_table()
 
 if len(upgrade_func_set) == 0:
-    summary_writer.value_matrix.append(['', '', 'No upgrade function found', ''])
+    summary_writer.value_matrix.append(['', '', '', '', 'No upgrade function found', ''])
 
 with open(CSV_PATH + '/summary.csv', 'w') as sum_file:
     summary_writer.stream = sum_file

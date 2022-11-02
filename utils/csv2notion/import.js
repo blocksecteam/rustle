@@ -136,11 +136,29 @@ async function createEntry(table_id, e) {
                     "name": "🚧WORKING"
                 }
             },
-            "Issue": {
+            "High": {
                 "rich_text": [
                     {
                         "text": {
-                            "content": e.issue,
+                            "content": e.high,
+                        },
+                    },
+                ],
+            },
+            "Medium": {
+                "rich_text": [
+                    {
+                        "text": {
+                            "content": e.medium,
+                        },
+                    },
+                ],
+            },
+            "Low": {
+                "rich_text": [
+                    {
+                        "text": {
+                            "content": e.low,
                         },
                     },
                 ],
@@ -231,7 +249,13 @@ async function createTable(page_id, title) {
                     ]
                 }
             },
-            "Issue": {
+            "High": {
+                "rich_text": {}
+            },
+            "Medium": {
+                "rich_text": {}
+            },
+            "Low": {
                 "rich_text": {}
             },
             "Info": {
@@ -286,11 +310,29 @@ async function createEntry_Summary(table_id, e) {
                     },
                 ],
             },
-            "Issue": {
+            "High": {
                 "rich_text": [
                     {
                         "text": {
-                            "content": e.issue,
+                            "content": e.high,
+                        },
+                    },
+                ],
+            },
+            "Medium": {
+                "rich_text": [
+                    {
+                        "text": {
+                            "content": e.medium,
+                        },
+                    },
+                ],
+            },
+            "Low": {
+                "rich_text": [
+                    {
+                        "text": {
+                            "content": e.low,
                         },
                     },
                 ],
@@ -328,7 +370,13 @@ async function createTable_Summary(page_id, title) {
             "Name": {
                 "rich_text": {}
             },
-            "Issue": {
+            "High": {
+                "rich_text": {}
+            },
+            "Medium": {
+                "rich_text": {}
+            },
+            "Low": {
                 "rich_text": {}
             },
             "Info": {
@@ -380,7 +428,7 @@ async function createTableForData_Summary(page_id, contract_name, entries) {
     });
     page_id = (response).id;
 
-    console.log(`projetc page_id: ${page_id}`)
+    console.log(`project page_id: ${page_id}`)
 
     for (let i = 2; i < process.argv.length; ++i) {
         console.log(`process.argv[i]: ${process.argv[i]}`)
