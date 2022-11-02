@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build-and-test-docker:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: docker build --build-arg UID=`id -u` --build-arg GID=`id -g` -t blocksecteam:rustle .
+    - name: Run the Docker image
+      run: docker run --name rustle -v `pwd`:/home/rustle/rustle -u rustle -w /home/rustle/rustle blocksecteam:rustle bash -c \
+        "git clone https://github.com/linear-protocol/LiNEAR.git ~/near-repo/LiNEAR && ./rustle -t ~/near-repo/LiNEAR ~/near-repo/LiNEAR/contracts/linear"
