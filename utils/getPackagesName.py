@@ -16,7 +16,7 @@ def getName(path) -> str:
         parsed_cargo = toml.loads(cargo_file.read())
         package = parsed_cargo.get('package')
         if package != None and package['name'] != None:
-            return(package['name'])
+            return(package['name'].replace('-', '_'))
     return None
 
 with open(TMP_PATH + '/.packages-name.tmp', 'w') as log_file:
