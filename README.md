@@ -90,7 +90,7 @@ All vulnerabilities **Rustle** can find.
 
 | Detector Id            | Description                                                                                 | Severity |
 | ---------------------- | ------------------------------------------------------------------------------------------- | -------- |
-| `unhandled-promise`    | [find `Promise`s that are not handled](docs/detectors/unhandled-promise.md)                 | High     |
+| `unhandled-promise`    | [find `Promises` that are not handled](docs/detectors/unhandled-promise.md)                 | High     |
 | `non-private-callback` | [missing macro `#[private]` for callback functions](docs/detectors/non-private-callback.md) | High     |
 | `reentrancy`           | [find functions that are vulnerable to reentrancy attack](docs/detectors/reentrancy.md)     | High     |
 | `unsafe-math`          | [lack of overflow check for arithmetic operation](docs/detectors/unsafe-math.md)            | High     |
