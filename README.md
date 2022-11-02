@@ -3,6 +3,8 @@
 <img src="./logo.png" alt="Rustle" width="500"/>
 
 [![Build Status](https://img.shields.io/github/workflow/status/blocksecteam/rustle/CI/main)](https://github.com/blocksecteam/rustle/actions/workflows/ci.yml?query=workflow%3ACI)
+[![License: AGPL v3](https://img.shields.io/github/license/blocksecteam/rustle)](LICENSE)
+[![AwesomeNEAR](https://img.shields.io/badge/AwesomeNEAR-Rustle-blue)](https://awesomenear.com/rustle)
 
 Rustle is an automatic static analyzer for NEAR smart contract in Rust. It can help to locate tens of different vulnerabilities in NEAR smart contract. 
 According to [DefiLlama](https://defillama.com/chain/Near), among the top 10 DApps in NEAR, 8 are audited by BlockSec. With the rich audit experience and deep understanding on NEAR protocol, we build this tool and share it with the community.
