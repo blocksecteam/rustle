@@ -6,8 +6,8 @@
 [![License: AGPL v3](https://img.shields.io/github/license/blocksecteam/rustle)](LICENSE)
 [![AwesomeNEAR](https://img.shields.io/badge/AwesomeNEAR-Rustle-blue)](https://awesomenear.com/rustle)
 
-Rustle is an automatic static analyzer for NEAR smart contract in Rust. It can help to locate tens of different vulnerabilities in NEAR smart contract. 
-According to [DefiLlama](https://defillama.com/chain/Near), among the top 10 DApps in NEAR, 8 are audited by BlockSec. With the rich audit experience and deep understanding on NEAR protocol, we build this tool and share it with the community.
+Rustle is an automatic static analyzer for NEAR smart contracts in Rust. It can help to locate tens of different vulnerabilities in NEAR smart contracts. 
+According to [DefiLlama](https://defillama.com/chain/Near), among the top 10 DApps in NEAR, 8 are audited by BlockSec. With rich audit experience and a deep understanding of NEAR protocol, we build this tool and share it with the community.
 
 ## Get started
 
