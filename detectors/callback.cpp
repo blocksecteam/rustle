@@ -49,12 +49,12 @@ namespace {
                     if (!I.getDebugLoc().get() || Rustle::regexForLibLoc.match(I.getDebugLoc().get()->getFilename()))
                         continue;
 
-                    if (funcFileName.empty()) {
+                    if (funcFileName.empty()) {  // only once
                         funcFileName = I.getDebugLoc().get()->getFilename();
-                        if (F.getName().contains("callback")) {
-                            *os << F.getName() << "@" << funcFileName << "\n";
-                            return false;
-                        }
+                        // if (F.getName().contains("callback")) {
+                        //     *os << F.getName() << "@" << funcFileName << "\n";
+                        //     return false;
+                        // }
                     }
 
                     if (llvm::CallBase *callInst = llvm::dyn_cast<llvm::CallBase>(&I)) {
