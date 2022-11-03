@@ -166,11 +166,11 @@ do
 done
 
 # expand severity level
-_arg_detector=$(echo $_arg_detector | sed 's/all/high,medium,low,info/g')
-_arg_detector=$(echo $_arg_detector | sed 's/high/unhandled-promise,non-private-callback,reentrancy,unsafe-math,self-transfer,incorrect-json-type/g')
-_arg_detector=$(echo $_arg_detector | sed 's/medium/div-before-mul,round,lock-callback,yocto-attach/g')
-_arg_detector=$(echo $_arg_detector | sed 's/low/prepaid-gas,non-callback-private,unused-ret,upgrade-func,tautology,inconsistency/g')
-_arg_detector=$(echo $_arg_detector | sed 's/info/timestamp,ext-call,promise-result,transfer,complex-loop/g')
+_arg_detector=$(echo $_arg_detector | sed 's/\ball\b/high,medium,low,info/g')
+_arg_detector=$(echo $_arg_detector | sed 's/\bhigh\b/unhandled-promise,non-private-callback,reentrancy,unsafe-math,self-transfer,incorrect-json-type/g')
+_arg_detector=$(echo $_arg_detector | sed 's/\bmedium\b/div-before-mul,round,lock-callback,yocto-attach/g')
+_arg_detector=$(echo $_arg_detector | sed 's/\blow\b/prepaid-gas,non-callback-private,unused-ret,upgrade-func,tautology,inconsistency/g')
+_arg_detector=$(echo $_arg_detector | sed 's/\binfo\b/timestamp,ext-call,promise-result,transfer,complex-loop/g')
 
 # run audit
 
