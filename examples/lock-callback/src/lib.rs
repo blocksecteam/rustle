@@ -47,7 +47,7 @@ impl Contract {
         self.orders.remove(&order_id);
         order.amount -= amount;
         if order.amount > 0 {
-            // only put back order if its amount larger than 0
+            // only put `order` back when its `amount` is larger than 0
             self.orders.insert(&order_id, &order);
         }
 
@@ -79,11 +79,11 @@ impl Contract {
             PromiseResult::NotReady => unreachable!(),
             PromiseResult::Successful(_) => {}
             PromiseResult::Failed => {
-                // this assertion can prevent order_id from getting recovered
-                // this will happen when another order seize the `order_id`
+                // this assertion can prevent deleted [Order] from getting recovered
+                // this will happen when another [Order] seizes the `order_id`
                 assert!(self.orders.get(&order_id).is_none());
 
-                // recover Order state when ft_transfer fails
+                // recover [Order] state when ft_transfer fails
                 self.orders.insert(
                     &order_id,
                     &Order {
