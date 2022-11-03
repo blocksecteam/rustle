@@ -5,6 +5,7 @@
  */
 #include "near_core.h"
 
+#include <fstream>
 #include <vector>
 
 #include "llvm/IR/BasicBlock.h"
@@ -23,8 +24,18 @@ namespace {
     struct ExtCall : public llvm::ModulePass {
         static char ID;
 
+        std::ifstream is;
+        std::vector<std::string> ext_call_traits;
+
       public:
-        ExtCall() : ModulePass(ID) {}
+        ExtCall() : ModulePass(ID) {
+            is.open(Rustle::ext_call_trait_file);
+            std::string ext_call_trait;
+            while (is >> ext_call_trait) {
+                ext_call_traits.push_back(ext_call_trait);
+            }
+            is.close();
+        }
         ~ExtCall() {}
 
         bool runOnModule(llvm::Module &M) override {
@@ -38,17 +49,18 @@ namespace {
                 if (Rustle::debug_print_function)
                     Rustle::Logger().Debug("Checking function ", F.getName());
 
-                for (llvm::BasicBlock &BB : F)
-                    for (llvm::Instruction &I : BB) {
+                for (BasicBlock &BB : F)
+                    for (Instruction &I : BB) {
                         if (!I.getDebugLoc().get() || Rustle::regexForLibLoc.match(I.getDebugLoc().get()->getFilename()))
                             continue;
 
-                        if (llvm::CallBase *callInst = llvm::dyn_cast<llvm::CallBase>(&I)) {
+                        if (CallBase *callInst = dyn_cast<CallBase>(&I)) {
                             if (!callInst->getCalledFunction())
                                 continue;
-                            if (Rustle::isInstCallFuncRec(&I, CG, Rustle::regexExtCall)) {
-                                Rustle::Logger().Info("Function <", F.getName(), "> calls\n\t<", callInst->getCalledFunction()->getName(), ">\n\tat ", I.getDebugLoc());
-                            }
+                            for (auto ext_call_trait : ext_call_traits)
+                                if (Rustle::isInstCallFunc(&I, Regex(ext_call_trait))) {
+                                    Rustle::Logger().Info("Function <", F.getName(), "> calls\n\t<", callInst->getCalledFunction()->getName(), ">\n\tat ", I.getDebugLoc());
+                                }
                         }
                     }
             }

@@ -65,7 +65,7 @@ ext-call-trait: tg_ir
 	@make -C detectors ext_call_trait.so
 	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/ext_call_trait.so -ext-call-trait {} -o /dev/null
 
-ext-call: tg_ir
+ext-call: tg_ir ext-call-trait
 	@make -C detectors ext_call.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \

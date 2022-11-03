@@ -21,7 +21,7 @@
 
 namespace Rustle {
     // tool config
-    std::string ext_call_file       = std::string(getenv("TMP_DIR")) + std::string("/.ext-call.tmp");
+    std::string ext_call_trait_file = std::string(getenv("TMP_DIR")) + std::string("/.ext-call-trait.tmp");
     const int MIN_INST_NUM_FOR_LOOP = 100;
 
     bool debug_check_all_func = true;
@@ -38,7 +38,7 @@ namespace Rustle {
                                        "|(serde\\.\\.de\\.\\.Deserialize)");
     auto regexForLibLoc  = llvm::Regex("(^/rustc)|(^/cargo)|(^/root/.cargo)|(^/home/.+/.cargo)|(^$)");
 
-    auto regexExtCall         = llvm::Regex("(.+near_sdk[0-9]+promise[0-9]+Promise[0-9]+function_call[0-9]+)");
+    auto regexExtCall         = llvm::Regex("(.+near_sdk[0-9]+promise[0-9]+Promise[0-9]+function_call(_weight)?[0-9]+)");
     auto regexPromiseTransfer = llvm::Regex("near_sdk[0-9]+promise[0-9]+Promise[0-9]+transfer[0-9]+");
     auto regexNep141Transfer  = llvm::Regex("[0-9]+(ft_transfer(_call)?)[0-9]+");
     auto regexRound           = llvm::Regex("[0-9]+(try_round|round)[0-9]+ ");

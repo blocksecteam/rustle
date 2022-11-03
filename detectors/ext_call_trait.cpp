@@ -30,7 +30,7 @@ namespace {
       public:
         ExtCallTrait() : ModulePass(ID) {
             std::error_code EC;
-            os = new llvm::raw_fd_ostream(Rustle::ext_call_file, EC, llvm::sys::fs::OpenFlags::OF_Append);
+            os = new llvm::raw_fd_ostream(Rustle::ext_call_trait_file, EC, llvm::sys::fs::OpenFlags::OF_Append);
         }
         ~ExtCallTrait() { os->close(); }
 
@@ -55,6 +55,7 @@ namespace {
                                 continue;
                             if (Rustle::regexExtCall.match(callInst->getCalledFunction()->getName())) {
                                 *os << F.getName() << "\n";
+                                return false;
                             }
                         }
                     }
