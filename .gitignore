@@ -1,5 +1,7 @@
+# misc files
+
 .DS_Store
-.vscode/*
+**/.vscode/*
 !.vscode/c_cpp_properties.json
 
 *.txt
@@ -9,6 +11,19 @@
 *.svg
 !logo.svg
 *.conf
+
+node_modules
+target/
+__pycache__
+near_audit*.md
+
+slice/*.pdf
+
+compile_commands.json
+.cache
+
+# project tmps
+
 *.bak
 *.log
 .*.tmp
@@ -16,15 +31,8 @@
 .tmp/*
 .api-result/*
 
-slice/*.pdf
-
-node_modules
-target/
-__pycache__
-near_audit*.md
+# project results
 
 near_audit*.csv
 summary.csv
 summary.json
-compile_commands.json
-.cache
