@@ -10,9 +10,11 @@ pub(crate) enum StorageKey {
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct Stake {
     owner: AccountId,
-    amount: Balance,
-    pub start_date: Timestamp,
-    pub end_date: Timestamp,
+
+    // both u64 and u128 are too large for json
+    amount: Balance,           // u128
+    pub start_date: Timestamp, // u64
+    pub end_date: Timestamp,   // u64
 }
 
 #[near_bindgen]
