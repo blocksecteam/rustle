@@ -214,7 +214,7 @@ unhandled-promise: tg_ir
 	fi
 	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/unhandled_promise.so -unhandled-promise {} -o /dev/null
 
-yocto-attach: tg_ir
+yocto-attach: tg_ir callback
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors yocto_attach.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \

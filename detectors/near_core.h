@@ -22,6 +22,7 @@
 namespace Rustle {
     // tool config
     std::string ext_call_trait_file = std::string(getenv("TMP_DIR")) + std::string("/.ext-call-trait.tmp");
+    std::string callback_file       = std::string(getenv("TMP_DIR")) + std::string("/.callback.tmp");
     const int MIN_INST_NUM_FOR_LOOP = 100;
 
     bool debug_check_all_func = true;

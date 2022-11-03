@@ -5,6 +5,7 @@
  */
 #include "near_core.h"
 
+#include <fstream>
 #include <set>
 
 #include "llvm/IR/BasicBlock.h"
@@ -27,7 +28,7 @@ namespace {
       private:
         llvm::raw_fd_ostream *os = nullptr;
 
-        std::set<std::string> ext_call_traits;
+        std::set<std::string> callbacks;
 
         bool isInstPrivilege(llvm::Instruction *I, int const depth = 1) {
             using namespace llvm;
@@ -66,6 +67,14 @@ namespace {
             std::error_code EC;
 
             os = new llvm::raw_fd_ostream(std::string(getenv("TMP_DIR")) + std::string("/.yocto-attach.tmp"), EC, llvm::sys::fs::OpenFlags::OF_Append);
+
+            std::ifstream is;
+            is.open(Rustle::callback_file);
+            std::string callback_line;
+            while (is >> callback_line) {
+                callbacks.insert(callback_line.substr(0, callback_line.find('@')));
+            }
+            is.close();
         }
         ~YoctoAttach() { os->close(); }
 
@@ -79,6 +88,8 @@ namespace {
 
                 if (!Rustle::debug_check_all_func && Rustle::regexForLibFunc.match(F.getName()))
                     continue;
+                if (callbacks.count(F.getName().str()))  // skip callback functions
+                    return false;
                 if (Rustle::debug_print_function)
                     Rustle::Logger().Debug("Checking function ", F.getName());
 

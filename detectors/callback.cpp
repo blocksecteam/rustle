@@ -30,7 +30,7 @@ namespace {
       public:
         Callback() : FunctionPass(ID) {
             std::error_code EC;
-            os = new llvm::raw_fd_ostream(std::string(getenv("TMP_DIR")) + std::string("/.callback.tmp"), EC, llvm::sys::fs::OpenFlags::OF_Append);
+            os = new llvm::raw_fd_ostream(Rustle::callback_file, EC, llvm::sys::fs::OpenFlags::OF_Append);
         }
         ~Callback() { os->close(); }
 
