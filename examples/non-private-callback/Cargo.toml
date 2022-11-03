@@ -1,0 +1,15 @@
+[package]
+name = "lock-callback"
+version = "0.1.0"
+authors = ["xiyao <futuretech6@foxmail.com>"]
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+near-sdk = "4.0.0"
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
