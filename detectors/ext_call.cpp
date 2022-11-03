@@ -24,11 +24,11 @@ namespace {
     struct ExtCall : public llvm::ModulePass {
         static char ID;
 
-        std::ifstream is;
         std::vector<std::string> ext_call_traits;
 
       public:
         ExtCall() : ModulePass(ID) {
+            std::ifstream is;
             is.open(Rustle::ext_call_trait_file);
             std::string ext_call_trait;
             while (is >> ext_call_trait) {
