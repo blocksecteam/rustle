@@ -39,7 +39,8 @@ impl Default for Contract {
 
 #[near_bindgen]
 impl Contract {
-    pub fn process_redeem(&mut self, order_id: u16, amount: u128) -> Promise {
+    pub fn process_redeem(&mut self, order_id: u16, amount: U128) -> Promise {
+        let amount = amount.0;
         let mut order = self.orders.get(&order_id).unwrap();
 
         assert!(amount <= order.amount, "balance is insufficient");
