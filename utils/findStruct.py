@@ -20,6 +20,7 @@ elif len(sys.argv) > 2:
 
 TMP_PATH = os.environ['TMP_DIR']
 
+os.makedirs(TMP_PATH, exist_ok=True)
 file_w_member = open(TMP_PATH + '/.struct-members.tmp', 'w')
 file_wo_member = open(TMP_PATH + '/.structs.tmp', 'w')
 
