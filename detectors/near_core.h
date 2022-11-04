@@ -133,9 +133,10 @@ namespace Rustle {
      *
      * @param value whose users will be found
      * @param set where users of `value` will be kept
-     * @param restrictCrossFunction whether strict the cross function get-user to only the paired args
+     * @param restrictCrossFunction whether strict the cross function get-user to only the paired args, activated only when `disableCrossFunction == false`
+     * @param disableCrossFunction whether allow cross function
      */
-    void simpleFindUsers(llvm::Value *value, std::set<llvm::Value *> &set, bool restrictCrossFunction = false) {
+    void simpleFindUsers(llvm::Value *value, std::set<llvm::Value *> &set, bool restrictCrossFunction = false, bool disableCrossFunction = false) {
         using namespace llvm;
 
         auto const valueType = value->getType();
@@ -149,15 +150,15 @@ namespace Rustle {
 
         if (auto CallInst = dyn_cast<CallBase>(value)) {
             for (unsigned i = 0; i < CallInst->arg_size(); i++) {
-                if (CallInst->getCalledFunction() && (!restrictCrossFunction || set.count(CallInst->getArgOperand(i))))
-                    simpleFindUsers(CallInst->getCalledFunction()->getArg(i), set, restrictCrossFunction);  // cross-function
+                if (!disableCrossFunction && CallInst->getCalledFunction() && (!restrictCrossFunction || set.count(CallInst->getArgOperand(i))))
+                    simpleFindUsers(CallInst->getCalledFunction()->getArg(i), set, restrictCrossFunction, disableCrossFunction);  // cross-function
                 if (CallInst->getCalledFunction() && CallInst->getCalledFunction()->getName().contains("core..convert..Into") && CallInst->arg_size() >= 2 && set.count(CallInst->getArgOperand(1))) {
-                    simpleFindUsers(CallInst->getArgOperand(0), set, restrictCrossFunction);  // add `xxx.into()` as user of `xxx`
+                    simpleFindUsers(CallInst->getArgOperand(0), set, restrictCrossFunction, disableCrossFunction);  // add `xxx.into()` as user of `xxx`
                 }
             }
         }
         for (auto *U : value->users()) {
-            simpleFindUsers(U, set, restrictCrossFunction);
+            simpleFindUsers(U, set, restrictCrossFunction, disableCrossFunction);
         }
     }
 
