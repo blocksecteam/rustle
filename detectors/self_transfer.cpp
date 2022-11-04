@@ -27,6 +27,10 @@ namespace {
       private:
         llvm::raw_fd_ostream *os = nullptr;
 
+        const llvm::Regex regex_ft_transfer_or_call    = llvm::Regex("near_contract_standards..fungible_token..core_impl..FungibleToken\\$.+[0-9]ft_transfer(_call)?[0-9]");
+        const llvm::Regex regex_ft_transfer_trait      = llvm::Regex("near_contract_standards..fungible_token..core..FungibleTokenCore\\$.+[0-9]ft_transfer[0-9]");
+        const llvm::Regex regex_ft_transfer_call_trait = llvm::Regex("near_contract_standards..fungible_token..core..FungibleTokenCore\\$.+[0-9]ft_transfer_call[0-9]");
+
       public:
         SelfTransfer() : FunctionPass(ID) {
             std::error_code EC;
@@ -38,7 +42,7 @@ namespace {
             using namespace llvm;
 
             // Use implementation in `near_contract_standards`
-            if (Regex("near_contract_standards..fungible_token..core_impl..FungibleToken\\$.+[0-9]ft_transfer[0-9]").match(F->getName()))
+            if (regex_ft_transfer_or_call.match(F->getName()))
                 return true;
 
             std::set<Value *> usersOfReceiverId;
@@ -85,25 +89,41 @@ namespace {
             if (Rustle::debug_print_function)
                 Rustle::Logger().Debug("Checking function ", F.getName());
 
-            if (!Regex("[0-9]ft_transfer[0-9]").match(F.getName()))
-                return false;
-            // outs() << F.getName() << "\n";
+            if (regex_ft_transfer_trait.match(F.getName())) {
 
-            if (F.arg_size() < 3)
-                return false;
-            std::string typeName = Rustle::printToString(F.getArg(1)->getType());
-            if (!StringRef(typeName).contains("AccountId"))
-                return false;
+                if (F.arg_size() < 3)
+                    return false;
+                std::string typeName = Rustle::printToString(F.getArg(1)->getType());
+                if (!StringRef(typeName).contains("AccountId"))
+                    return false;
 
-            outs() << "\e[33m[*] Find ft_transfer \e[34m" << F.getName() << "\e[0m\n";
-            *os << F.getName();
+                Rustle::Logger().Info("Find ft_transfer \e[34m", F.getName());
+                *os << F.getName();
 
-            if (hasSenderReceiverCheck(&F, 1)) {
-                Rustle::Logger().Info("Find self-transfer check for \e[34mft_transfer");
-                *os << "@True\n";
-            } else {
-                Rustle::Logger().Warning("Lack self-transfer check for \e[34mft_transfer");
-                *os << "@False\n";
+                if (hasSenderReceiverCheck(&F, 1)) {
+                    Rustle::Logger().Info("Find self-transfer check for \e[34mft_transfer");
+                    *os << "@True\n";
+                } else {
+                    Rustle::Logger().Warning("Lack self-transfer check for \e[34mft_transfer");
+                    *os << "@False\n";
+                }
+            } else if (regex_ft_transfer_call_trait.match(F.getName())) {
+                if (F.arg_size() < 3)
+                    return false;
+                std::string typeName = Rustle::printToString(F.getArg(2)->getType());
+                if (!StringRef(typeName).contains("AccountId"))
+                    return false;
+
+                Rustle::Logger().Info("Find ft_transfer_call \e[34m", F.getName());
+                *os << F.getName();
+
+                if (hasSenderReceiverCheck(&F, 2)) {
+                    Rustle::Logger().Info("Find self-transfer check for \e[34mft_transfer_call");
+                    *os << "@True\n";
+                } else {
+                    Rustle::Logger().Warning("Lack self-transfer check for \e[34mft_transfer_call");
+                    *os << "@False\n";
+                }
             }
 
             return false;
