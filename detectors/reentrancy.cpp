@@ -63,7 +63,6 @@ namespace {
                                 if (auto switchInst = dyn_cast<SwitchInst>(i)) {
                                     for (auto caseIt : switchInst->cases()) {
                                         if (caseIt.getCaseValue()->equalsInt(1)) {  // PromiseResult::Successful == 1
-                                            Rustle::Logger().Debug(switchInst, callInst);
                                             SuccessfulBlock = caseIt.getCaseSuccessor();
                                             break;
                                         }
@@ -80,7 +79,7 @@ namespace {
                                 while (hasNewBlock) {
                                     hasNewBlock = false;
 
-                                    Rustle::Logger().Debug(currentBlock->getName());
+                                    // Rustle::Logger().Debug(currentBlock->getName());
 
                                     for (Instruction &I : *currentBlock) {
                                         // branch inst, branch between basic block
@@ -119,8 +118,6 @@ namespace {
                                                     break;
                                                 }
                                             }
-
-                                            Rustle::Logger().Debug(storeInst, usedInReturn, useSelf);
 
                                             if (!usedInReturn && useSelf) {
                                                 Rustle::Logger().Warning("Changing state upon PromiseResult::Successful at ", I.getDebugLoc(), " may lead to reentrancy.");
