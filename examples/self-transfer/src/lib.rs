@@ -152,8 +152,8 @@ impl Contract {
         amount: Balance,
         memo: Option<String>,
     ) {
-        // This check is important
-        require!(sender_id != receiver_id, "Identical sender and receiver");
+        // // This check is important
+        // require!(sender_id != receiver_id, "Identical sender and receiver");
 
         require!(amount > 0, "The amount should be a positive number");
 
