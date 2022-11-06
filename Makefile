@@ -278,10 +278,11 @@ audit: promise-result reentrancy transfer timestamp div-before-mul unsafe-math r
 audit-report:
 	@python3 ./utils/audit.py ${NEAR_SRC_DIR}
 
-clean: clean_pass clean_tg
+clean: clean_pass clean_example clean_tg
 clean_pass:
 	make -C detectors clean
-
+clean_example:
+	find examples -name "Cargo.toml" | xargs -i cargo clean --manifest-path={} 
 clean_tg:
 	@for i in ${TG_MANIFESTS} ; do \
 		cargo clean --manifest-path=$$i ; \
