@@ -52,12 +52,25 @@ namespace {
                     if (!I.getDebugLoc().get() || Rustle::regexForLibLoc.match(I.getDebugLoc().get()->getFilename()))
                         continue;
 
-                    auto re_prepaid_gas = Regex("prepaid_gas");
+                    auto re_prepaid_gas = Regex("near_sdk[0-9]+environment[0-9]+env[0-9]+prepaid_gas");
                     if (Rustle::isInstCallFunc(&I, re_prepaid_gas)) {
-                        Rustle::Logger().Info("Find prepaid_gas check in ft_transfer_call at ", &I.getDebugLoc());
-                        *os << "@True\n";
+                        bool check_prepaid_gas = false;
 
-                        return false;
+                        std::set<Value *> prepaid_gas_users;
+                        Rustle::findUsers(&I, prepaid_gas_users);
+                        for (auto i : prepaid_gas_users) {
+                            if (auto call_base = dyn_cast<CallBase>(i)) {
+                                if (Rustle::isInstCallFunc(call_base, Rustle::regexPartialOrd)) {
+                                    check_prepaid_gas = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (check_prepaid_gas) {
+                            Rustle::Logger().Info("Find prepaid_gas check in ft_transfer_call at ", &I.getDebugLoc());
+                            *os << "@True\n";
+                            return false;
+                        }
                     }
                 }
             }
