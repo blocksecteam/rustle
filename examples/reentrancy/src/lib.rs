@@ -10,7 +10,7 @@ const GAS_FOR_FT_RESOLVE_TRANSFER: Gas = Gas(10 * TGAS);
 
 #[ext_contract(ext_self)]
 pub trait SelfContract {
-    fn ft_resolve_transfer(&mut self, amount: u128) -> bool;
+    fn ft_resolve_transfer(&mut self, amount: U128) -> bool;
 }
 
 #[near_bindgen]
@@ -46,7 +46,7 @@ impl VictimContract {
                 ext_self::ext(env::current_account_id())
                     .with_static_gas(GAS_FOR_FT_RESOLVE_TRANSFER)
                     .with_attached_deposit(0)
-                    .ft_resolve_transfer(amount.into()),
+                    .ft_resolve_transfer(amount),
             )
     }
 
@@ -62,13 +62,13 @@ impl VictimContract {
     /// It is recommended to change the `balance` before calling `ft_transfer_call`, and restore the `balance` only when
     /// it fails
     #[private]
-    pub fn ft_resolve_transfer(&mut self, amount: u128) {
+    pub fn ft_resolve_transfer(&mut self, amount: U128) {
         log!("victim::ft_resolve_transfer :{:?}", env::block_height());
 
         match env::promise_result(0) {
             PromiseResult::NotReady => unreachable!(),
             PromiseResult::Successful(_) => {
-                self.balance -= amount;
+                self.balance -= amount.0;
             }
             PromiseResult::Failed => {}
         };
