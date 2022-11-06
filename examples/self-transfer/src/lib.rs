@@ -71,6 +71,10 @@ impl FungibleTokenCore for Contract {
         msg: String,
     ) -> PromiseOrValue<U128> {
         assert_one_yocto();
+        require!(
+            env::prepaid_gas() > GAS_FOR_FT_TRANSFER_CALL,
+            "Insufficient gas"
+        );
         let sender_id = env::predecessor_account_id();
         let amount = amount.into();
 
