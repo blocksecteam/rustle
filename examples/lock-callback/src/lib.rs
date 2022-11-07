@@ -59,7 +59,7 @@ impl Contract {
             .then(
                 Self::ext(env::current_account_id())
                     .with_static_gas(GAS_FOR_CALLBACK)
-                    .ft_resolve_transfer(
+                    .callback_redeem(
                         order_id,
                         order.token_id.clone(),
                         order.user.clone(),
@@ -69,7 +69,7 @@ impl Contract {
     }
 
     #[private]
-    pub fn ft_resolve_transfer(
+    pub fn callback_redeem(
         &mut self,
         order_id: u16,
         token_id: AccountId,
