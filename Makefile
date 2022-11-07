@@ -1,6 +1,6 @@
 .PHONY: pass analysis echo tg_ir audit audit-report \
 	transfer div-before-mul shared-var-get-shared shared-var-get-invoke unsafe-math reentrancy round variable struct-member admin-func public-func tautology lock-callback non-callback-private non-private-callback incorrect-json-type complex-loop \
-	clean clean_pass clean_demo clean_tg clean_tmp
+	clean clean_pass clean_demo clean_tg clean_tmp compile_flags.txt
 
 SHELL := /bin/bash # Use bash syntax
 
@@ -298,3 +298,6 @@ compile_commands.json: clean_pass
 		bear -- make -C detectors pass ; \
 	fi
 
+compile_flags.txt:
+	rm -f compile_commands.json
+	echo ${LLVM_CLANG} ${CXXFLAGS} ${LDFLAGS} | sed 's/\s/\n/g' > compile_flags.txt
