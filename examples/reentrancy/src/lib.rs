@@ -10,7 +10,7 @@ const GAS_FOR_FT_RESOLVE_TRANSFER: Gas = Gas(10 * TGAS);
 
 #[ext_contract(ext_self)]
 pub trait SelfContract {
-    fn ft_resolve_transfer(&mut self, amount: U128) -> bool;
+    fn callback_withdraw(&mut self, amount: U128) -> bool;
 }
 
 #[near_bindgen]
@@ -46,7 +46,7 @@ impl VictimContract {
                 ext_self::ext(env::current_account_id())
                     .with_static_gas(GAS_FOR_FT_RESOLVE_TRANSFER)
                     .with_attached_deposit(0)
-                    .ft_resolve_transfer(amount),
+                    .callback_withdraw(amount),
             )
     }
 
@@ -54,7 +54,7 @@ impl VictimContract {
         U128(self.balance)
     }
 
-    /// Here `ft_resolve_transfer` changes balance only on `ft_transfer_call` successes.
+    /// Here `callback_withdraw` changes balance only on `ft_transfer_call` successes.
     ///
     /// However, if the attacker call the `withdraw` again, the balance has not been changed yet, therefore, attacker
     /// can withdraw again.
@@ -62,8 +62,8 @@ impl VictimContract {
     /// It is recommended to change the `balance` before calling `ft_transfer_call`, and restore the `balance` only when
     /// it fails
     #[private]
-    pub fn ft_resolve_transfer(&mut self, amount: U128) {
-        log!("victim::ft_resolve_transfer :{:?}", env::block_height());
+    pub fn callback_withdraw(&mut self, amount: U128) {
+        log!("victim::callback_withdraw :{:?}", env::block_height());
 
         match env::promise_result(0) {
             PromiseResult::NotReady => unreachable!(),
