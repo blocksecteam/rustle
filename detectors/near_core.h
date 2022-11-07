@@ -42,7 +42,7 @@ namespace Rustle {
     auto regexExtCall         = llvm::Regex("(.+near_sdk[0-9]+promise[0-9]+Promise[0-9]+function_call(_weight)?[0-9]+)");
     auto regexPromiseTransfer = llvm::Regex("near_sdk[0-9]+promise[0-9]+Promise[0-9]+transfer[0-9]+");
     auto regexNep141Transfer  = llvm::Regex("[0-9]+(ft_transfer(_call)?)[0-9]+");
-    auto regexRound           = llvm::Regex("[0-9]+(try_round|round)[0-9]+ ");
+    auto regexRound           = llvm::Regex("[0-9]+std[0-9]+.+[0-9]+(try_round|round)[0-9]+");
     auto regexPartialEq       = llvm::Regex("(core..cmp..PartialEq)");
     auto regexPartialOrd      = llvm::Regex("(core[0-9]+cmp[0-9]+PartialOrd)");
     auto regexPromiseResult   = llvm::Regex("near_sdk[0-9]+environment[0-9]+env[0-9]+promise_result[0-9]+");
