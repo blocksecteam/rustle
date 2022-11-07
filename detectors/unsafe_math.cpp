@@ -66,8 +66,9 @@ namespace {
 
                     // Option 2: negative detection with variable name sense
                     const char *opName = I.getOpcodeName();
-                    if (!strncmp(opName, "mul", 3) || !strncmp(opName + 1, "mul", 3) || !strncmp(opName, "add", 3) || !strncmp(opName + 1, "add", 3) || !strncmp(opName, "sub", 3) ||
-                        !strncmp(opName + 1, "sub", 3)) {
+                    if ((!strncmp(opName, "mul", 3) || !strncmp(opName + 1, "mul", 3) || !strncmp(opName, "add", 3) || !strncmp(opName + 1, "add", 3) || !strncmp(opName, "sub", 3) ||
+                            !strncmp(opName + 1, "sub", 3)) &&
+                        opName[0] != 'f') {  // exclude float
                         bool foundUserDefVar = false;
                         // check result
                         if (auto b = dyn_cast<BinaryOperator>(&I))
