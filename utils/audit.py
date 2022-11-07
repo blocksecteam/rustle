@@ -384,7 +384,7 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
         with open(path, 'r') as file:
             string = re.sub('//[^\n]+\n', '\n', file.read())
             for inconsistent_key in inconsistency_dict.keys():
-                for match in re.compile(inconsistent_key, re.MULTILINE | re.DOTALL).finditer(string):
+                for match in re.compile(r'\b' + inconsistent_key + r'\b', re.MULTILINE | re.DOTALL).finditer(string):
                     line_no = string[0:match.start()].count("\n")
                     if line2func(line_no, results) != func_name:
                         continue
