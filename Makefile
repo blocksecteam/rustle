@@ -225,7 +225,7 @@ yocto-attach: tg_ir callback
 	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/yocto_attach.so -yocto-attach {} -o /dev/null
 
 tautology:
-	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
+	@if test $(shell find ${NEAR_SRC_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
@@ -233,37 +233,37 @@ tautology:
 	@python3 ./detectors/tautology.py ${NEAR_SRC_DIR}
 
 unused-ret: all-call
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
+	@if test $(shell find ${NEAR_SRC_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	fi
 	@python3 ./detectors/unused-ret.py ${NEAR_SRC_DIR}
 
 inconsistency:
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
+	@if test $(shell find ${NEAR_SRC_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	fi
 	@python3 ./detectors/inconsistency.py ${NEAR_SRC_DIR}
 
 lock-callback: callback
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
+	@if test $(shell find ${NEAR_SRC_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	fi
 	@python3 ./detectors/lock-callback.py ${NEAR_SRC_DIR}
 
 non-callback-private: callback
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
+	@if test $(shell find ${NEAR_SRC_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	fi
 	@python3 ./detectors/non-callback-private.py ${NEAR_SRC_DIR}
 
 non-private-callback: callback
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
+	@if test $(shell find ${NEAR_SRC_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	fi
 	@python3 ./detectors/non-private-callback.py ${NEAR_SRC_DIR}
 
 incorrect-json-type: find-struct
-	@if test $(shell find ${NEAR_TG_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
+	@if test $(shell find ${NEAR_SRC_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	fi
 	@python3 ./detectors/incorrect-json-type.py ${NEAR_SRC_DIR}
