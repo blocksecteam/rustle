@@ -38,7 +38,7 @@ impl Contract {
         self.balance -= amount.0;
 
         ext_ft_core::ext(self.token_id.clone())
-            .with_attached_deposit(0)
+            .with_attached_deposit(1)
             .with_static_gas(GAS_FOR_FT_TRANSFER)
             .ft_transfer(self.depositor.clone(), amount, None)
             .then(

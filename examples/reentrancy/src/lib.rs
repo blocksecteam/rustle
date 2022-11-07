@@ -39,7 +39,7 @@ impl VictimContract {
         assert!(self.balance >= amount.into(), "insufficient balance");
 
         ext_ft_core::ext(self.token_id.clone())
-            .with_attached_deposit(0)
+            .with_attached_deposit(1)
             .with_static_gas(GAS_FOR_FT_TRANSFER_CALL)
             .ft_transfer_call(self.depositor.clone(), amount, None, "".to_string())
             .then(
