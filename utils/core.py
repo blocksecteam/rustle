@@ -173,7 +173,7 @@ def findFunc(filename, ignoreTest=False) -> list:
         #     string = re.sub(r'\n\s+\n', r'\n\n', string)
         string = re.sub(r'#\[cfg\(test\)\]\n+mod\s+\w+\s*\{(.|\s)+\n\}', '', string)
 
-        pattern = r'(?P<macro>(#\[[^\]]+\]\s*)+\n)?(?P<indent> *)(?P<vis>pub)?(?P<hasCrate>\(crate\))?\s*(extern\s+"C")?\s*(async)?\s*fn\s+(?P<name>\w+)\s*(?P<trait><[^>]+>)?\s*\((?P<args>[^\)]*)\)\s*(->\s*(?P<return>[^\{\;]+))?\s*(where[^\{]*)?\s*\{'
+        pattern = r'(?P<macro>(#\[[^\]]+\]\s*)+\n)?(?P<indent> *)(?P<vis>pub\s*)?(?P<hasCrate>\(crate\)\s*)?(extern\s+"C"\s*)?(async\s*)?fn\s+(?P<name>\w+)\s*(?P<trait><[^>]+>)?\s*\((?P<args>[^\)]*)\)\s*(->\s*(?P<return>[^\{\;]+))?\s*(where[^\{]*)?\s*\{'
 
         matches = re.compile(pattern, re.MULTILINE | re.DOTALL)
         for match in matches.finditer(string):
