@@ -18,6 +18,7 @@ elif len(sys.argv) > 2:
     sys.exit()
 
 TMP_PATH = os.environ['TMP_DIR']
+os.makedirs(TMP_PATH, exist_ok=True)
 
 all_funcs = []
 for path in getFiles(PROJ_PATH):

@@ -18,6 +18,7 @@ elif len(sys.argv) > 2:
     sys.exit()
 
 TMP_PATH = os.environ['TMP_DIR']
+os.makedirs(TMP_PATH, exist_ok=True)
 
 callback_func_set = set()
 os.system("ls " + TMP_PATH + "/.callback.tmp | xargs -i sh -c 'mv {} {}.org; rustfilt -i {}.org -o {}; rm {}.org'")

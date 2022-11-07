@@ -18,6 +18,7 @@ elif len(sys.argv) > 2:
     sys.exit()
 
 TMP_PATH = os.environ['TMP_DIR']
+os.makedirs(TMP_PATH, exist_ok=True)
 
 structMember_dict = dict()  # <memberName, memberType>
 with open(TMP_PATH + '/.struct-members.tmp', 'r') as f:
