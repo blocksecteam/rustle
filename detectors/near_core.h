@@ -21,31 +21,31 @@
 
 namespace Rustle {
     // tool config
-    std::string ext_call_trait_file = std::string(getenv("TMP_DIR")) + std::string("/.ext-call-trait.tmp");
-    std::string callback_file       = std::string(getenv("TMP_DIR")) + std::string("/.callback.tmp");
-    const int MIN_INST_NUM_FOR_LOOP = 100;
+    std::string const ext_call_trait_file = std::string(getenv("TMP_DIR")) + std::string("/.ext-call-trait.tmp");
+    std::string const callback_file       = std::string(getenv("TMP_DIR")) + std::string("/.callback.tmp");
+    int const MIN_INST_NUM_FOR_LOOP       = 100;
 
-    bool debug_check_all_func = true;
+    bool const debug_check_all_func = true;
 
-    bool debug_print_function = false;
-    bool debug_print_tmp      = false;
-    bool debug_print_notfound = debug_print_function && false;
+    bool const debug_print_function = false;
+    bool const debug_print_tmp      = false;
+    bool const debug_print_notfound = debug_print_function && false;
 
-    bool debug_print_derive_pack = false;  // show pack/unpack from `#[derive(Serialize, Deserialize)]`
+    bool const debug_print_derive_pack = false;  // show pack/unpack from `#[derive(Serialize, Deserialize)]`
 
     // built-in regex
-    auto regexForLibFunc = llvm::Regex("(^/cargo)|(^/rustc)"
-                                       "|(_ZN\\d+(core|std|alloc|num_traits|solana_program|byteorder|hex|bytemuck|borsh|enumflags2|safe_transmute|thiserror|byteorder)([0-9]+|\\.\\.)[a-zA-Z]+)"
-                                       "|(serde\\.\\.de\\.\\.Deserialize)");
-    auto regexForLibLoc  = llvm::Regex("(^/rustc)|(^/cargo)|(^/root/.cargo)|(^/home/.+/.cargo)|(^$)");
+    auto const regexForLibFunc = llvm::Regex("(^/cargo)|(^/rustc)"
+                                             "|(_ZN\\d+(core|std|alloc|num_traits|solana_program|byteorder|hex|bytemuck|borsh|enumflags2|safe_transmute|thiserror|byteorder)([0-9]+|\\.\\.)[a-zA-Z]+)"
+                                             "|(serde\\.\\.de\\.\\.Deserialize)");
+    auto const regexForLibLoc  = llvm::Regex("(^/rustc)|(^/cargo)|(^/root/.cargo)|(^/home/.+/.cargo)|(^$)");
 
-    auto regexExtCall         = llvm::Regex("(.+near_sdk[0-9]+promise[0-9]+Promise[0-9]+function_call(_weight)?[0-9]+)");
-    auto regexPromiseTransfer = llvm::Regex("near_sdk[0-9]+promise[0-9]+Promise[0-9]+transfer[0-9]+");
-    auto regexNep141Transfer  = llvm::Regex("[0-9]+(ft_transfer(_call)?)[0-9]+");
-    auto regexRound           = llvm::Regex("[0-9]+std[0-9]+.+[0-9]+(try_round|round)[0-9]+");
-    auto regexPartialEq       = llvm::Regex("(core..cmp..PartialEq)");
-    auto regexPartialOrd      = llvm::Regex("(core[0-9]+cmp[0-9]+PartialOrd)");
-    auto regexPromiseResult   = llvm::Regex("near_sdk[0-9]+environment[0-9]+env[0-9]+promise_result[0-9]+");
+    auto const regexExtCall         = llvm::Regex("(.+near_sdk[0-9]+promise[0-9]+Promise[0-9]+function_call(_weight)?[0-9]+)");
+    auto const regexPromiseTransfer = llvm::Regex("near_sdk[0-9]+promise[0-9]+Promise[0-9]+transfer[0-9]+");
+    auto const regexNep141Transfer  = llvm::Regex("[0-9]+(ft_transfer(_call)?)[0-9]+");
+    auto const regexRound           = llvm::Regex("[0-9]+std[0-9]+.+[0-9]+(try_round|round)[0-9]+");
+    auto const regexPartialEq       = llvm::Regex("(core..cmp..PartialEq)");
+    auto const regexPartialOrd      = llvm::Regex("(core[0-9]+cmp[0-9]+PartialOrd)");
+    auto const regexPromiseResult   = llvm::Regex("near_sdk[0-9]+environment[0-9]+env[0-9]+promise_result[0-9]+");
 
     class Logger {
       private:
