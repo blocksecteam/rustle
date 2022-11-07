@@ -15,5 +15,4 @@ Promise results should always be handled by a callback function or another promi
 token.ft_transfer_call(receiver, U128(amount), None, "".to_string());
 ```
 
-In this sample, the contract invokes `ft_transfer_call` but doesn't handle its promise result with a specified function (e.g., `ft_resolve_transfer`).
-
+In this sample, the contract invokes `ft_transfer_call` but doesn't handle its promise result with a specified callback function (e.g., `resolve_transfer`). Therefore, The contract won't know whether the transfer is successful. And if the transfer is failed, contract states will not be rolled back.
