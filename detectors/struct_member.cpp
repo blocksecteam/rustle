@@ -45,8 +45,8 @@ namespace {
                 for (Instruction &I : BB) {
                     if (!I.getDebugLoc().get() || Rustle::regexForLibLoc.match(I.getDebugLoc().get()->getFilename()))
                         continue;
-                    auto result          = Rustle::usingStruct(&I, vars);
-                    std::string name     = result.first;
+                    auto result       = Rustle::usingStruct(&I, vars);
+                    std::string name  = result.first;
                     Rustle::Mode mode = result.second;
                     if (name != "") {  // Found
                         Rustle::Logger().Info("Found struct <", name, "> used(",

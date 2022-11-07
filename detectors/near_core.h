@@ -169,7 +169,7 @@ namespace Rustle {
      * @param value whose users will be found
      * @param set where users of `value` will be kept
      * @param GEPOffset speicify offset of GetElementPtr instruction, by default is -1, which means unspecified
-     * @param depth depcth of recursion
+     * @param depth depth of recursion
      */
     void findUsers(llvm::Value *value, std::set<llvm::Value *> &set, const int GEPOffset = -1, int depth = __INT32_MAX__) {
         using namespace llvm;
@@ -370,7 +370,7 @@ namespace Rustle {
 
                         // outs() << "callInst->arg_size(): " << callInst->arg_size() << "\n";
 
-                        // outs() << "argsop: ";
+                        // outs() << "args_op: ";
                         int user_no = -1;
                         for (auto i = 0; i < callInst->arg_size(); i++) {
                             if (callInst->getArgOperand(i) == prevUser)
