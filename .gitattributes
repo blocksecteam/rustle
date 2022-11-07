@@ -14,7 +14,7 @@ Cargo.lock text
 
 docs/** linguist-documentation
 
-demo/** -linguist-documentation
+examples/** -linguist-documentation
 
 *.md -linguist-detectable
 *.json -linguist-detectable
