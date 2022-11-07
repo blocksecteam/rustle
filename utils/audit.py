@@ -415,6 +415,11 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
                     note_info += 'used of ' + inconsistent_key + ' at ' + \
                         str(line_no) + ' may be conflict with ' + str(inconsistency_dict[inconsistent_key]).replace("'", '') + '; '
 
+        note_high = note_high.strip()
+        note_medium = note_medium.strip()
+        note_low = note_low.strip()
+        note_info = note_info.strip()
+
         writer.value_matrix.append([func_name, func['struct'], '', func['modifier'], func['macro'],
                                    func['visibility'], 'working', func_type, note_high, note_medium, note_low, note_info])
         if note_high != '' or note_medium != '' or note_low != '' or note_info != '':
