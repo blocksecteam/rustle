@@ -16,6 +16,7 @@
 #include "llvm/Pass.h"
 
 #include "llvm/IR/LegacyPassManager.h"
+#include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Regex.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
@@ -24,7 +25,9 @@ namespace {
     struct ExtCall : public llvm::ModulePass {
         static char ID;
 
+      private:
         std::vector<std::string> ext_call_traits;
+        llvm::raw_fd_ostream *os = nullptr;
 
       public:
         ExtCall() : ModulePass(ID) {
@@ -35,8 +38,11 @@ namespace {
                 ext_call_traits.push_back(ext_call_trait);
             }
             is.close();
+
+            std::error_code EC;
+            os = new llvm::raw_fd_ostream(std::string(getenv("TMP_DIR")) + std::string("/.ext-call.tmp"), EC, llvm::sys::fs::OpenFlags::OF_Append);
         }
-        ~ExtCall() {}
+        ~ExtCall() { os->close(); }
 
         bool runOnModule(llvm::Module &M) override {
             using namespace llvm;
@@ -60,6 +66,7 @@ namespace {
                             for (auto ext_call_trait : ext_call_traits)
                                 if (Rustle::isInstCallFunc(&I, Regex(ext_call_trait))) {
                                     Rustle::Logger().Info("Function <", F.getName(), "> calls\n\t<", callInst->getCalledFunction()->getName(), ">\n\tat ", I.getDebugLoc());
+                                    *os << F.getName() << "@" << I.getDebugLoc()->getFilename() << "@" << I.getDebugLoc().getLine() << "\n";
                                 }
                         }
                     }

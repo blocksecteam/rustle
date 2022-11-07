@@ -34,8 +34,9 @@ for i in os.listdir(CSV_PATH):
     os.remove(CSV_PATH + '/' + i)
 
 promise_results_set = set()    # func, file, line
+ext_call_set = set()           # func, file, line
 reentrancy_set = set()         # func, file, line
-complex_loop_set = set()          # func, file, line
+complex_loop_set = set()       # func, file, line
 transfer_set = set()           # func, file, line
 round_set = set()              # func, file, line
 div_before_mul_set = set()     # func, file, line
@@ -75,6 +76,13 @@ try:
         for line in f:
             func, file, line = line.strip().split('@')
             promise_results_set.add((func, file, int(line)))
+except Exception as e:
+    print("Tmp log not found: ", e)
+try:
+    with open(TMP_PATH + '/.ext-call.tmp', 'r') as f:
+        for line in f:
+            func, file, line = line.strip().split('@')
+            ext_call_set.add((func, file, int(line)))
 except Exception as e:
     print("Tmp log not found: ", e)
 try:
@@ -343,6 +351,22 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
                 hasPrint = True
         if hasPrint:
             note_high = note_high.rstrip() + '>; '
+
+        hasPrint = False
+        for line in ext_call_set:
+            if structFuncNameMatch(line[0], func['struct'], func['struct_trait'], func_name, path, line[1]):
+                note_info += ('' if hasPrint else 'call external function at <') + 'L' + str(line[2]) + ' '
+                hasPrint = True
+        if hasPrint:
+            note_info = note_info.rstrip() + '>; '
+
+        hasPrint = False
+        for line in promise_results_set:
+            if structFuncNameMatch(line[0], func['struct'], func['struct_trait'], func_name, path, line[1]):
+                note_info += ('' if hasPrint else 'promise_result at <') + 'L' + str(line[2]) + ' '
+                hasPrint = True
+        if hasPrint:
+            note_info = note_info.rstrip() + '>; '
 
         for ya_line in yocto_attach_set:
             if structFuncNameMatch(ya_line[0], func['struct'], func['struct_trait'], func_name, path, ya_line[1]):
