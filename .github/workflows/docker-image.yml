@@ -5,9 +5,11 @@ on:
   push:
     paths:
       - 'Dockerfile'
+      - '.github/workflows/docker-image.yml'
   pull_request:
     paths:
       - 'Dockerfile'
+      - '.github/workflows/docker-image.yml'
 
 jobs:
 
@@ -23,6 +25,6 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWD }}
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ github.sha }}
+      run: docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/rustle
     - name: Push the Docker image
-      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ github.sha }}
+      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/rustle
