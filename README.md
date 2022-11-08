@@ -37,6 +37,22 @@ sudo apt install libudev-dev figlet
 cargo install rustfilt
 ```
 
+#### Docker
+
+We provide a docker solution.
+
+```bash
+# build the image
+sudo docker build --build-arg UID=`id -u` --build-arg GID=`id -g` -t blocksecteam:rustle .
+
+# run a container from the image
+sudo docker run --name rustle -it -v `pwd`:/home/rustle/rustle -u rustle -w /home/rustle/rustle blocksecteam:rustle bash
+
+# exec the container
+sudo docker start rustle
+sudo docker exec -it -u rustle -w /home/rustle/rustle rustle bash
+```
+
 ### Usage
 
 ```bash
@@ -67,22 +83,6 @@ git clone https://github.com/linear-protocol/LiNEAR.git ~/near-repo/LiNEAR
 ```
 
 A CSV-format report will be generated in the directory "./audit-result".
-
-### Docker
-
-We provide a docker solution.
-
-```bash
-# build the image
-sudo docker build --build-arg UID=`id -u` --build-arg GID=`id -g` -t blocksecteam:rustle .
-
-# run a container from the image
-sudo docker run --name rustle -it -v `pwd`:/home/rustle/rustle -u rustle -w /home/rustle/rustle blocksecteam:rustle bash
-
-# exec the container
-sudo docker start rustle
-sudo docker exec -it -u rustle -w /home/rustle/rustle rustle bash
-```
 
 ## Detectors
 
