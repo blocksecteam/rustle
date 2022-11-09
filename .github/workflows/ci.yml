@@ -18,7 +18,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build --build-arg UID=`id -u` --build-arg GID=`id -g` -t blocksecteam:rustle .
+      run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/rustle
     - name: Run the Docker image
-      run: docker run --name rustle -v `pwd`:/home/rustle/rustle -u rustle -w /home/rustle/rustle blocksecteam:rustle bash -c \
+      run: docker run -v `pwd`:/home/rustle/rustle -u rustle -w /home/rustle/rustle ${{ secrets.DOCKERHUB_USERNAME }}/rustle bash -c \
         "scripts/unit_test.sh"
