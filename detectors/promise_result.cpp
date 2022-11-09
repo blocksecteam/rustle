@@ -47,12 +47,14 @@ namespace {
                 for (Instruction &I : BB) {
                     if (!I.getDebugLoc().get() || Rustle::regexForLibLoc.match(I.getDebugLoc().get()->getFilename()))
                         continue;
-                    if (auto CI = dyn_cast<CastInst>(&I)) {  // for offset > 0
-                        if (Regex(".+PromiseResult.+").match(Rustle::printToString(CI->getSrcTy()))) {
-                            Rustle::Logger().Info("PromiseResult use at ", &I.getDebugLoc());
-                            *os << F.getName() << "@" << I.getDebugLoc()->getFilename() << "@" << I.getDebugLoc().getLine() << "\n";
-                        }
+                    // if (auto CI = dyn_cast<CastInst>(&I)) {  // for offset > 0
+                    //     if (Regex(".+PromiseResult.+").match(Rustle::printToString(CI->getSrcTy()))) {
+                    if (Rustle::isInstCallFunc(&I, Rustle::regexPromiseResult)) {
+                        Rustle::Logger().Info("PromiseResult use at ", &I.getDebugLoc());
+                        *os << F.getName() << "@" << I.getDebugLoc()->getFilename() << "@" << I.getDebugLoc().getLine() << "\n";
                     }
+                    //     }
+                    // }
                 }
             return false;
         }
