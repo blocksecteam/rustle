@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: build-image
 
 on:
   workflow_dispatch:
@@ -13,18 +13,19 @@ on:
 
 jobs:
 
-  build:
-
+  build-and-push-image:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
+
     - name: Login to Docker Hub
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWD }}
+
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/rustle
+
     - name: Push the Docker image
       run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/rustle

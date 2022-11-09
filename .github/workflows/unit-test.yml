@@ -1,4 +1,4 @@
-name: CI
+name: unit-test
 
 on:
   workflow_dispatch:
@@ -13,12 +13,14 @@ on:
 
 jobs:
 
-  build-and-test-docker:
+  pull-image-and-test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Build the Docker image
+
+    - name: Pull the Docker image
       run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/rustle
+
     - name: Run the Docker image
       run: docker run -u rustle -w /home/rustle ${{ secrets.DOCKERHUB_USERNAME }}/rustle bash -c \
         "git clone https://github.com/blocksecteam/rustle; cd rustle; scripts/unit_test.sh"
