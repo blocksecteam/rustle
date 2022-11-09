@@ -25,12 +25,10 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER rustle
 WORKDIR /home/rustle
 
-RUN curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y
+RUN curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain 1.64.0
 # RUN echo 'source /home/rustle/.cargo/env' >> /home/rustle/.bashrc
 
 ENV PATH="/home/rustle/.cargo/bin:/home/rustle/.local/bin:$PATH"
-
-RUN rustup default 1.64.0
 
 RUN rustup target add wasm32-unknown-unknown
 RUN cargo install rustfilt
