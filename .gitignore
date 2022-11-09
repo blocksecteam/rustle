@@ -5,6 +5,7 @@
 !.vscode/c_cpp_properties.json
 
 *.txt
+!expected.txt
 !requirements.txt
 *.so
 *.pdf
