@@ -17,9 +17,17 @@ elif len(sys.argv) > 2:
     print('Usage: detectors/tautology.py [path to project]')
     sys.exit()
 
-for path in getFiles(PROJ_PATH):
-    # print('[*] Checking ' + path)
-    results = regexInFile(path, r'(true\s*\|\|)|(\|\|\s*true)|(false\s*&&)|(&&\s*false)')
-    if(len(results) != 0):
-        for result in results:
-            print("{}:{}:{}".format(path, result[0], result[1]))
+TMP_PATH = os.environ['TMP_DIR']
+os.makedirs(TMP_PATH, exist_ok=True)
+
+with open(TMP_PATH + '/.tautology.tmp', 'w') as out_file:
+    for path in getFiles(PROJ_PATH):
+        # print('[*] Checking ' + path)
+        funcs = findFunc(path)
+        results = regexInFile(path, r'(true\s*\|\|)|(\|\|\s*true)|(false\s*&&)|(&&\s*false)')
+        if(len(results) != 0):
+            for line_no, line in results:
+                print("{}:{}:{}".format(path, line_no, line))
+                func = line2func(line_no, funcs)
+                out_file.write(func['struct'] + '::' + func['struct_trait'] + '::' + func['name'] + '@' + path + '@' + str(line_no) + '\n')
+    out_file.close()
