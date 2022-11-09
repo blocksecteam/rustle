@@ -201,7 +201,7 @@ def findFunc(filename, ignoreTest=False) -> list:
                 'line_number': string[0:match.start()].count("\n") + 2,  # not accurate
                 'modifier': '',
                 'macro': '' if match.groupdict()['macro'] == None else match.groupdict()['macro'].replace(' ', '').strip('\n').replace('\n', '; '),
-                'visibility': 'internal' if (match.groupdict()['macro'] and '#[private]' in match.groupdict()['macro'] or match.groupdict()['hasCrate']) else ('public' if match.groupdict()['vis'] == 'pub' else 'private'),
+                'visibility': 'internal' if (match.groupdict()['macro'] and '#[private]' in match.groupdict()['macro'] or match.groupdict()['hasCrate']) else ('public' if match.groupdict()['vis'] and match.groupdict()['vis'].startswith('pub') else 'private'),
                 'args': re.sub('//.+\n', '', match.groupdict()['args']).replace(' ', '').replace('\n', '').replace(':', ': ').replace(',', ', '),
                 'return': match.groupdict()['return'].strip() if match.groupdict()['return'] else '',
                 # 'callback': '',
