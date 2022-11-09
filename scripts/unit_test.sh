@@ -6,7 +6,7 @@ echo $TOP
 echo $DETECTORS_WITH_EXAMPLE
 
 die () {
-    echo -e "\e[31m${*:2}\e[0m" 1>&2   # ]]
+    echo -e "\e[31m$2\e[0m" 1>&2   # ]]
     echo -e "\e[33mYour result:\e[0m"  # ]]
     cat $3
     echo -e "\e[33mExpected result:\e[0m" # ]]
