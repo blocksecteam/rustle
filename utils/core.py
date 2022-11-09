@@ -36,7 +36,7 @@ def regexInFile(filename, pattern) -> list:
     with open(filename, 'r') as file:
         for line in file:
             count += 1
-            if re.match('\\s*//.+', line):  # skip comments
+            if re.match(r'\s*//.+', line):  # skip comments
                 continue
             if len(re.findall(pattern, line)) != 0:
                 results.append((count, line.rstrip()))
@@ -98,7 +98,21 @@ def findPub(filename) -> dict:
     return results
 
 
-def line2func(line, results) -> str:
+def line2func(line, results) -> dict:
+    '''Convert line number to function name
+    '''
+    closestDist = sys.maxsize
+    closestFunc = None
+    for func in results:
+        if line > func['line_number']:
+            dist = line - func['line_number']
+            if dist < closestDist:
+                closestDist = dist
+                closestFunc = func
+    return closestFunc
+
+
+def line2funcName(line, results) -> str:
     '''Convert line number to function name
     '''
     closestDist = sys.maxsize
@@ -243,7 +257,7 @@ def findFunc(filename, ignoreTest=False) -> list:
         matches = re.compile(r'(assert|require)!\([^;]+\);', re.MULTILINE | re.DOTALL)
         for match in matches.finditer(string):
             start, end = string[0:match.start()].count("\n"), string[0:match.end()].count("\n")
-            func_name = line2func(start, results)
+            func_name = line2funcName(start, results)
             results[_name2index(func_name, results)].update(modifier=results[_name2index(func_name, results)]['modifier'] +
                                                             re.sub('\n +', ' ', match.group().strip()).replace('"', '').replace("'", '') + ' ')
 
@@ -256,7 +270,7 @@ def findFunc(filename, ignoreTest=False) -> list:
     #     matches = re.compile(r'\.then\s*\([^\.]+\.(?P<callback_func>(\w+::)?\w+)\s*\(', re.MULTILINE | re.DOTALL)
     #     for match in matches.finditer(string):
     #         start, end = string[0:match.start()].count("\n"), string[0:match.end()].count("\n")
-    #         func_name = line2func(start, results)
+    #         func_name = line2funcName(start, results)
     #         results[_name2index(func_name, results)].update(callback=match.groupdict()['callback_func'])
 
     return results

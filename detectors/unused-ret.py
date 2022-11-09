@@ -49,7 +49,7 @@ with open(TMP_PATH + '/.unused-ret.tmp', 'w') as out_file:
                 if curStruct['trait'] == None:
                     curStruct['trait'] = ''
 
-                curFunc = line2func(line_no, findFunc(path))
+                curFunc = line2funcName(line_no, findFunc(path))
                 callee_name = match.groupdict()['name'].strip()
 
                 target_func = None

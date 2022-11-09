@@ -410,7 +410,7 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
             for inconsistent_key in inconsistency_dict.keys():
                 for match in re.compile(r'\b' + inconsistent_key + r'\b', re.MULTILINE | re.DOTALL).finditer(string):
                     line_no = string[0:match.start()].count("\n")
-                    if line2func(line_no, results) != func_name:
+                    if line2funcName(line_no, results) != func_name:
                         continue
                     note_info += 'used of ' + inconsistent_key + ' at ' + \
                         str(line_no) + ' may be conflict with ' + str(inconsistency_dict[inconsistent_key]).replace("'", '') + '; '
