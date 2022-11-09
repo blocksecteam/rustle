@@ -18,13 +18,9 @@ Install the required toolkits with the following commands for **Rustle**. Comman
 ```bash
 # install Rust Toolchain
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-rustup default 1.64.0  # we are still working on supporting 1.65.0 now
 
 # install LLVM 15
-wget https://apt.llvm.org/llvm.sh
-chmod +x llvm.sh
-sudo ./llvm.sh 15
-rm llvm.sh
+sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)" 15
 
 # install Python toolchain
 sudo apt install python3 python3-pip python3-tk   
