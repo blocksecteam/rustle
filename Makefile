@@ -7,7 +7,7 @@ SHELL := /bin/bash # Use bash syntax
 export
 # Config Env
 TOP = $(shell pwd)
-LLVM_DIR = /usr/lib/llvm-14
+LLVM_DIR = /usr/lib/llvm-15
 
 # Binaries
 LLVM_CONFIG = ${LLVM_DIR}/bin/llvm-config

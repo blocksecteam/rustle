@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:jammy
 SHELL ["/bin/bash", "-c"]
 
 ARG UID=1000
@@ -9,9 +9,14 @@ RUN echo $UID $GID
 RUN apt-get update
 
 # tools for Rustle
+RUN apt-get install -y wget gnupg2
+RUN echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main" > /etc/apt/sources.list.d/llvm.list
+RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+RUN apt-get update
+
 RUN apt-get install -y \
     build-essential curl vim \
-    llvm-14 clang-14 python3 python3-pip libudev-dev figlet
+    llvm-15 clang-15 python3 python3-pip libudev-dev figlet
 
 # tools for users
 RUN apt-get install -y sudo vim git
@@ -25,7 +30,7 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER rustle
 WORKDIR /home/rustle
 
-RUN curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain 1.64.0
+RUN curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain stable
 # RUN echo 'source /home/rustle/.cargo/env' >> /home/rustle/.bashrc
 
 ENV PATH="/home/rustle/.cargo/bin:/home/rustle/.local/bin:$PATH"

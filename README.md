@@ -20,10 +20,10 @@ Install the required toolkits with the following commands for **Rustle**. Comman
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 rustup default 1.64.0  # we are still working on supporting 1.65.0 now
 
-# install LLVM 14
+# install LLVM 15
 wget https://apt.llvm.org/llvm.sh
 chmod +x llvm.sh
-sudo ./llvm.sh 14
+sudo ./llvm.sh 15
 rm llvm.sh
 
 # install Python toolchain

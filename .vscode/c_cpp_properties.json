@@ -1,17 +1,17 @@
 {
     "configurations": [
         {
-            "name": "LLVM-14",
-            "compilerPath": "/usr/bin/clang-14",
+            "name": "LLVM-15",
+            "compilerPath": "/usr/bin/clang-15",
             "includePath": [
-                "/usr/lib/llvm-14/include",
+                "/usr/lib/llvm-15/include",
                 "detectors"
             ],
             "compilerArgs": [
                 "-fno-exceptions",
-                "-L/usr/lib/llvm-14/lib"
+                "-L/usr/lib/llvm-15/lib"
             ],
-            "cppStandard": "c++14",
+            "cppStandard": "c++15",
             "defines": [
                 "_GNU_SOURCE",
                 "__STDC_CONSTANT_MACROS",
