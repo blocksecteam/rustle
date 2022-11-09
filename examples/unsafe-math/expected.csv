@@ -1,0 +1,5 @@
+"file","name","high","medium","low","info"
+"src/lib.rs","sum","unsafe math at <L17>;",,,
+"src/lib.rs","sub","unsafe math at <L21>;",,,
+"src/lib.rs","mul","unsafe math at <L25>;",,,
+,,,,"No upgrade function found",

@@ -1,0 +1,4 @@
+"file","name","high","medium","low","info"
+"src/lib.rs","withdraw_with_promise","unhandled promise at <L42>;",,,
+"src/lib.rs","transfer_without_promise","unhandled promise at <L47>;",,,
+,,,,"No upgrade function found",

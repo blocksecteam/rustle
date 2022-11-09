@@ -1,0 +1,4 @@
+"file","name","high","medium","low","info"
+"src/lib.rs","ft_transfer","require self-transfer check;",,,
+"src/lib.rs","ft_transfer_call","require self-transfer check;",,,
+,,,,"No upgrade function found",

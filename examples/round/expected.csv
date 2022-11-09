@@ -1,0 +1,4 @@
+"file","name","high","medium","low","info"
+"src/lib.rs","calc_bonus",,"rounding at <L25>;",,
+"src/lib.rs","calc_fee",,"rounding at <L30>;",,
+,,,,"No upgrade function found",

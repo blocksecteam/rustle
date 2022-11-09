@@ -1,0 +1,4 @@
+"file","name","high","medium","low","info"
+"src/lib.rs","withdraw",,,,"used of GAS_FOR_FT_TRANSFER_CALL at 42 may be conflict with [GAS_FOR_FT_TRANSFER];"
+"src/lib.rs","withdraw_call",,,,"used of GAS_FOR_FT_TRANSFER at 58 may be conflict with [GAS_FOR_FT_TRANSFER_CALL];"
+,,,,"No upgrade function found",
