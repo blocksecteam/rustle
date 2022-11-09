@@ -185,7 +185,7 @@ try:
 except Exception as e:
     print("Tmp log not found: ", e)
 try:
-    with open(TMP_PATH + '/.inconsistency.json', 'r') as f:
+    with open(TMP_PATH + '/.inconsistency.tmp', 'r') as f:
         inconsistency_dict = json.load(f)
 except Exception as e:
     print("Tmp log not found: ", e)

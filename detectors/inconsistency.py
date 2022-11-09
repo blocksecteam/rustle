@@ -53,5 +53,5 @@ for i in global_vars.keys():
         fuzz_set.pop(i)
 print(json.dumps(fuzz_set, sort_keys=True, indent=4))
 
-with open(TMP_PATH + '/.inconsistency.json', 'w') as file:
+with open(TMP_PATH + '/.inconsistency.tmp', 'w') as file:
     json.dump(fuzz_set, file, sort_keys=True, indent=4)
