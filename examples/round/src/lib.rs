@@ -21,12 +21,12 @@ impl Default for Contract {
 #[near_bindgen]
 impl Contract {
     pub fn calc_bonus(&self, amount: U128) -> U128 {
-        // don't use `round`, you should use `ceil` here
+        // don't use `round`, you should use `floor` here
         U128((amount.0 as f64 * self.bonus_rate as f64 / 100.).round() as u128)
     }
 
     pub fn calc_fee(&self, amount: U128) -> U128 {
-        // don't use `round`, you should use `floor` here
+        // don't use `round`, you should use `ceil` here
         U128((amount.0 as f64 * self.fee_rate as f64 / 100.).round() as u128)
     }
 }
