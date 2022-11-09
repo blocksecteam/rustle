@@ -39,7 +39,7 @@ with open(TMP_PATH + '/.incorrect-json-type.tmp', 'w') as out_file:
             func_name = func['name']
             note_issue = ''
 
-            typesWITHu128 = ['u128', 'u64', 'Balance']
+            typesWITHu128 = ['u128', 'u64', 'Balance', 'Timestamp']
             for structName, structDetail in structMember_dict.items():
                 for typeWITHu128 in typesWITHu128:
                     if typeWITHu128 in structDetail.values():
