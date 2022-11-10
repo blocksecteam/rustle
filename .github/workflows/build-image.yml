@@ -7,11 +7,11 @@ on:
       - '**'
     paths:
       - 'Dockerfile'
-      - '.github/workflows/docker-image.yml'
+      - '.github/workflows/build-image.yml'
   pull_request:
     paths:
       - 'Dockerfile'
-      - '.github/workflows/docker-image.yml'
+      - '.github/workflows/build-image.yml'
 
 jobs:
 
