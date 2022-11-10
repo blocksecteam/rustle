@@ -33,5 +33,5 @@ jobs:
       run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ github.ref_name }}
 
     - name: Push to latest for main
-      if: ${{ github.ref_name }} == 'main'
+      if: github.ref_name == 'main'
       run: docker tag ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ github.ref_name }} ${{ secrets.DOCKERHUB_USERNAME }}/rustle && docker push ${{ secrets.DOCKERHUB_USERNAME }}/rustle
