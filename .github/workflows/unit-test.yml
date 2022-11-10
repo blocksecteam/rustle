@@ -25,4 +25,4 @@ jobs:
 
     - name: Run the Docker image to test
       run: docker run -u rustle -w /home/rustle ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ github.ref_name }} bash -c \
-        "git clone https://github.com/blocksecteam/rustle; cd rustle; scripts/unit_test.sh"
+        "git clone -b ${{ github.ref_name }} https://github.com/blocksecteam/rustle; cd rustle; scripts/unit_test.sh"
