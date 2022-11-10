@@ -116,7 +116,7 @@ All vulnerabilities **Rustle** can find.
 1. Fork this repo to your account.
 2. Put the new detector under [/detectors](/detectors/) (for the LLVM detector written in C++, add a build target in [detectors/Makefile](/detectors/Makefile)).
 3. Add a detection target in [/Makefile](/Makefile) with commands to run your detector.
-4. Add the target to the dependency of `audit` target and its name to [detector list](/rustle#L139) and [severity groups](/rustle#L160) in `./rustle` script.
+4. Add the target to the dependency of `audit` target and its name to [detector list](/rustle#L146) and [severity groups](/rustle#L169) in `./rustle` script.
 5. Add processing code in [utils/audit.py](/utils/audit.py) (refer to other detectors' code in `audit.py`).
 6. Submit a pull request from your branch to the main.
 
