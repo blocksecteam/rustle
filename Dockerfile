@@ -30,7 +30,7 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER rustle
 WORKDIR /home/rustle
 
-RUN curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain 1.64.0
+RUN curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain stable
 # RUN echo 'source /home/rustle/.cargo/env' >> /home/rustle/.bashrc
 
 ENV PATH="/home/rustle/.cargo/bin:/home/rustle/.local/bin:$PATH"
