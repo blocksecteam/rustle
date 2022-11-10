@@ -90,12 +90,11 @@ namespace {
                 Rustle::Logger().Debug("Checking function ", F.getName());
 
             if (regex_ft_transfer_trait.match(F.getName())) {
-
                 if (F.arg_size() < 3)
                     return false;
-                std::string typeName = Rustle::printToString(F.getArg(1)->getType());
-                if (!StringRef(typeName).contains("AccountId"))
-                    return false;
+                // std::string typeName = Rustle::printToString(F.getArg(1)->getType());
+                // if (!StringRef(typeName).contains("AccountId"))
+                //     return false;
 
                 Rustle::Logger().Info("Find ft_transfer \e[34m", F.getName());
                 *os << F.getName();
@@ -110,9 +109,9 @@ namespace {
             } else if (regex_ft_transfer_call_trait.match(F.getName())) {
                 if (F.arg_size() < 3)
                     return false;
-                std::string typeName = Rustle::printToString(F.getArg(2)->getType());
-                if (!StringRef(typeName).contains("AccountId"))
-                    return false;
+                // std::string typeName = Rustle::printToString(F.getArg(2)->getType());
+                // if (!StringRef(typeName).contains("AccountId"))
+                //     return false;
 
                 Rustle::Logger().Info("Find ft_transfer_call \e[34m", F.getName());
                 *os << F.getName();
