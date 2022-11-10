@@ -27,11 +27,11 @@ jobs:
         password: ${{ secrets.DOCKERHUB_PASSWD }}
 
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ github.ref }}
+      run: docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ github.ref_name }}
 
     - name: Push the Docker image
-      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ github.ref }}
+      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ github.ref_name }}
 
     - name: Push to latest for main
-      if: ${{ github.ref }} == 'main'
-      run: docker tag ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ github.ref }} ${{ secrets.DOCKERHUB_USERNAME }}/rustle && docker push ${{ secrets.DOCKERHUB_USERNAME }}/rustle
+      if: ${{ github.ref_name }} == 'main'
+      run: docker tag ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ github.ref_name }} ${{ secrets.DOCKERHUB_USERNAME }}/rustle && docker push ${{ secrets.DOCKERHUB_USERNAME }}/rustle
