@@ -151,9 +151,9 @@ def findImpl(filename, includeMod=False) -> list:
     results = []
     with open(filename, 'r') as file:
         string = re.sub(r' +//[^\n]+\n', '\n', file.read())
-        while '\n\n\n' in string:
-            string = re.sub(r'\n\s+\n', r'\n\n', string)
-        string = re.sub(r'#\[cfg\(test\)\]\n+mod\s+\w+\s*\{(.|\s)+\n\}', '', string)
+        # while '\n\n\n' in string:
+        #     string = re.sub(r'\n\s+\n', r'\n\n', string)
+        # string = re.sub(r'#\[cfg\(test\)\]\n+mod\s+\w+\s*\{(.|\s)+\n\}', '', string)
 
         pattern = r'(impl' + (r'|mod' if includeMod else r'') + r')\s+((?P<trait>[^\s]+)\s+for\s+)?(?P<struct>[^\s]+)\s*\{'
         # for func in re.findall(pattern, re.sub('/\\*.+\\*/', '', re.sub('//.+\n', '\n', file.read()))):  # remove comment
