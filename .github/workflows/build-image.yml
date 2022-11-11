@@ -20,6 +20,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Docker tag from github.ref
+      uses: yuya-takeyama/docker-tag-from-github-ref-action@v1.0.0
+
     - name: Login to Docker Hub
       uses: docker/login-action@v2
       with:
@@ -27,11 +30,11 @@ jobs:
         password: ${{ secrets.DOCKERHUB_PASSWD }}
 
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ github.ref_name }}
+      run: docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ steps.docker-tag.outputs.tag }}
 
     - name: Push the Docker image
-      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ github.ref_name }}
+      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ steps.docker-tag.outputs.tag }}
 
     - name: Push to latest for main
       if: github.ref_name == 'main'
-      run: docker tag ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ github.ref_name }} ${{ secrets.DOCKERHUB_USERNAME }}/rustle && docker push ${{ secrets.DOCKERHUB_USERNAME }}/rustle
+      run: docker tag ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ steps.docker-tag.outputs.tag }} ${{ secrets.DOCKERHUB_USERNAME }}/rustle && docker push ${{ secrets.DOCKERHUB_USERNAME }}/rustle
