@@ -20,7 +20,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Docker tag from github.ref
+    - id: docker-tag
       uses: yuya-takeyama/docker-tag-from-github-ref-action@v1.0.0
 
     - name: Login to Docker Hub
