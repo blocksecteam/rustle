@@ -1,6 +1,6 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::json_types::U128;
-use near_sdk::{env, ext_contract, near_bindgen, AccountId, Gas, Promise, PromiseResult};
+use near_sdk::{env, near_bindgen, AccountId, Gas, Promise, PromiseResult};
 
 pub const TGAS: u64 = 1_000_000_000_000;
 const GAS_FOR_WITHDRAW_CALLBACK: Gas = Gas(20 * TGAS);
@@ -36,7 +36,7 @@ impl Contract {
     }
 
     pub fn check_balance(&self) -> U128 {
-        self.balance
+        U128(self.balance)
     }
 
     #[private]
