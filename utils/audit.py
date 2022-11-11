@@ -58,6 +58,7 @@ inconsistency_dict = dict()
 structMember_dict = dict()
 
 lock_callback_set = set()      # func, file
+public_interface_set = set()   # func, file
 non_cb_private_set = set()     # func, file
 non_pri_callback_set = set()   # func, file
 
@@ -215,6 +216,13 @@ try:
         for line in f:
             func, file, note = line.strip().split('@')
             incorrect_json_set.add((func, file, note))
+except Exception as e:
+    print("Tmp log not found: ", e)
+try:
+    with open(TMP_PATH + '/.public-interface.tmp', 'r') as f:
+        for line in f:
+            func, file = line.strip().split('@')
+            public_interface_set.add((func, file))
 except Exception as e:
     print("Tmp log not found: ", e)
 try:
@@ -405,6 +413,12 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
                     note_low += callee + '(L' + line + ') '
                 note_low = note_low.rstrip() + '> with unused return value; '
                 break
+
+        for func_string, file in public_interface_set:
+            if structFuncNameMatch(func_string, func['struct'], func['struct_trait'], func_name, path, file, rustle_format=True):
+                note_info += 'public interface; '
+                break
+
         with open(path, 'r') as file:
             string = re.sub('//[^\n]+\n', '\n', file.read())
             for inconsistent_key in inconsistency_dict.keys():

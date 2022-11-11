@@ -287,6 +287,15 @@ incorrect-json-type: find-struct
 	fi
 	@python3 ./detectors/incorrect-json-type.py ${NEAR_SRC_DIR}
 
+public-interface:
+	@rm -f ${TMP_DIR}/.$@.tmp
+	@if test $(shell find ${NEAR_SRC_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
+		figlet $@ -w 200 ; \
+	else \
+		echo -e "\e[31m[!] Source not found\e[0m" ; \
+	fi
+	@python3 ./detectors/public-interface.py ${NEAR_SRC_DIR}
+
 find-struct:  # provide .struct.tmp and .struct-member.tmp
 	@python3 ./utils/findStruct.py ${NEAR_SRC_DIR}
 
