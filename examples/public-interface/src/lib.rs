@@ -24,9 +24,7 @@ impl Default for Contract {
 #[near_bindgen]
 impl Contract {
     pub fn withdraw(&mut self, amount: U128) -> Promise {
-        assert!(self.balance >= amount.into(), "insufficient balance");
-
-        self.balance -= amount.0;
+        self.sub_balance(amount.into());
 
         Promise::new(self.depositor.clone())
             .transfer(amount.0)
@@ -50,5 +48,10 @@ impl Contract {
                 self.balance += amount.0;
             }
         };
+    }
+
+    fn sub_balance(&mut self, amount: u128) {
+        assert!(self.balance >= amount, "insufficient balance");
+        self.balance -= amount;
     }
 }
