@@ -6,12 +6,12 @@ on:
     branches:
       - '**'
     paths:
-      - 'detectors/'
-      - 'utils/'
+      - 'detectors/**'
+      - 'utils/**'
   pull_request:
     paths:
-      - 'detectors/'
-      - 'utils/'
+      - 'detectors/**'
+      - 'utils/**'
 
 jobs:
 
@@ -25,7 +25,12 @@ jobs:
 
     - name: Pull the Docker image
       run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ steps.docker-tag.outputs.tag }}
+      
+    - name: Pull the default Docker image on failures
+      if: failure()
+      run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/rustle && docker tag ${{ secrets.DOCKERHUB_USERNAME }}/rustle ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ steps.docker-tag.outputs.tag }} && docker push ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ steps.docker-tag.outputs.tag }}
 
     - name: Run the Docker image to test
+      if: always()
       run: docker run -u rustle -w /home/rustle ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ steps.docker-tag.outputs.tag }} bash -c \
         "git clone -b ${{ steps.docker-tag.outputs.tag }} https://github.com/blocksecteam/rustle; cd rustle; scripts/unit_test.sh"
