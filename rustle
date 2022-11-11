@@ -154,6 +154,7 @@ else
     export NEAR_TG_DIR=$(realpath $_arg_src_dir)
 fi
 export CSV_PATH=$(realpath $_arg_output)
+export TMP_DIR=$(realpath `pwd`/.rustle-tmp-`date +%s`)
 
 make -C $TOP echo
 
@@ -192,5 +193,7 @@ do
 done
 
 make -C $TOP audit-report
+
+make -C $TOP clean_tmp
 
 # ] <-- needed because of Argbash
