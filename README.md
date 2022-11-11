@@ -41,14 +41,14 @@ We provide a docker solution.
 
 ```bash
 # build the image
-sudo docker build --build-arg UID=`id -u` --build-arg GID=`id -g` -t blocksecteam:rustle .
+docker build --build-arg UID=`id -u` --build-arg GID=`id -g` -t rustle .
 
 # run a container from the image
-sudo docker run --name rustle -it -v `pwd`:/home/rustle/rustle -u rustle -w /home/rustle/rustle blocksecteam:rustle bash
+docker run --name rustle -it -v `pwd`:/rustle -w /rustle rustle bash
 
 # exec the container
-sudo docker start rustle
-sudo docker exec -it -u rustle -w /home/rustle/rustle rustle bash
+docker start rustle
+docker exec -it -w /rustle rustle bash
 ```
 
 ### Usage
