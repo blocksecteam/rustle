@@ -29,7 +29,5 @@ with open(TMP_PATH + '/.public-interface.tmp', 'w') as out_file:
 
             if func['visibility'] == 'public(near_bindgen)':
                 print('[*] public interface ' + func['struct'] + '::' + func_name)
-                # import json
-                # print(json.dumps(func, indent=4))
                 out_file.write(func['struct'] + '::' + func['struct_trait'] + '::' + func_name + '@' + path + '\n')
     out_file.close()
