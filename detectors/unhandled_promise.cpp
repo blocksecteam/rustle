@@ -55,7 +55,7 @@ namespace {
                         if (!callInst->getCalledFunction())
                             continue;
                         if (callInst->arg_size() > 1 && callInst->getArgOperand(0)->getType() &&
-                            Rustle::printToString(callInst->getArgOperand(0)->getType()).find("near_sdk::promise::Promise") != std::string::npos) {  // return value is promise
+                            Rustle::printToString(callInst->getArgOperand(0)).find("near_sdk::promise::Promise") != std::string::npos) {  // return value is promise
                             bool handlePromise = false;
                             bool usedInReturn  = false;
 

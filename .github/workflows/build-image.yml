@@ -3,13 +3,15 @@ name: build-image
 on:
   workflow_dispatch:
   push:
+    branches:
+      - '**'
     paths:
       - 'Dockerfile'
-      - '.github/workflows/docker-image.yml'
+      - '.github/workflows/build-image.yml'
   pull_request:
     paths:
       - 'Dockerfile'
-      - '.github/workflows/docker-image.yml'
+      - '.github/workflows/build-image.yml'
 
 jobs:
 
@@ -18,6 +20,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - id: docker-tag
+      uses: yuya-takeyama/docker-tag-from-github-ref-action@v1.0.0
+
     - name: Login to Docker Hub
       uses: docker/login-action@v2
       with:
@@ -25,7 +30,11 @@ jobs:
         password: ${{ secrets.DOCKERHUB_PASSWD }}
 
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/rustle
+      run: docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ steps.docker-tag.outputs.tag }}
 
     - name: Push the Docker image
-      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/rustle
+      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ steps.docker-tag.outputs.tag }}
+
+    - name: Push to latest for main
+      if: github.ref_name == 'main'
+      run: docker tag ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ steps.docker-tag.outputs.tag }} ${{ secrets.DOCKERHUB_USERNAME }}/rustle && docker push ${{ secrets.DOCKERHUB_USERNAME }}/rustle

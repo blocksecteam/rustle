@@ -21,3 +21,5 @@ do
     cmp --silent ./audit-result/summary.csv $TOP/examples/$detector/expected.csv \
         || die 1 "Unit test fails for the $detector." ./audit-result/summary.csv $TOP/examples/$detector/expected.csv
 done
+
+echo -e "\e[32mUnit test passed!\e[0m" # ]]
