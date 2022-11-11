@@ -109,6 +109,7 @@ All vulnerabilities **Rustle** can find.
 | `ext-call`             | [find all cross-contract invocations](docs/detectors/ext-call.md)                           | Info     |
 | `promise-result`       | [find all uses of promise result](docs/detectors/promise-result.md)                         | Info     |
 | `transfer`             | [find all transfer actions](docs/detectors/transfer.md)                                     | Info     |
+| `public-interface`     | [find all public interfaces](docs/detectors/public-interface.md)                            | Info     |
 
 ## Add new detector
 
