@@ -334,7 +334,7 @@ def findCallbackFunc(filename) -> set:
             results.add(match.groupdict()['callback_func'])
     return results
 
-def structFuncNameMatch(func_string, struct, trait, func, path, llvm_path=None, rustle_format=False) -> bool:
+def structFuncNameMatch(func_string, struct, trait, func, path, detector_path=None, rustle_format=False) -> bool:
     '''match func_string with provided args
 
     Args:
@@ -343,7 +343,7 @@ def structFuncNameMatch(func_string, struct, trait, func, path, llvm_path=None, 
         trait (string): struct_trait from findFunc()
         func (string): name from from findFunc()
         path (string): path from getFiles()
-        llvm_path (string, optional): path of file output by llvm
+        detector_path (string, optional): path of file output by detector
         rustle_format (bool, optional): Whether the `func_string` is generate by Rustle rather than LLVM. Defaults to False.
 
     Returns:
@@ -356,7 +356,7 @@ def structFuncNameMatch(func_string, struct, trait, func, path, llvm_path=None, 
             trait = ''
         return struct + '::' + trait + '::' + func == func_string
     else:
-        if llvm_path != None and not path.endswith(llvm_path):
+        if detector_path != None and not path.endswith(detector_path):
             return False
         if struct == None or struct == '':
             return func_string.endswith(path.split('/')[-1].split('.')[0] + '::' + func)
