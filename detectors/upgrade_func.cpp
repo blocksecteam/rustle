@@ -49,7 +49,8 @@ namespace {
                         continue;
 
                     if (Rustle::isInstCallFunc(&I, promise_batch_action_deploy_contract)) {
-                        funcFileName                              = I.getDebugLoc().get()->getFilename();
+                        if (I.getDebugLoc().get())
+                            funcFileName = I.getDebugLoc().get()->getFilename();
                         call_promise_batch_action_deploy_contract = true;
                     }
                     if (Rustle::isInstCallFunc(&I, promise_batch_action_function_call)) {

@@ -50,7 +50,8 @@ namespace {
                         continue;
 
                     if (funcFileName.empty()) {  // only once
-                        funcFileName = I.getDebugLoc().get()->getFilename();
+                        if (I.getDebugLoc().get())
+                            funcFileName = I.getDebugLoc().get()->getFilename();
                         // if (F.getName().contains("callback")) {
                         //     *os << F.getName() << "@" << funcFileName << "\n";
                         //     return false;

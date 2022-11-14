@@ -113,7 +113,8 @@ namespace {
                                     continue;
 
                                 if (funcFileName.empty())
-                                    funcFileName = I.getDebugLoc().get()->getFilename();
+                                    if (I.getDebugLoc().get())
+                                        funcFileName = I.getDebugLoc().get()->getFilename();
 
                                 Regex const static regex_assert_yocto = Regex("near_sdk[0-9]+utils[0-9]+assert_one_yocto");
                                 if (Rustle::isInstCallFuncRec(&I, CG, regex_assert_yocto)) {
