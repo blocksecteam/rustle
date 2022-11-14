@@ -25,7 +25,7 @@ id_map = dict()
 for path in getFiles(PROJ_PATH):
     funcs = findFunc(path)
     with open(path, 'r') as file:
-        for match in re.compile(r'(?P<name>\w+):\s*(?P<collection>(LegacyTreeMap|LookupMap|LookupSet|TreeMap|UnorderedMap|UnorderedSet|Vector))'
+        for match in re.compile(r'(?P<name>\w+):\s*(?P<collection>(LazyOption|LegacyTreeMap|LookupMap|LookupSet|TreeMap|UnorderedMap|UnorderedSet|Vector))'
                                 r'::new\((?P<id>(\w|:)+)\),').finditer(file.read()):
             groupdict = match.groupdict()
             if groupdict['id'] != None:
