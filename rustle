@@ -6,7 +6,7 @@
 # ARG_OPTIONAL_SINGLE([tg_dir],[t],[path to the contract build target, only used when it's different from],[])
 # ARG_OPTIONAL_SINGLE([detector],[d],[detector list, pass multiple detectors seperated by ',', pass 'all' to support all detectors],[all])
 # ARG_POSITIONAL_SINGLE([src_dir],[path to the contract source],[])
-# ARG_OPTIONAL_SINGLE([output],[o],[location of audit report, defualts to "./audit-resutl"],[./audit-result])
+# ARG_OPTIONAL_SINGLE([output],[o],[location of audit reports],[./audit-result])
 # ARG_HELP([The general script's help msg])
 # ARGBASH_GO()
 # needed because of Argbash --> m4_ignore([
@@ -47,7 +47,7 @@ print_help()
 	printf '\t%s\n' "<src_dir>: path to the contract source"
 	printf '\t%s\n' "-t, --tg_dir: path to the contract build target, only used when it's different from (no default)"
 	printf '\t%s\n' "-d, --detector: detector list, pass multiple detectors seperated by ',', pass 'all' to support all detectors (default: 'all')"
-	printf '\t%s\n' "-o, --output: location of audit report, defualts to \"./audit-resutl\" (default: './audit-result')"
+	printf '\t%s\n' "-o, --output: location of audit reports (default: './audit-result')"
 	printf '\t%s\n' "-h, --help: Prints help"
 }
 
