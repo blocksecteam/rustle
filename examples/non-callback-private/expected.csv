@@ -1,3 +1,3 @@
 "file","name","high","medium","low","info"
 "src/lib.rs","get_token_list",,,"macro #[private] used in non-callback function;",
-,,,,"No upgrade function found",
+"global","global",,,"No upgrade function found;",

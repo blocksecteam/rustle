@@ -1,4 +1,4 @@
 "file","name","high","medium","low","info"
 "src/lib.rs","withdraw",,,,"public interface;"
 "src/lib.rs","check_balance",,,,"public interface;"
-,,,,"No upgrade function found",
+"global","global",,,"No upgrade function found;",
