@@ -62,6 +62,8 @@ public_interface_set = set()   # func, file
 non_cb_private_set = set()     # func, file
 non_pri_callback_set = set()   # func, file
 
+unique_collection_id_log = ''  # log can be printed without processing
+
 os.system("ls " + TMP_PATH + "/.*.tmp | xargs -i sh -c 'mv {} {}.org; rustfilt -i {}.org -o {}; rm {}.org'")
 
 
@@ -226,6 +228,11 @@ try:
 except Exception as e:
     print("Tmp log not found: ", e)
 try:
+    with open(TMP_PATH + '/.dup-collection-id.tmp', 'r') as f:
+        unique_collection_id_log = f.read()
+except Exception as e:
+    print("Tmp log not found: ", e)
+try:
     with open(TMP_PATH + '/.struct-members.tmp', 'r') as f:
         structNum = int(f.readline())
         for i in range(structNum):
@@ -252,8 +259,7 @@ json_summary_writer = pytablewriter.JsonTableWriter()
 json_summary_writer.headers = ["file", "name", "high", "medium", "low", "info"]
 
 '''
-TODO
-use func line number instead of func name for llvm pass result
+add per-function note
 '''
 for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
     if '/src/' not in path:
@@ -450,8 +456,18 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
         writer.stream = file
         writer.write_table()
 
+'''
+add summary-only note
+'''
+summary_high = ''
+summary_medium = ''
+summary_low = ''
+summary_info = ''
 if len(upgrade_func_set) == 0:
-    summary_writer.value_matrix.append(['', '', '', '', 'No upgrade function found', ''])
+    summary_low += 'No upgrade function found; '
+summary_medium += unique_collection_id_log
+
+summary_writer.value_matrix.append(['', '', summary_high.strip(), summary_medium.strip(), summary_low.strip(), summary_info.strip()])
 
 with open(CSV_PATH + '/summary.csv', 'w') as sum_file:
     summary_writer.stream = sum_file

@@ -98,6 +98,7 @@ All vulnerabilities **Rustle** can find.
 | `round`                | [rounding without specifying ceil or floor](docs/detectors/round.md)                        | Medium   |
 | `lock-callback`        | [panic in callback function may lock contract](docs/detectors/lock-callback.md)             | Medium   |
 | `yocto-attach`         | [no `assert_one_yocto` in privileged function](docs/detectors/yocto-attach.md)              | Medium   |
+| `dup-collection-id`    | [duplicated id uses in collections]()                                                       | Medium   |
 | `prepaid-gas`          | [missing check of prepaid gas in `ft_transfer_call`](docs/detectors/prepaid-gas.md)         | Low      |
 | `non-callback-private` | [macro `#[private]` used in non-callback function](docs/detectors/non-callback-private.md)  | Low      |
 | `unused-ret`           | [function result not used or checked](docs/detectors/unused-ret.md)                         | Low      |
