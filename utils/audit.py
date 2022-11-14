@@ -467,7 +467,7 @@ if len(upgrade_func_set) == 0:
     summary_low += 'No upgrade function found; '
 summary_medium += unique_collection_id_log
 
-summary_writer.value_matrix.append(['', '', summary_high.strip(), summary_medium.strip(), summary_low.strip(), summary_info.strip()])
+summary_writer.value_matrix.append(['global', 'global', summary_high.strip(), summary_medium.strip(), summary_low.strip(), summary_info.strip()])
 
 with open(CSV_PATH + '/summary.csv', 'w') as sum_file:
     summary_writer.stream = sum_file
