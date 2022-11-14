@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
+import re
+from utils.core import *
 import sys
 import os
 sys.path.insert(0, os.getcwd())
-from utils.core import *
-import re
 
 PROJ_PATH = os.environ['NEAR_SRC_DIR'] if os.environ.get('NEAR_SRC_DIR') != None else ''
 
@@ -30,9 +30,9 @@ for path in getFiles(PROJ_PATH):
             groupdict = match.groupdict()
             if groupdict['id'] != None:
                 if groupdict['id'] in id_map:
-                    id_map[groupdict['id']].append(groupdict['name'])
+                    id_map[groupdict['id']].insert(groupdict['name'])
                 else:
-                    id_map[groupdict['id']] = [groupdict['name']]
+                    id_map[groupdict['id']] = {groupdict['name']}
         file.close()
 
 
@@ -40,5 +40,6 @@ with open(TMP_PATH + '/.dup-collection-id.tmp', 'w') as out_file:
     for id, name_list in id_map.items():
         if len(name_list) > 1:
             print('[!] collection id `{}` used in multiple collections: {}'.format(id, name_list).replace("'", '`'))
-            out_file.write('collection id `{}` used in multiple collections: {}; '.format(id, name_list).replace("'", '`'))
+            out_file.write('collection id `{}` used in multiple collections: {}; '.format(
+                id, name_list).replace("'", '`'))
     out_file.close()
