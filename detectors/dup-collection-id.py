@@ -40,5 +40,5 @@ with open(TMP_PATH + '/.dup-collection-id.tmp', 'w') as out_file:
     for id, name_list in id_map.items():
         if len(name_list) > 1:
             print('[!] collection id `{}` used in multiple collections: {}'.format(id, name_list).replace("'", '`'))
-            out_file.write('collection id `{}` used in multiple collections: {}; '.format(id, name_list).replace("'", '`'))
+            out_file.write('collection id `{}` used in multiple collections: {}; '.format(id, sorted(list(name_list))).replace("'", '`'))
     out_file.close()
