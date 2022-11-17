@@ -38,10 +38,10 @@ file_w_member.write('{}\n'.format(sum(len(i) for i in results_list)))
 for results_single_file in results_list:
     for struct in results_single_file:
         struct_name = struct['name']
-        print('\n[*] {}'.format(struct_name))
+        # print('\n[*] {}'.format(struct_name))
         file_wo_member.write('{}\n'.format(struct_name))
         file_w_member.write('{}@{}@{}\n'.format(struct_name, len(struct['members']), struct['file']))
         member_list = struct['members']
         for i in member_list:
-            print(" +- {}: {}".format(i['name'], i['type']))
+            # print(" +- {}: {}".format(i['name'], i['type']))
             file_w_member.write("{}\n{}\n".format(i['name'], i['type']))
