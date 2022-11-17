@@ -170,8 +170,8 @@ done
 _arg_detector=$(echo $_arg_detector | sed 's/\ball\b/high,medium,low,info/g')
 _arg_detector=$(echo $_arg_detector | sed 's/\bhigh\b/unhandled-promise,non-private-callback,reentrancy,unsafe-math,self-transfer,incorrect-json-type/g')
 _arg_detector=$(echo $_arg_detector | sed 's/\bmedium\b/div-before-mul,round,lock-callback,yocto-attach,dup-collection-id/g')
-_arg_detector=$(echo $_arg_detector | sed 's/\blow\b/prepaid-gas,non-callback-private,unused-ret,upgrade-func,tautology,inconsistency/g')
-_arg_detector=$(echo $_arg_detector | sed 's/\binfo\b/timestamp,ext-call,promise-result,transfer,complex-loop,public-interface/g')
+_arg_detector=$(echo $_arg_detector | sed 's/\blow\b/prepaid-gas,non-callback-private,unused-ret,upgrade-func,tautology/g')
+_arg_detector=$(echo $_arg_detector | sed 's/\binfo\b/inconsistency,timestamp,ext-call,promise-result,transfer,complex-loop,public-interface/g')
 
 # run audit
 

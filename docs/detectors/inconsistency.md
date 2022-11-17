@@ -3,7 +3,7 @@
 ### Configuration
 
 * detector id: `inconsistency`
-* severity: low
+* severity: info
 
 ### Description
 

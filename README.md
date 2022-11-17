@@ -104,7 +104,7 @@ All vulnerabilities **Rustle** can find.
 | `unused-ret`           | [function result not used or checked](docs/detectors/unused-ret.md)                         | Low      |
 | `upgrade-func`         | [no upgrade function in contract](docs/detectors/upgrade-func.md)                           | Low      |
 | `tautology`            | [tautology used in conditional branch](docs/detectors/tautology.md)                         | Low      |
-| `inconsistency`        | [use of similar but slightly different symbol](docs/detectors/inconsistency.md)             | Low      |
+| `inconsistency`        | [use of similar but slightly different symbol](docs/detectors/inconsistency.md)             | Info     |
 | `timestamp`            | [find all uses of `timestamp`](docs/detectors/timestamp.md)                                 | Info     |
 | `complex-loop`         | [find all loops with complex logic which may lead to DoS](docs/detectors/complex-loop.md)   | Info     |
 | `ext-call`             | [find all cross-contract invocations](docs/detectors/ext-call.md)                           | Info     |
