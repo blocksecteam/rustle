@@ -19,50 +19,56 @@
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
 
 namespace {
-    struct UpdateFunc : public llvm::FunctionPass {
+    struct UpdateFunc : public llvm::ModulePass {
         static char ID;
 
       private:
         llvm::raw_fd_ostream *os = nullptr;
 
       public:
-        UpdateFunc() : FunctionPass(ID) {
+        UpdateFunc() : ModulePass(ID) {
             std::error_code EC;
             os = new llvm::raw_fd_ostream(std::string(getenv("TMP_DIR")) + std::string("/.upgrade-func.tmp"), EC, llvm::sys::fs::OpenFlags::OF_Append);
         }
         ~UpdateFunc() { os->close(); }
 
-        bool runOnFunction(llvm::Function &F) override {
+        bool runOnModule(llvm::Module &M) override {
             using namespace llvm;
-            if (!Rustle::debug_check_all_func && Rustle::regexForLibFunc.match(F.getName()))
-                return false;
-            if (Rustle::debug_print_function)
-                Rustle::Logger().Debug("Checking function ", F.getName());
 
-            bool call_promise_batch_action_deploy_contract = false, call_promise_batch_action_function_call = false;
-            auto promise_batch_action_deploy_contract = Regex("promise_batch_action_deploy_contract"), promise_batch_action_function_call = Regex("promise_batch_action_function_call");
-            StringRef funcFileName;
+            bool found_upgrade = false;
 
-            for (BasicBlock &BB : F)
-                for (Instruction &I : BB) {
-                    if (!I.getDebugLoc().get() || Rustle::regexForLibLoc.match(I.getDebugLoc().get()->getFilename()))
-                        continue;
+            for (auto &F : M) {
+                if (!Rustle::debug_check_all_func && Rustle::regexForLibFunc.match(F.getName()))
+                    return false;
+                if (Rustle::debug_print_function)
+                    Rustle::Logger().Debug("Checking function ", F.getName());
 
-                    if (Rustle::isInstCallFunc(&I, promise_batch_action_deploy_contract)) {
-                        if (I.getDebugLoc().get())
-                            funcFileName = I.getDebugLoc().get()->getFilename();
-                        call_promise_batch_action_deploy_contract = true;
+                bool call_promise_batch_action_deploy_contract = false, call_promise_batch_action_function_call = false;
+                auto promise_batch_action_deploy_contract = Regex("promise_batch_action_deploy_contract"), promise_batch_action_function_call = Regex("promise_batch_action_function_call");
+                StringRef funcFileName;
+
+                for (BasicBlock &BB : F)
+                    for (Instruction &I : BB) {
+                        if (!I.getDebugLoc().get() || Rustle::regexForLibLoc.match(I.getDebugLoc().get()->getFilename()))
+                            continue;
+
+                        if (Rustle::isInstCallFunc(&I, promise_batch_action_deploy_contract)) {
+                            if (I.getDebugLoc().get())
+                                funcFileName = I.getDebugLoc().get()->getFilename();
+                            call_promise_batch_action_deploy_contract = true;
+                        }
+                        if (Rustle::isInstCallFunc(&I, promise_batch_action_function_call)) {
+                            call_promise_batch_action_function_call = true;
+                        }
                     }
-                    if (Rustle::isInstCallFunc(&I, promise_batch_action_function_call)) {
-                        call_promise_batch_action_function_call = true;
-                    }
+                if (call_promise_batch_action_deploy_contract && call_promise_batch_action_function_call) {
+                    Rustle::Logger().Info("Find upgrade in function ", F.getName(), " at ", funcFileName);
+                    *os << F.getName() << "@" << funcFileName << "\n";
+                    found_upgrade = true;
                 }
-            if (call_promise_batch_action_deploy_contract && call_promise_batch_action_function_call) {
-                Rustle::Logger().Warning("Find upgrade in function ", F.getName(), " at ", funcFileName);
-                *os << F.getName() << "@" << funcFileName << "\n";
-            } else if (Rustle::debug_print_notfound)
-                Rustle::Logger().Info("upgrade not found");
-
+            }
+            if (!found_upgrade)
+                Rustle::Logger().Warning("Upgrade function not found");
             return false;
         }
     };

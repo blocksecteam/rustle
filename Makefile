@@ -172,7 +172,6 @@ upgrade-func: tg_ir
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi
 	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/upgrade_func.so -upgrade-func {} -o /dev/null
-	@test -s .tmp/.upgrade-func.tmp || echo -e "\e[33m[!] Upgrade func not found\e[0m"
 
 self-transfer: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
