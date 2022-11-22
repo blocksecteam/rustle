@@ -176,6 +176,17 @@ namespace Rustle {
      */
     bool isInstCallFuncRec(llvm::Instruction *I, llvm::CallGraph &CG, llvm::Regex const &regex);
 
+    /**
+     * @brief check if F calls function with name matching regex recursively
+     *
+     * @param F
+     * @param CG
+     * @param regex
+     * @return true
+     * @return false
+     */
+    bool isFuncCallFuncRec(llvm::Function *F, llvm::CallGraph &CG, llvm::Regex const &regex);
+
     enum Mode { Read = 0b10, Write = 0b01, RW = 0b11, Unknown = 0b00 };
 
     /**

@@ -163,7 +163,8 @@ namespace Rustle {
             return false;
         }
     }  // namespace
-       // Recursive version
+
+    // Recursive version
     bool isInstCallFuncRec(llvm::Instruction *I, llvm::CallGraph &CG, llvm::Regex const &regex) {
         if (isInstCallFunc(I, regex))
             return true;
@@ -179,6 +180,16 @@ namespace Rustle {
             }
         }
         return false;
+    }
+
+    // Recursive version
+    bool isFuncCallFuncRec(llvm::Function *F, llvm::CallGraph &CG, llvm::Regex const &regex) {
+        if (llvm::Regex("llvm").match(F->getName()))
+            return false;
+
+        std::vector<llvm::CallGraphNode *> callStack;
+        callStack.push_back(CG[F]);
+        return _isInstCallFunc_Rec(CG[F], regex, callStack);
     }
 
     namespace {  // Hide this func
