@@ -30,10 +30,12 @@ jobs:
         password: ${{ secrets.DOCKERHUB_PASSWD }}
 
     - name: Pull the Docker image
+      id: pull
+      continue-on-error: true
       run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ steps.docker-tag.outputs.tag }}
       
     - name: Build and push the image on failures
-      if: failure()
+      if: steps.pull.outcome != 'success'
       run: docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ steps.docker-tag.outputs.tag }} && docker push ${{ secrets.DOCKERHUB_USERNAME }}/rustle:${{ steps.docker-tag.outputs.tag }}
 
     - name: Run the Docker image to test
