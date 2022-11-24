@@ -140,7 +140,7 @@ namespace Rustle {
     }
 
     namespace {  // Hide this func
-        bool _isInstCallFunc_Rec(llvm::CallGraphNode *node, llvm::Regex const &regex, std::vector<llvm::CallGraphNode *> &callStack) {
+        bool _isFuncCallFunc_Rec(llvm::CallGraphNode *node, llvm::Regex const &regex, std::vector<llvm::CallGraphNode *> &callStack) {
             if (!node)
                 return false;
 
@@ -156,7 +156,7 @@ namespace Rustle {
                     continue;
 
                 callStack.push_back(callee.second);
-                if (_isInstCallFunc_Rec(callee.second, regex, callStack))
+                if (_isFuncCallFunc_Rec(callee.second, regex, callStack))
                     return true;
                 callStack.pop_back();
             }
@@ -176,7 +176,7 @@ namespace Rustle {
 
                 std::vector<llvm::CallGraphNode *> callStack;
                 callStack.push_back(CG[callInst->getCalledFunction()]);
-                return _isInstCallFunc_Rec(CG[callInst->getCalledFunction()], regex, callStack);
+                return _isFuncCallFunc_Rec(CG[callInst->getCalledFunction()], regex, callStack);
             }
         }
         return false;
@@ -189,7 +189,7 @@ namespace Rustle {
 
         std::vector<llvm::CallGraphNode *> callStack;
         callStack.push_back(CG[F]);
-        return _isInstCallFunc_Rec(CG[F], regex, callStack);
+        return _isFuncCallFunc_Rec(CG[F], regex, callStack);
     }
 
     namespace {  // Hide this func
