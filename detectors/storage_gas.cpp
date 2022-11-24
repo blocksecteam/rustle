@@ -76,14 +76,18 @@ namespace {
                 }
 
                 if (hasStorageExpansion) {
+                    *os << F.getName();
+
                     auto regexStorageUse = Regex("near_sdk[0-9]+environment[0-9]+env[0-9]+storage_usage[0-9]+");
 
                     // Rustle::Logger().Debug(CG[&F]->size());
 
                     if (!Rustle::isFuncCallFuncRec(&F, CG, regexStorageUse)) {
                         Rustle::Logger().Warning("Lack of storage check in function ", F.getName());
+                        *os << "@False\n";
                     } else {
-                        Rustle::Logger().Warning("Find check in function ", F.getName());
+                        Rustle::Logger().Warning("Find storage check in function ", F.getName());
+                        *os << "@True\n";
                     }
                 }
             }
