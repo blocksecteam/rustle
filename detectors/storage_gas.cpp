@@ -67,7 +67,7 @@ namespace {
                         if (!I.getDebugLoc().get() || Rustle::regexForLibLoc.match(I.getDebugLoc().get()->getFilename()))
                             continue;
 
-                        auto regexStorageExpansion = Regex("near_sdk[0-9]+collections[0-9]+.+(insert|extend)");
+                        auto const static regexStorageExpansion = Regex("near_sdk[0-9]+collections[0-9]+.+(insert|extend)");
                         if (Rustle::isInstCallFuncRec(&I, CG, regexStorageExpansion)) {
                             hasStorageExpansion = true;
                             break;
@@ -78,7 +78,7 @@ namespace {
                 if (hasStorageExpansion) {
                     *os << F.getName();
 
-                    auto regexStorageUse = Regex("near_sdk[0-9]+environment[0-9]+env[0-9]+storage_usage[0-9]+");
+                    auto const static regexStorageUse = Regex("near_sdk[0-9]+environment[0-9]+env[0-9]+storage_usage[0-9]+");
 
                     // Rustle::Logger().Debug(CG[&F]->size());
 
