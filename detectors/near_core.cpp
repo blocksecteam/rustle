@@ -1,4 +1,5 @@
 #include "near_core.h"
+#include <llvm-15/llvm/IR/InstrTypes.h>
 
 namespace Rustle {
     void simpleFindUsers(llvm::Value *value, std::set<llvm::Value *> &set, bool restrictCrossFunction, bool disableCrossFunction) {
@@ -190,6 +191,24 @@ namespace Rustle {
         std::vector<llvm::CallGraphNode *> callStack;
         callStack.push_back(CG[F]);
         return _isFuncCallFunc_Rec(CG[F], regex, callStack);
+    }
+
+    void findFunctionCallerRec(llvm::Function *F, std::set<llvm::Function *> &set, int depth) {
+        using namespace llvm;
+        if (depth <= 0)
+            return;
+
+        for (auto &ui : F->uses()) {
+            if (auto callInst = dyn_cast<CallBase>(ui.getUser())) {
+                // Function *caller = callInst->getParent()->getParent();
+                Function *caller = callInst->getFunction();
+
+                if (caller && !set.count(caller)) {
+                    set.insert(caller);
+                    findFunctionCallerRec(caller, set, depth - 1);
+                }
+            }
+        }
     }
 
     namespace {  // Hide this func

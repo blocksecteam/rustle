@@ -187,6 +187,25 @@ namespace Rustle {
      */
     bool isFuncCallFuncRec(llvm::Function *F, llvm::CallGraph &CG, llvm::Regex const &regex);
 
+    /**
+     * @brief find all caller of function F, recursively
+     *
+     * @param F
+     * @param set result set, passed by reference
+     * @param depth depth of recursion
+     */
+    void findFunctionCallerRec(llvm::Function *F, std::set<llvm::Function *> &set, int depth = INT32_MAX);
+
+    /**
+     * @brief find all caller of function F
+     *
+     * @param F
+     * @param set result set, passed by reference
+     */
+    inline void findFunctionCaller(llvm::Function *F, std::set<llvm::Function *> &set) {
+        findFunctionCallerRec(F, set, 1);
+    }
+
     enum Mode { Read = 0b10, Write = 0b01, RW = 0b11, Unknown = 0b00 };
 
     /**

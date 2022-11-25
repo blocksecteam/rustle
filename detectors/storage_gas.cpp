@@ -68,7 +68,7 @@ namespace {
                             continue;
 
                         auto const static regexStorageExpansion = Regex("near_sdk[0-9]+collections[0-9]+.+(insert|extend)");
-                        if (Rustle::isInstCallFuncRec(&I, CG, regexStorageExpansion)) {
+                        if (Rustle::isInstCallFunc(&I, regexStorageExpansion)) {
                             hasStorageExpansion = true;
                             break;
                         }
@@ -80,9 +80,20 @@ namespace {
 
                     auto const static regexStorageUse = Regex("near_sdk[0-9]+environment[0-9]+env[0-9]+storage_usage[0-9]+");
 
-                    // Rustle::Logger().Debug(CG[&F]->size());
+                    bool hasGasCheck = Rustle::isFuncCallFuncRec(&F, CG, regexStorageUse);  // find storage check in current function
 
-                    if (!Rustle::isFuncCallFuncRec(&F, CG, regexStorageUse)) {
+                    if (!hasGasCheck) {  // find storage check in callers of current function
+                        std::set<Function *> setCallers;
+                        Rustle::findFunctionCallerRec(&F, setCallers, 2);  // only consider callers with limited depth, avoid false negative
+
+                        for (auto caller : setCallers) {
+                            hasGasCheck |= Rustle::isFuncCallFuncRec(caller, CG, regexStorageUse);
+                            if (hasGasCheck)
+                                break;
+                        }
+                    }
+
+                    if (!hasGasCheck) {
                         Rustle::Logger().Warning("Lack of storage check in function ", F.getName());
                         *os << "@False\n";
                     } else {
