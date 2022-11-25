@@ -27,14 +27,6 @@ namespace Rustle {
         }
     }
 
-    /**
-     * @brief find users of `value`
-     *
-     * @param value whose users will be found
-     * @param set where users of `value` will be kept
-     * @param GEPOffset speicify offset of GetElementPtr instruction, by default is -1, which means unspecified
-     * @param depth depth of recursion
-     */
     void findUsers(llvm::Value *value, std::set<llvm::Value *> &set, const int GEPOffset, int depth) {
         using namespace llvm;
         if (depth <= 0)
@@ -163,7 +155,8 @@ namespace Rustle {
             return false;
         }
     }  // namespace
-       // Recursive version
+
+    // Recursive version
     bool isInstCallFuncRec(llvm::Instruction *I, llvm::CallGraph &CG, llvm::Regex const &regex) {
         if (isInstCallFunc(I, regex))
             return true;
@@ -282,13 +275,6 @@ namespace Rustle {
         }
     }  // namespace
 
-    /**
-     * @brief use GetElementPtrInst and CastInst to find all dereferences to struct pointers
-     *
-     * @param I pointer to instruction
-     * @param vars target list
-     * @return std::pair<std::string, unsigned> pair of struct name and member offset; <"", 0> will be returned if not found
-     */
     std::pair<std::pair<std::string, unsigned>, Mode> usingStructMember(llvm::Instruction *I, std::set<std::pair<std::string, unsigned>> &vars) {
         using namespace llvm;
 
@@ -380,13 +366,6 @@ namespace Rustle {
         }
     }
 
-    /**
-     * @brief use GetElementPtrInst and CastInst to find all dereferences to struct pointers
-     *
-     * @param I pointer to instruction
-     * @param vars target list
-     * @return std::pair<std::string, unsigned> pair of struct name and member offset; <"", Unkown> will be returned if not found
-     */
     std::pair<std::string, Mode> usingStruct(llvm::Instruction *I, std::set<std::string> &structs) {
         using namespace llvm;
 
