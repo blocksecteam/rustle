@@ -50,7 +50,7 @@ impl Contract {
             env::attached_deposit()
                 > ((env::storage_usage() - prev_storage) as u128 * env::storage_byte_cost()),
             "insufficient storage gas"
-        )
+        );
     }
 
     pub fn create_bank_unsafe(&mut self, bank: BankInterface) {
