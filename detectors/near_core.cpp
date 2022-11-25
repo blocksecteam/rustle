@@ -1,4 +1,5 @@
 #include "near_core.h"
+#include <llvm-15/llvm/IR/InstrTypes.h>
 
 namespace Rustle {
     void simpleFindUsers(llvm::Value *value, std::set<llvm::Value *> &set, bool restrictCrossFunction, bool disableCrossFunction) {
@@ -132,7 +133,7 @@ namespace Rustle {
     }
 
     namespace {  // Hide this func
-        bool _isInstCallFunc_Rec(llvm::CallGraphNode *node, llvm::Regex const &regex, std::vector<llvm::CallGraphNode *> &callStack) {
+        bool _isFuncCallFunc_Rec(llvm::CallGraphNode *node, llvm::Regex const &regex, std::vector<llvm::CallGraphNode *> &callStack) {
             if (!node)
                 return false;
 
@@ -148,7 +149,7 @@ namespace Rustle {
                     continue;
 
                 callStack.push_back(callee.second);
-                if (_isInstCallFunc_Rec(callee.second, regex, callStack))
+                if (_isFuncCallFunc_Rec(callee.second, regex, callStack))
                     return true;
                 callStack.pop_back();
             }
@@ -168,10 +169,38 @@ namespace Rustle {
 
                 std::vector<llvm::CallGraphNode *> callStack;
                 callStack.push_back(CG[callInst->getCalledFunction()]);
-                return _isInstCallFunc_Rec(CG[callInst->getCalledFunction()], regex, callStack);
+                return _isFuncCallFunc_Rec(CG[callInst->getCalledFunction()], regex, callStack);
             }
         }
         return false;
+    }
+
+    // Recursive version
+    bool isFuncCallFuncRec(llvm::Function *F, llvm::CallGraph &CG, llvm::Regex const &regex) {
+        if (llvm::Regex("llvm").match(F->getName()))
+            return false;
+
+        std::vector<llvm::CallGraphNode *> callStack;
+        callStack.push_back(CG[F]);
+        return _isFuncCallFunc_Rec(CG[F], regex, callStack);
+    }
+
+    void findFunctionCallerRec(llvm::Function *F, std::set<llvm::Function *> &set, int depth) {
+        using namespace llvm;
+        if (depth <= 0)
+            return;
+
+        for (auto &ui : F->uses()) {
+            if (auto callInst = dyn_cast<CallBase>(ui.getUser())) {
+                // Function *caller = callInst->getParent()->getParent();
+                Function *caller = callInst->getFunction();
+
+                if (caller && !set.count(caller)) {
+                    set.insert(caller);
+                    findFunctionCallerRec(caller, set, depth - 1);
+                }
+            }
+        }
     }
 
     namespace {  // Hide this func
