@@ -438,7 +438,7 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
 
         for func_string, hasCheck in storage_gas_set:
             if hasCheck == False and structFuncNameMatch(func_string, func['struct'], func['struct_trait'], func_name, path):
-                note_high += 'require gas check for storage expansion; '
+                note_low += 'require gas check for storage expansion; '
                 break
 
         with open(path, 'r') as file:
