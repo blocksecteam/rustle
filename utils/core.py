@@ -45,7 +45,7 @@ def regexInFile(filename, pattern) -> list:
 
 def defInFileWithDepth(filename) -> dict:
     '''Search for var def, along with line numbers and depth
-    todo: {/}不能和定义同行
+    todo: {/} can't be in the same line as definition
 
     Returns:
         dict: dict key is var name, value is tuple of (line number, line content, depth, namespace)
