@@ -34,8 +34,10 @@ namespace {
         const llvm::Regex regex_ft_transfer_trait      = llvm::Regex("near_contract_standards..fungible_token..core..FungibleTokenCore\\$.+[0-9]ft_transfer[0-9]");
         const llvm::Regex regex_ft_transfer_call_trait = llvm::Regex("near_contract_standards..fungible_token..core..FungibleTokenCore\\$.+[0-9]ft_transfer_call[0-9]");
 
-        const llvm::Regex regex_get              = llvm::Regex("near_sdk[0-9]+collections[0-9]+(LookupMap|TreeMap|UnorderedMap)\\$.+[0-9]+get[0-9]+");
-        const llvm::Regex regex_unchecked_unwrap = llvm::Regex("core[0-9]+(option[0-9]+Option|result[0-9]+Result)\\$.+[0-9]+(unwrap_[a-z_]+)[0-9]+");
+        const llvm::Regex regex_get =
+            llvm::Regex("near_sdk[0-9]+collections[0-9]+(lookup_map[0-9]+LookupMap|tree_map[0-9]+TreeMap|unordered_map[0-9]+UnorderedMap)\\$.+[0-9]+get[0-9]+");  // `get` in map collections
+        const llvm::Regex regex_unchecked_unwrap =
+            llvm::Regex("core[0-9]+(option[0-9]+Option|result[0-9]+Result)\\$.+[0-9]+(unwrap_or|unwrap_or_default|unwrap_unchecked)[0-9]+");  // unwrap and unwrap_or_else is ok
 
       public:
         UnregisteredReceiver() : FunctionPass(ID) {
@@ -52,13 +54,13 @@ namespace {
                 return true;
 
             std::set<Value *> usersOfReceiverId;
-            Rustle::simpleFindUsers(receiver, usersOfReceiverId);
+            Rustle::simpleFindUsers(receiver, usersOfReceiverId, false, true);
 
             for (auto v : usersOfReceiverId) {
                 if (auto callInst = dyn_cast<CallBase>(v)) {
                     if (Rustle::isInstCallFunc(callInst, regex_get)) {
                         std::set<Value *> usersOfGet;
-                        Rustle::findUsers(callInst, usersOfGet);
+                        Rustle::simpleFindUsers(callInst, usersOfGet);
 
                         for (auto v : usersOfGet) {  // find if Option of `get` is unwrapped without check
                             if (auto callInst = dyn_cast<CallBase>(v)) {

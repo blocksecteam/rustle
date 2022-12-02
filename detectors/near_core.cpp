@@ -1,5 +1,4 @@
 #include "near_core.h"
-#include <llvm-15/llvm/IR/InstrTypes.h>
 
 namespace Rustle {
     void simpleFindUsers(llvm::Value *value, std::set<llvm::Value *> &set, bool restrictCrossFunction, bool disableCrossFunction) {
@@ -22,7 +21,10 @@ namespace Rustle {
                     simpleFindUsers(CallInst->getArgOperand(0), set, restrictCrossFunction, disableCrossFunction);  // add `xxx.into()` as user of `xxx`
                 }
             }
+        } else if (auto StInst = dyn_cast<StoreInst>(value)) {
+            simpleFindUsers(StInst->getPointerOperand(), set, restrictCrossFunction, disableCrossFunction);
         }
+
         for (auto *U : value->users()) {
             simpleFindUsers(U, set, restrictCrossFunction, disableCrossFunction);
         }
