@@ -13,7 +13,9 @@ Developers may try to register a new account for the receiver without asking for
 
 ### Sample code
 
-The code below shows two ways of unwrapping balance of an account (i.e., the receiver). The safe one will panic when the account is not registered, while the unsafe one will return a default balance of 0 without panic. In the unsafe case, a new key with `AccountId == account_id` will be inserted into the `accounts` map, whose storage fee is paid by the sponsor of the `Contract`.
+The code segment below shows two ways of unwrapping the balance of an account (i.e., the receiver). The safe one will panic when the account is not registered, while the unsafe one will return a default balance of 0 without panic. In the unsafe case, a new key with `AccountId == account_id` will be inserted into the `accounts` map, whose storage fee is paid by the sponsor of the `Contract`.
+
+For the full sample code, refer to [examples/unregistered-receiver](/examples/unregistered-receiver).
 
 ```rust
 #[near_bindgen]
