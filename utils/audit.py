@@ -49,6 +49,7 @@ unhandled_promise_set = set()  # func, file, line
 yocto_attach_set = set()       # func, file
 incorrect_json_set = set()     # func, file, note
 storage_gas_set = set()        # func, check
+unregistered_receiver_set = set() # func, check
 
 
 # deadcode_set = set()
@@ -240,6 +241,15 @@ try:
             func, check = line.strip().split('@')
             check = check.lower() == 'true'
             storage_gas_set.add((func, check))
+except Exception as e:
+    print("Tmp log not found: ", e)
+
+try:
+    with open(TMP_PATH + '/.unregistered-receiver.tmp', 'r') as f:
+        for line in f:
+            func, check = line.strip().split('@')
+            check = check.lower() == 'true'
+            unregistered_receiver_set.add((func, check))
 except Exception as e:
     print("Tmp log not found: ", e)
 
@@ -439,6 +449,11 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
         for func_string, hasCheck in storage_gas_set:
             if hasCheck == False and structFuncNameMatch(func_string, func['struct'], func['struct_trait'], func_name, path):
                 note_low += 'require gas check for storage expansion; '
+                break
+
+        for func_string, hasCheck in unregistered_receiver_set:
+            if hasCheck == False and structFuncNameMatch(func_string, func['struct'], func['struct_trait'], func_name, path):
+                note_high += 'should panic when the receiver is not registered; '
                 break
 
         with open(path, 'r') as file:
