@@ -143,7 +143,7 @@ assign_positional_args 1 "${_positionals[@]}"
 # [ <-- needed because of Argbash
 
 TOP=$(realpath $(dirname "${BASH_SOURCE[0]}"))
-DETECTORS="div-before-mul ext-call inconsistency incorrect-json-type lock-callback non-callback-private non-private-callback prepaid-gas promise-result reentrancy round self-transfer tautology timestamp transfer unhandled-promise unsafe-math unused-ret upgrade-func yocto-attach complex-loop public-interface dup-collection-id storage-gas"
+DETECTORS="div-before-mul ext-call inconsistency incorrect-json-type lock-callback non-callback-private non-private-callback prepaid-gas promise-result reentrancy round self-transfer tautology timestamp transfer unhandled-promise unsafe-math unused-ret upgrade-func yocto-attach complex-loop public-interface dup-collection-id storage-gas unregistered-receiver"
 
 # export environs
 export NEAR_SRC_DIR=$(realpath $_arg_src_dir)
@@ -169,7 +169,7 @@ done
 # expand severity level
 _arg_detector=$(echo $_arg_detector | sed 's/\ball\b/high,medium,low,info/g')
 _arg_detector=$(echo $_arg_detector | sed 's/\bhigh\b/unhandled-promise,non-private-callback,reentrancy,unsafe-math,self-transfer,incorrect-json-type/g')
-_arg_detector=$(echo $_arg_detector | sed 's/\bmedium\b/div-before-mul,round,lock-callback,yocto-attach,dup-collection-id/g')
+_arg_detector=$(echo $_arg_detector | sed 's/\bmedium\b/div-before-mul,round,lock-callback,yocto-attach,dup-collection-id,unregistered-receiver/g')
 _arg_detector=$(echo $_arg_detector | sed 's/\blow\b/prepaid-gas,non-callback-private,unused-ret,upgrade-func,tautology,storage-gas/g')
 _arg_detector=$(echo $_arg_detector | sed 's/\binfo\b/inconsistency,timestamp,ext-call,promise-result,transfer,complex-loop,public-interface/g')
 

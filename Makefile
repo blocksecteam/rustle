@@ -233,6 +233,16 @@ storage-gas: tg_ir
 	fi
 	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/storage_gas.so -storage-gas {} -o /dev/null
 
+unregistered-receiver: tg_ir
+	@rm -f ${TMP_DIR}/.$@.tmp
+	@make -C detectors unregistered_receiver.so
+	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
+		figlet $@ -w 200 ; \
+	else \
+		echo -e "\e[31m[!] Source not found\e[0m" ; \
+	fi
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/unregistered_receiver.so -unregistered-receiver {} -o /dev/null
+
 tautology:
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@if test $(shell find ${NEAR_SRC_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
