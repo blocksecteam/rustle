@@ -5,9 +5,6 @@
  */
 #include "near_core.h"
 
-#include <llvm-15/llvm/IR/InstrTypes.h>
-#include <llvm-15/llvm/Support/Casting.h>
-#include <llvm-15/llvm/Support/Regex.h>
 #include <set>
 
 #include "llvm/IR/BasicBlock.h"
