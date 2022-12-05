@@ -22,7 +22,7 @@
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
 
 namespace {
-    struct SafeMath : public llvm::FunctionPass {
+    struct UnsafeMath : public llvm::FunctionPass {
         static char ID;
 
       private:
@@ -41,11 +41,11 @@ namespace {
         }
 
       public:
-        SafeMath() : FunctionPass(ID) {
+        UnsafeMath() : FunctionPass(ID) {
             std::error_code EC;
             os = new llvm::raw_fd_ostream(std::string(getenv("TMP_DIR")) + std::string("/.unsafe-math.tmp"), EC, llvm::sys::fs::OpenFlags::OF_Append);
         }
-        ~SafeMath() { os->close(); }
+        ~UnsafeMath() { os->close(); }
 
         bool runOnFunction(llvm::Function &F) override {
             using namespace llvm;
@@ -102,7 +102,7 @@ namespace {
 
 }  // namespace
 
-char SafeMath::ID = 0;
-static llvm::RegisterPass<SafeMath> X("unsafe-math", "", false /* Only looks at CFG */, false /* Analysis Pass */);
+char UnsafeMath::ID = 0;
+static llvm::RegisterPass<UnsafeMath> X("unsafe-math", "", false /* Only looks at CFG */, false /* Analysis Pass */);
 
-static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &Builder, llvm::legacy::PassManagerBase &PM) { PM.add(new SafeMath()); });
+static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &Builder, llvm::legacy::PassManagerBase &PM) { PM.add(new UnsafeMath()); });

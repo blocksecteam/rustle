@@ -24,18 +24,18 @@
 #include <vector>
 
 namespace {
-    struct HeavyLoop : public llvm::LoopPass {
+    struct ComplexLoop : public llvm::LoopPass {
         static char ID;
 
       private:
         llvm::raw_fd_ostream *os = nullptr;
 
       public:
-        HeavyLoop() : LoopPass(ID) {
+        ComplexLoop() : LoopPass(ID) {
             std::error_code EC;
             os = new llvm::raw_fd_ostream(std::string(getenv("TMP_DIR")) + std::string("/.complex-loop.tmp"), EC, llvm::sys::fs::OpenFlags::OF_Append);
         }
-        ~HeavyLoop() { os->close(); }
+        ~ComplexLoop() { os->close(); }
 
         /**
          * @brief count functionInstNum with at most `depth` recursion
@@ -100,7 +100,7 @@ namespace {
     };
 }  // namespace
 
-char HeavyLoop::ID = 0;
-static llvm::RegisterPass<HeavyLoop> X("complex-loop", "Pass to find all loops", false /* Only looks at CFG */, false /* Analysis Pass */);
+char ComplexLoop::ID = 0;
+static llvm::RegisterPass<ComplexLoop> X("complex-loop", "Pass to find all loops", false /* Only looks at CFG */, false /* Analysis Pass */);
 
-static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &Builder, llvm::legacy::PassManagerBase &PM) { PM.add(new HeavyLoop()); });
+static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &Builder, llvm::legacy::PassManagerBase &PM) { PM.add(new ComplexLoop()); });

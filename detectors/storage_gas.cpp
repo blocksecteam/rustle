@@ -22,7 +22,7 @@
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
 
 namespace {
-    struct YoctoAttach : public llvm::ModulePass {
+    struct StorageGas : public llvm::ModulePass {
         static char ID;
 
       private:
@@ -31,7 +31,7 @@ namespace {
         std::set<std::string> callbacks;
 
       public:
-        YoctoAttach() : ModulePass(ID) {
+        StorageGas() : ModulePass(ID) {
             std::error_code EC;
 
             os = new llvm::raw_fd_ostream(std::string(getenv("TMP_DIR")) + std::string("/.storage-gas.tmp"), EC, llvm::sys::fs::OpenFlags::OF_Append);
@@ -44,7 +44,7 @@ namespace {
             }
             is.close();
         }
-        ~YoctoAttach() { os->close(); }
+        ~StorageGas() { os->close(); }
 
         bool runOnModule(llvm::Module &M) override {
             using namespace llvm;
@@ -107,7 +107,7 @@ namespace {
     };
 }  // namespace
 
-char YoctoAttach::ID = 0;
-static llvm::RegisterPass<YoctoAttach> X("storage-gas", "", false /* Only looks at CFG */, false /* Analysis Pass */);
+char StorageGas::ID = 0;
+static llvm::RegisterPass<StorageGas> X("storage-gas", "", false /* Only looks at CFG */, false /* Analysis Pass */);
 
-static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &Builder, llvm::legacy::PassManagerBase &PM) { PM.add(new YoctoAttach()); });
+static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &Builder, llvm::legacy::PassManagerBase &PM) { PM.add(new StorageGas()); });
