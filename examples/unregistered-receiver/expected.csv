@@ -1,0 +1,3 @@
+"file","name","high","medium","low","info"
+"src/lib.rs","ft_transfer",,"should panic when the receiver is not registered;",,
+"global","global",,,"No upgrade function found;",

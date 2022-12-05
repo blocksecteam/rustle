@@ -86,32 +86,33 @@ A CSV-format report will be generated in the directory "./audit-result".
 
 All vulnerabilities **Rustle** can find.
 
-| Detector Id            | Description                                                                                 | Severity |
-| ---------------------- | ------------------------------------------------------------------------------------------- | -------- |
-| `unhandled-promise`    | [find `Promises` that are not handled](docs/detectors/unhandled-promise.md)                 | High     |
-| `non-private-callback` | [missing macro `#[private]` for callback functions](docs/detectors/non-private-callback.md) | High     |
-| `reentrancy`           | [find functions that are vulnerable to reentrancy attack](docs/detectors/reentrancy.md)     | High     |
-| `unsafe-math`          | [lack of overflow check for arithmetic operation](docs/detectors/unsafe-math.md)            | High     |
-| `self-transfer`        | [missing check of `sender != receiver`](docs/detectors/self-transfer.md)                    | High     |
-| `incorrect-json-type`  | [incorrect type used in parameters or return values](docs/detectors/incorrect-json-type.md) | High     |
-| `div-before-mul`       | [precision loss due to incorrect operation order](docs/detectors/div-before-mul.md)         | Medium   |
-| `round`                | [rounding without specifying ceil or floor](docs/detectors/round.md)                        | Medium   |
-| `lock-callback`        | [panic in callback function may lock contract](docs/detectors/lock-callback.md)             | Medium   |
-| `yocto-attach`         | [no `assert_one_yocto` in privileged function](docs/detectors/yocto-attach.md)              | Medium   |
-| `dup-collection-id`    | [duplicate id uses in collections](docs/detectors/dup-collection-id.md)                     | Medium   |
-| `prepaid-gas`          | [missing check of prepaid gas in `ft_transfer_call`](docs/detectors/prepaid-gas.md)         | Low      |
-| `non-callback-private` | [macro `#[private]` used in non-callback function](docs/detectors/non-callback-private.md)  | Low      |
-| `unused-ret`           | [function result not used or checked](docs/detectors/unused-ret.md)                         | Low      |
-| `upgrade-func`         | [no upgrade function in contract](docs/detectors/upgrade-func.md)                           | Low      |
-| `tautology`            | [tautology used in conditional branch](docs/detectors/tautology.md)                         | Low      |
-| `storage-gas`          | [missing balance check for storage expansion](docs/detectors/storage-gas.md)                | Low      |
-| `inconsistency`        | [use of similar but slightly different symbol](docs/detectors/inconsistency.md)             | Info     |
-| `timestamp`            | [find all uses of `timestamp`](docs/detectors/timestamp.md)                                 | Info     |
-| `complex-loop`         | [find all loops with complex logic which may lead to DoS](docs/detectors/complex-loop.md)   | Info     |
-| `ext-call`             | [find all cross-contract invocations](docs/detectors/ext-call.md)                           | Info     |
-| `promise-result`       | [find all uses of promise result](docs/detectors/promise-result.md)                         | Info     |
-| `transfer`             | [find all transfer actions](docs/detectors/transfer.md)                                     | Info     |
-| `public-interface`     | [find all public interfaces](docs/detectors/public-interface.md)                            | Info     |
+| Detector Id             | Description                                                                                 | Severity |
+| ----------------------- | ------------------------------------------------------------------------------------------- | -------- |
+| `unhandled-promise`     | [find `Promises` that are not handled](docs/detectors/unhandled-promise.md)                 | High     |
+| `non-private-callback`  | [missing macro `#[private]` for callback functions](docs/detectors/non-private-callback.md) | High     |
+| `reentrancy`            | [find functions that are vulnerable to reentrancy attack](docs/detectors/reentrancy.md)     | High     |
+| `unsafe-math`           | [lack of overflow check for arithmetic operation](docs/detectors/unsafe-math.md)            | High     |
+| `self-transfer`         | [missing check of `sender != receiver`](docs/detectors/self-transfer.md)                    | High     |
+| `incorrect-json-type`   | [incorrect type used in parameters or return values](docs/detectors/incorrect-json-type.md) | High     |
+| `div-before-mul`        | [precision loss due to incorrect operation order](docs/detectors/div-before-mul.md)         | Medium   |
+| `round`                 | [rounding without specifying ceil or floor](docs/detectors/round.md)                        | Medium   |
+| `lock-callback`         | [panic in callback function may lock contract](docs/detectors/lock-callback.md)             | Medium   |
+| `yocto-attach`          | [no `assert_one_yocto` in privileged function](docs/detectors/yocto-attach.md)              | Medium   |
+| `dup-collection-id`     | [duplicate id uses in collections](docs/detectors/dup-collection-id.md)                     | Medium   |
+| `unregistered-receiver` | [no panic on unregistered transfer receivers](docs/detectors/unregistered-receiver.md)      | Medium   |
+| `prepaid-gas`           | [missing check of prepaid gas in `ft_transfer_call`](docs/detectors/prepaid-gas.md)         | Low      |
+| `non-callback-private`  | [macro `#[private]` used in non-callback function](docs/detectors/non-callback-private.md)  | Low      |
+| `unused-ret`            | [function result not used or checked](docs/detectors/unused-ret.md)                         | Low      |
+| `upgrade-func`          | [no upgrade function in contract](docs/detectors/upgrade-func.md)                           | Low      |
+| `tautology`             | [tautology used in conditional branch](docs/detectors/tautology.md)                         | Low      |
+| `storage-gas`           | [missing balance check for storage expansion](docs/detectors/storage-gas.md)                | Low      |
+| `inconsistency`         | [use of similar but slightly different symbol](docs/detectors/inconsistency.md)             | Info     |
+| `timestamp`             | [find all uses of `timestamp`](docs/detectors/timestamp.md)                                 | Info     |
+| `complex-loop`          | [find all loops with complex logic which may lead to DoS](docs/detectors/complex-loop.md)   | Info     |
+| `ext-call`              | [find all cross-contract invocations](docs/detectors/ext-call.md)                           | Info     |
+| `promise-result`        | [find all uses of promise result](docs/detectors/promise-result.md)                         | Info     |
+| `transfer`              | [find all transfer actions](docs/detectors/transfer.md)                                     | Info     |
+| `public-interface`      | [find all public interfaces](docs/detectors/public-interface.md)                            | Info     |
 
 ## Add new detector
 
