@@ -15,7 +15,7 @@ on:
 
 jobs:
 
-  pull-image-and-test:
+  build-image-and-test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
