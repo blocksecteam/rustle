@@ -1,6 +1,6 @@
 /**
- * @file self_transfer.cpp
- * @brief find if ft_transfer checks `sender_id != receiver_id`
+ * @file unregistered_receiver.cpp
+ * @brief find if program will panic on unregistered transfer receivers
  *
  */
 #include "near_core.h"
