@@ -11,10 +11,14 @@
 #include "llvm/IR/DebugInfoMetadata.h"
 #include "llvm/IR/DebugLoc.h"
 #include "llvm/IR/Function.h"
+#include "llvm/IR/InstrTypes.h"
+#include "llvm/IR/Instruction.h"
 #include "llvm/IR/Instructions.h"
+#include "llvm/IR/Value.h"
 #include "llvm/Pass.h"
 
 #include "llvm/IR/LegacyPassManager.h"
+#include "llvm/Support/Casting.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Regex.h"
 #include "llvm/Support/raw_ostream.h"
@@ -27,8 +31,14 @@ namespace {
       private:
         llvm::raw_fd_ostream *os = nullptr;
 
-        const llvm::Regex regex_get =
-            llvm::Regex("near_sdk[0-9]+collections[0-9]+(lookup_map[0-9]+LookupMap|tree_map[0-9]+TreeMap|unordered_map[0-9]+UnorderedMap)\\$.+[0-9]+get[0-9]+");  // `get` in map collections
+        const llvm::Regex regexMapGet    = llvm::Regex("near_sdk[0-9]+collections[0-9]+"  // `get` in map collections
+                                                       "(lookup_map[0-9]+LookupMap|tree_map[0-9]+TreeMap|unordered_map[0-9]+UnorderedMap)\\$.+[0-9]+"
+                                                          "get[0-9]+");
+        const llvm::Regex regexMapInsert = llvm::Regex("near_sdk[0-9]+collections[0-9]+"  // `insert` in map collections
+                                                       "(lookup_map[0-9]+LookupMap|tree_map[0-9]+TreeMap|unordered_map[0-9]+UnorderedMap)\\$.+[0-9]+"
+                                                       "insert[0-9]+");
+        const llvm::Regex regexAllUnwrap = llvm::Regex("core[0-9]+(option[0-9]+Option|result[0-9]+Result)\\$.+[0-9]+"
+                                                       "(unwrap|unwrap_or|unwrap_or_else|unwrap_or_default|unwrap_unchecked)[0-9]+");
 
       public:
         UnsavedChanges() : ModulePass(ID) {
@@ -51,46 +61,63 @@ namespace {
                 if (Rustle::debug_print_function)
                     Rustle::Logger().Debug("Checking function ", F.getName());
 
-                bool hasStorageExpansion = false;
-
                 for (BasicBlock &BB : F) {
-                    bool isPrivilege = false;
                     for (Instruction &I : BB) {
                         if (!I.getDebugLoc().get() || Rustle::regexForLibLoc.match(I.getDebugLoc().get()->getFilename()))
                             continue;
 
-                        auto const static regexStorageExpansion = Regex("near_sdk[0-9]+collections[0-9]+.+(insert|extend)");
-                        if (Rustle::isInstCallFunc(&I, regexStorageExpansion)) {
-                            hasStorageExpansion = true;
-                            break;
+                        if (dyn_cast<CallBase>(&I) && dyn_cast<CallBase>(&I)->arg_size() == 3 && Rustle::isInstCallFunc(&I, regexMapGet)) {
+                            std::set<Value *> usersOfGet;
+                            Rustle::simpleFindUsers(dyn_cast<CallBase>(&I)->getArgOperand(0),  // the first operand is the return value of `get`
+                                usersOfGet, false, true);                                      // only find in current function
+
+                            // Rustle::Logger().Debug(&I, "\n", dyn_cast<CallBase>(&I)->getArgOperand(0));
+
+                            Value *unwrappedValue = nullptr;
+
+                            for (auto user : usersOfGet) {
+                                if (dyn_cast<CallBase>(user) && Rustle::isInstCallFunc(dyn_cast<CallBase>(user), regexAllUnwrap)) {
+                                    unwrappedValue = dyn_cast<CallBase>(user)->getArgOperand(0);
+                                    break;
+                                }
+                            }
+
+                            if (unwrappedValue == nullptr) {  // no unwrap
+                                break;                        // skip this `get` instruction
+                            }
+
+                            std::set<Value *> usersOfUnwrappedValue;
+                            Rustle::findUsers(unwrappedValue, usersOfUnwrappedValue);  // only find in current function
+
+                            Instruction *instChangeValue = nullptr;
+
+                            for (auto user : usersOfUnwrappedValue) {
+                                if (dyn_cast<StoreInst>(user)) {
+                                    instChangeValue = dyn_cast<StoreInst>(user);
+                                    break;
+                                }
+                            }
+
+                            if (instChangeValue != nullptr) {
+                                Instruction *instInsertValue = nullptr;
+
+                                usersOfUnwrappedValue.clear();
+                                Rustle::simpleFindUsers(unwrappedValue, usersOfUnwrappedValue);  // only find in current function
+                                for (auto user : usersOfUnwrappedValue) {
+                                    if (dyn_cast<CallBase>(user) && Rustle::isInstCallFunc(dyn_cast<CallBase>(user), regexMapInsert)) {
+                                        instInsertValue = dyn_cast<CallBase>(user);
+                                        break;
+                                    }
+                                }
+
+                                if (instInsertValue != nullptr) {
+                                    Rustle::Logger().Info("Changes at ", instChangeValue->getDebugLoc(), " to map at ", I.getDebugLoc(), " have been saved at ", instInsertValue->getDebugLoc());
+                                } else {
+                                    Rustle::Logger().Info("Changes at ", instChangeValue->getDebugLoc(), " to map at ", I.getDebugLoc(), " is unsaved");
+                                    *os << F.getName() << "@" << I.getDebugLoc()->getFilename() << "@" << I.getDebugLoc().getLine() << "\n";
+                                }
+                            }
                         }
-                    }
-                }
-
-                if (hasStorageExpansion) {
-                    *os << F.getName();
-
-                    auto const static regexStorageUse = Regex("near_sdk[0-9]+environment[0-9]+env[0-9]+storage_usage[0-9]+");
-
-                    bool hasGasCheck = Rustle::isFuncCallFuncRec(&F, CG, regexStorageUse);  // find storage check in current function
-
-                    if (!hasGasCheck) {  // find storage check in callers of current function
-                        std::set<Function *> setCallers;
-                        Rustle::findFunctionCallerRec(&F, setCallers, 2);  // only consider callers with limited depth, avoid false negative
-
-                        for (auto caller : setCallers) {
-                            hasGasCheck |= Rustle::isFuncCallFuncRec(caller, CG, regexStorageUse);
-                            if (hasGasCheck)
-                                break;
-                        }
-                    }
-
-                    if (!hasGasCheck) {
-                        Rustle::Logger().Warning("Lack of storage check in function ", F.getName());
-                        *os << "@False\n";
-                    } else {
-                        Rustle::Logger().Warning("Find storage check in function ", F.getName());
-                        *os << "@True\n";
                     }
                 }
             }
