@@ -37,7 +37,7 @@ namespace {
         const llvm::Regex regexMapInsert = llvm::Regex("near_sdk[0-9]+collections[0-9]+"  // `insert` in map collections
                                                        "(lookup_map[0-9]+LookupMap|tree_map[0-9]+TreeMap|unordered_map[0-9]+UnorderedMap)\\$.+[0-9]+"
                                                        "insert[0-9]+");
-        const llvm::Regex regexAllUnwrap = llvm::Regex("core[0-9]+(option[0-9]+Option|result[0-9]+Result)\\$.+[0-9]+"
+        const llvm::Regex regexAllUnwrap = llvm::Regex("core[0-9]+option[0-9]+Option\\$.+[0-9]+"
                                                        "(unwrap|unwrap_or|unwrap_or_else|unwrap_or_default|unwrap_unchecked)[0-9]+");
 
       public:
@@ -87,7 +87,7 @@ namespace {
                             }
 
                             std::set<Value *> usersOfUnwrappedValue;
-                            Rustle::findUsers(unwrappedValue, usersOfUnwrappedValue);  // only find in current function
+                            Rustle::simpleFindUsers(unwrappedValue, usersOfUnwrappedValue, true);  // allow but restrict cross function
 
                             Instruction *instChangeValue = nullptr;
 
@@ -100,9 +100,6 @@ namespace {
 
                             if (instChangeValue != nullptr) {
                                 Instruction *instInsertValue = nullptr;
-
-                                usersOfUnwrappedValue.clear();
-                                Rustle::simpleFindUsers(unwrappedValue, usersOfUnwrappedValue);  // only find in current function
                                 for (auto user : usersOfUnwrappedValue) {
                                     if (dyn_cast<CallBase>(user) && Rustle::isInstCallFunc(dyn_cast<CallBase>(user), regexMapInsert)) {
                                         instInsertValue = dyn_cast<CallBase>(user);
@@ -111,9 +108,9 @@ namespace {
                                 }
 
                                 if (instInsertValue != nullptr) {
-                                    Rustle::Logger().Info("Changes at ", instChangeValue->getDebugLoc(), " to map at ", I.getDebugLoc(), " have been saved at ", instInsertValue->getDebugLoc());
+                                    Rustle::Logger().Info("Changes to map at ", I.getDebugLoc(), " have been saved at ", instInsertValue->getDebugLoc());
                                 } else {
-                                    Rustle::Logger().Info("Changes at ", instChangeValue->getDebugLoc(), " to map at ", I.getDebugLoc(), " is unsaved");
+                                    Rustle::Logger().Warning("Changes to map at ", I.getDebugLoc(), " is unsaved");
                                     *os << F.getName() << "@" << I.getDebugLoc()->getFilename() << "@" << I.getDebugLoc().getLine() << "\n";
                                 }
                             }
