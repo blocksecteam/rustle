@@ -56,8 +56,18 @@ namespace {
             for (auto v : usersOfReceiverId) {
                 if (auto callInst = dyn_cast<CallBase>(v)) {
                     if (Rustle::isInstCallFunc(callInst, regex_get)) {
+                        Value *returnValueOfGet = nullptr;
+                        switch (dyn_cast<CallBase>(callInst)->arg_size()) {
+                            case 2: returnValueOfGet = callInst; break;                                        // returnVal = call get(self, key)
+                            case 3: returnValueOfGet = dyn_cast<CallBase>(callInst)->getArgOperand(0); break;  // call get(returnVal, self, key)
+                            default: break;
+                        }
+                        if (returnValueOfGet == nullptr) {  // skip other circumstances
+                            continue;
+                        }
+
                         std::set<Value *> usersOfGet;
-                        Rustle::simpleFindUsers(callInst, usersOfGet);
+                        Rustle::simpleFindUsers(returnValueOfGet, usersOfGet);
 
                         for (auto v : usersOfGet) {  // find if Option of `get` is unwrapped without check
                             if (auto callInst = dyn_cast<CallBase>(v)) {
