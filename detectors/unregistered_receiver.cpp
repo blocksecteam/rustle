@@ -116,7 +116,7 @@ namespace {
                 *os << F.getName();
 
                 if (allowUnregisteredReceiver(&F, F.getArg(2))) {
-                    Rustle::Logger().Warning("Unregistered receiver can be used for3 \e[34mft_transfer_call");
+                    Rustle::Logger().Warning("Unregistered receiver can be used for \e[34mft_transfer_call");
                     *os << "@False\n";
                 } else {
                     Rustle::Logger().Info("Unregistered receiver can't be used for \e[34mft_transfer_call");
