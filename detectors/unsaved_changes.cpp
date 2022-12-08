@@ -66,10 +66,21 @@ namespace {
                         if (!I.getDebugLoc().get() || Rustle::regexForLibLoc.match(I.getDebugLoc().get()->getFilename()))
                             continue;
 
-                        if (dyn_cast<CallBase>(&I) && dyn_cast<CallBase>(&I)->arg_size() == 3 && Rustle::isInstCallFunc(&I, regexMapGet)) {
+                        if (dyn_cast<CallBase>(&I) && Rustle::isInstCallFunc(&I, regexMapGet)) {
+
+                            Value *returnValueOfGet = nullptr;
+                            switch (dyn_cast<CallBase>(&I)->arg_size()) {
+                                case 2: returnValueOfGet = &I; break;                                        // returnVal = call get(self, key)
+                                case 3: returnValueOfGet = dyn_cast<CallBase>(&I)->getArgOperand(0); break;  // call get(returnVal, self, key)
+                                default: break;
+                            }
+                            if (returnValueOfGet == nullptr) {  // skip other circumstances
+                                continue;
+                            }
+
                             std::set<Value *> usersOfGet;
-                            Rustle::simpleFindUsers(dyn_cast<CallBase>(&I)->getArgOperand(0),  // the first operand is the return value of `get`
-                                usersOfGet, false, true);                                      // only find in current function
+                            Rustle::simpleFindUsers(returnValueOfGet,  // the first operand is the return value of `get`
+                                usersOfGet, false, true);              // only find in current function
 
                             // Rustle::Logger().Debug(&I, "\n", dyn_cast<CallBase>(&I)->getArgOperand(0));
 
