@@ -468,10 +468,10 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
         hasPrint = False
         for func_string, func_path, func_line in unsaved_changes_set:
             if structFuncNameMatch(func_string, func['struct'], func['struct_trait'], func_name, path, func_path):
-                note_medium += ('' if hasPrint else 'unsaved changes to map(s) at <') + 'L' + str(func_line) + ' '
+                note_high += ('' if hasPrint else 'unsaved changes to map(s) at <') + 'L' + str(func_line) + ' '
                 hasPrint = True
         if hasPrint:
-            note_medium = note_medium.rstrip() + '>; '
+            note_high = note_high.rstrip() + '>; '
 
         with open(path, 'r') as file:
             string = re.sub('//[^\n]+\n', '\n', file.read())
