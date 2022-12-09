@@ -11,10 +11,12 @@
 #include "llvm/IR/DebugInfoMetadata.h"
 #include "llvm/IR/DebugLoc.h"
 #include "llvm/IR/Function.h"
+#include "llvm/IR/InstrTypes.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/Pass.h"
 
 #include "llvm/IR/LegacyPassManager.h"
+#include "llvm/Support/Casting.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Regex.h"
 #include "llvm/Support/raw_ostream.h"
@@ -31,8 +33,9 @@ namespace {
         const llvm::Regex regex_ft_transfer_trait      = llvm::Regex("near_contract_standards..fungible_token..core..FungibleTokenCore\\$.+[0-9]ft_transfer[0-9]");
         const llvm::Regex regex_ft_transfer_call_trait = llvm::Regex("near_contract_standards..fungible_token..core..FungibleTokenCore\\$.+[0-9]ft_transfer_call[0-9]");
 
-        const llvm::Regex regex_get =
-            llvm::Regex("near_sdk[0-9]+collections[0-9]+(lookup_map[0-9]+LookupMap|tree_map[0-9]+TreeMap|unordered_map[0-9]+UnorderedMap)\\$.+[0-9]+get[0-9]+");  // `get` in map collections
+        const llvm::Regex regex_get = llvm::Regex("near_sdk[0-9]+collections[0-9]+"  // `get` in map collections
+                                                  "(lookup_map[0-9]+LookupMap|tree_map[0-9]+TreeMap|unordered_map[0-9]+UnorderedMap|legacy_tree_map[0-9]+LegacyTreeMap)"
+                                                  "\\$.+[0-9]+get[0-9]+");
         const llvm::Regex regex_unchecked_unwrap =
             llvm::Regex("core[0-9]+(option[0-9]+Option|result[0-9]+Result)\\$.+[0-9]+(unwrap_or|unwrap_or_default|unwrap_unchecked)[0-9]+");  // unwrap and unwrap_or_else is ok
 
