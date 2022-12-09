@@ -32,11 +32,11 @@ namespace {
         llvm::raw_fd_ostream *os = nullptr;
 
         const llvm::Regex regexMapGet    = llvm::Regex("near_sdk[0-9]+collections[0-9]+"  // `get` in map collections
-                                                       "(lookup_map[0-9]+LookupMap|tree_map[0-9]+TreeMap|unordered_map[0-9]+UnorderedMap)\\$.+[0-9]+"
-                                                          "get[0-9]+");
+                                                       "(lookup_map[0-9]+LookupMap|tree_map[0-9]+TreeMap|unordered_map[0-9]+UnorderedMap|legacy_tree_map[0-9]+LegacyTreeMap)"
+                                                          "\\$.+[0-9]+get[0-9]+");
         const llvm::Regex regexMapInsert = llvm::Regex("near_sdk[0-9]+collections[0-9]+"  // `insert` in map collections
-                                                       "(lookup_map[0-9]+LookupMap|tree_map[0-9]+TreeMap|unordered_map[0-9]+UnorderedMap)\\$.+[0-9]+"
-                                                       "insert[0-9]+");
+                                                       "(lookup_map[0-9]+LookupMap|tree_map[0-9]+TreeMap|unordered_map[0-9]+UnorderedMap|legacy_tree_map[0-9]+LegacyTreeMap)"
+                                                       "\\$.+[0-9]+insert[0-9]+");
         const llvm::Regex regexAllUnwrap = llvm::Regex("core[0-9]+option[0-9]+Option\\$.+[0-9]+"
                                                        "(unwrap|unwrap_or|unwrap_or_else|unwrap_or_default|unwrap_unchecked)[0-9]+");
 
