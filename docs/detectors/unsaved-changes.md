@@ -9,6 +9,8 @@
 
 [NEAR SDK](https://crates.io/crates/near-sdk) provides some map collections which can store key-value mappings. You can use `get` to get a value by its key and insert or overwrite the value by calling `insert` with a specified key. The collections use borsh to serialize and deserialize, when you want to make some changes to a collection, you need to `get` an existing value and make changes to it, then `insert` it into the collection again. Without the `insert` function, the changes will not be saved to the contract.
 
+Note, since the [v4.1.0](https://docs.rs/near-sdk/4.1.0/near_sdk/index.html) of NEAR SDK, developers can use maps in [`near_sdk::store`](https://docs.rs/near-sdk/4.1.0/near_sdk/store/index.html) which will write back changes automatically to avoid this issue introduced by `near_sdk::collections`.
+
 ### Sample code
 
 ```rust
