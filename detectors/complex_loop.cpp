@@ -63,7 +63,7 @@ namespace {
             return count;
         }
 
-        bool runOnLoop(llvm::Loop *L, llvm::LPPassManager &LPM) override {
+        bool runOnLoop(llvm::Loop *L, llvm::LPPassManager &lpm) override {
             using namespace llvm;
             if (Rustle::regexForLibFunc.match(L->getHeader()->getParent()->getName()))
                 return false;
@@ -102,4 +102,4 @@ namespace {
 char ComplexLoop::ID = 0;
 static llvm::RegisterPass<ComplexLoop> X("complex-loop", "Pass to find all loops", false /* Only looks at CFG */, false /* Analysis Pass */);
 
-static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &Builder, llvm::legacy::PassManagerBase &PM) { PM.add(new ComplexLoop()); });
+static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &builder, llvm::legacy::PassManagerBase &PM) { PM.add(new ComplexLoop()); });

@@ -34,7 +34,7 @@ namespace {
         }
         ~SelfTransfer() { os->close(); }
 
-        bool hasSenderReceiverCheck(llvm::Function *F, unsigned receiver_offset) {
+        bool hasSenderReceiverCheck(llvm::Function *F, unsigned receiverOffset) {
             using namespace llvm;
 
             // Use implementation in `near_contract_standards`
@@ -42,7 +42,7 @@ namespace {
                 return true;
 
             std::set<Value *> usersOfReceiverId;
-            Rustle::findUsers(F->getArg(receiver_offset), usersOfReceiverId);
+            Rustle::findUsers(F->getArg(receiverOffset), usersOfReceiverId);
 
             for (BasicBlock &BB : *F) {
                 for (Instruction &I : BB) {
@@ -59,17 +59,17 @@ namespace {
                         if (useReceiverId)
                             return true;
                     } else if (auto callInst = dyn_cast<CallBase>(&I)) {
-                        int next_receiver_offset = -1;
+                        int nextReceiverOffset = -1;
                         for (int i = 0; i < callInst->arg_size(); i++) {
                             if (usersOfReceiverId.count(callInst->getArgOperand(i))) {  // whether passing ft_transfer's arg receiver to next level
-                                next_receiver_offset = i;
+                                nextReceiverOffset = i;
                                 break;
                             }
                         }
-                        if (next_receiver_offset == -1)  // not found, skip this Instruction
+                        if (nextReceiverOffset == -1)  // not found, skip this Instruction
                             continue;
 
-                        if (callInst->getCalledFunction() && hasSenderReceiverCheck(callInst->getCalledFunction(), next_receiver_offset)) {
+                        if (callInst->getCalledFunction() && hasSenderReceiverCheck(callInst->getCalledFunction(), nextReceiverOffset)) {
                             return true;
                         }
                     }
@@ -129,4 +129,4 @@ namespace {
 char SelfTransfer::ID = 0;
 static llvm::RegisterPass<SelfTransfer> X("self-transfer", "", false /* Only looks at CFG */, false /* Analysis Pass */);
 
-static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &Builder, llvm::legacy::PassManagerBase &PM) { PM.add(new SelfTransfer()); });
+static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &builder, llvm::legacy::PassManagerBase &PM) { PM.add(new SelfTransfer()); });

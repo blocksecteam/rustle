@@ -66,4 +66,4 @@ namespace {
 char ExtCallTrait::ID = 0;
 static llvm::RegisterPass<ExtCallTrait> X("ext-call-trait", "function tagged with #[ext_contract()]", false /* Only looks at CFG */, false /* Analysis Pass */);
 
-static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &Builder, llvm::legacy::PassManagerBase &PM) { PM.add(new ExtCallTrait()); });
+static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &builder, llvm::legacy::PassManagerBase &PM) { PM.add(new ExtCallTrait()); });

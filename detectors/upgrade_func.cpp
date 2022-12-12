@@ -33,7 +33,7 @@ namespace {
         bool runOnModule(llvm::Module &M) override {
             using namespace llvm;
 
-            bool found_upgrade = false;
+            bool foundUpgrade = false;
 
             for (auto &F : M) {
                 if (!Rustle::debug_check_all_func && Rustle::regexForLibFunc.match(F.getName()))
@@ -41,8 +41,8 @@ namespace {
                 if (Rustle::debug_print_function)
                     Rustle::Logger().Debug("Checking function ", F.getName());
 
-                bool call_promise_batch_action_deploy_contract = false, call_promise_batch_action_function_call = false;
-                auto promise_batch_action_deploy_contract = Regex("promise_batch_action_deploy_contract"), promise_batch_action_function_call = Regex("promise_batch_action_function_call");
+                bool callPromiseBatchActionDeployContract = false, callPromiseBatchActionFunctionCall = false;
+                auto promiseBatchActionDeployContract = Regex("promise_batch_action_deploy_contract"), promiseBatchActionFunctionCall = Regex("promise_batch_action_function_call");
                 StringRef funcFileName;
 
                 for (BasicBlock &BB : F)
@@ -50,22 +50,22 @@ namespace {
                         if (!I.getDebugLoc().get() || Rustle::regexForLibLoc.match(I.getDebugLoc().get()->getFilename()))
                             continue;
 
-                        if (Rustle::isInstCallFunc(&I, promise_batch_action_deploy_contract)) {
+                        if (Rustle::isInstCallFunc(&I, promiseBatchActionDeployContract)) {
                             if (I.getDebugLoc().get())
                                 funcFileName = I.getDebugLoc().get()->getFilename();
-                            call_promise_batch_action_deploy_contract = true;
+                            callPromiseBatchActionDeployContract = true;
                         }
-                        if (Rustle::isInstCallFunc(&I, promise_batch_action_function_call)) {
-                            call_promise_batch_action_function_call = true;
+                        if (Rustle::isInstCallFunc(&I, promiseBatchActionFunctionCall)) {
+                            callPromiseBatchActionFunctionCall = true;
                         }
                     }
-                if (call_promise_batch_action_deploy_contract && call_promise_batch_action_function_call) {
+                if (callPromiseBatchActionDeployContract && callPromiseBatchActionFunctionCall) {
                     Rustle::Logger().Info("Find upgrade in function ", F.getName(), " at ", funcFileName);
                     *os << F.getName() << "@" << funcFileName << "\n";
-                    found_upgrade = true;
+                    foundUpgrade = true;
                 }
             }
-            if (!found_upgrade)
+            if (!foundUpgrade)
                 Rustle::Logger().Warning("Upgrade function not found");
             return false;
         }
@@ -75,4 +75,4 @@ namespace {
 char UpdateFunc::ID = 0;
 static llvm::RegisterPass<UpdateFunc> X("upgrade-func", "", false /* Only looks at CFG */, false /* Analysis Pass */);
 
-static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &Builder, llvm::legacy::PassManagerBase &PM) { PM.add(new UpdateFunc()); });
+static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &builder, llvm::legacy::PassManagerBase &PM) { PM.add(new UpdateFunc()); });

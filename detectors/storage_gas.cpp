@@ -36,9 +36,9 @@ namespace {
 
             std::ifstream is;
             is.open(Rustle::callback_file);
-            std::string callback_line;
-            while (is >> callback_line) {
-                callbacks.insert(callback_line.substr(0, callback_line.find('@')));
+            std::string callbackLine;
+            while (is >> callbackLine) {
+                callbacks.insert(callbackLine.substr(0, callbackLine.find('@')));
             }
             is.close();
         }
@@ -108,4 +108,4 @@ namespace {
 char StorageGas::ID = 0;
 static llvm::RegisterPass<StorageGas> X("storage-gas", "", false /* Only looks at CFG */, false /* Analysis Pass */);
 
-static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &Builder, llvm::legacy::PassManagerBase &PM) { PM.add(new StorageGas()); });
+static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &builder, llvm::legacy::PassManagerBase &PM) { PM.add(new StorageGas()); });

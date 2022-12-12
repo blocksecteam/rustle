@@ -50,21 +50,21 @@ namespace {
                     if (!I.getDebugLoc().get() || Rustle::regexForLibLoc.match(I.getDebugLoc().get()->getFilename()))
                         continue;
 
-                    auto re_prepaid_gas = Regex("near_sdk[0-9]+environment[0-9]+env[0-9]+prepaid_gas");
-                    if (Rustle::isInstCallFunc(&I, re_prepaid_gas)) {
-                        bool check_prepaid_gas = false;
+                    auto rePrepaidGas = Regex("near_sdk[0-9]+environment[0-9]+env[0-9]+prepaid_gas");
+                    if (Rustle::isInstCallFunc(&I, rePrepaidGas)) {
+                        bool checkPrepaidGas = false;
 
-                        std::set<Value *> prepaid_gas_users;
-                        Rustle::findUsers(&I, prepaid_gas_users);
-                        for (auto i : prepaid_gas_users) {
-                            if (auto call_base = dyn_cast<CallBase>(i)) {
-                                if (Rustle::isInstCallFunc(call_base, Rustle::regexPartialOrd)) {
-                                    check_prepaid_gas = true;
+                        std::set<Value *> prepaidGasUsers;
+                        Rustle::findUsers(&I, prepaidGasUsers);
+                        for (auto i : prepaidGasUsers) {
+                            if (auto callBase = dyn_cast<CallBase>(i)) {
+                                if (Rustle::isInstCallFunc(callBase, Rustle::regexPartialOrd)) {
+                                    checkPrepaidGas = true;
                                     break;
                                 }
                             }
                         }
-                        if (check_prepaid_gas) {
+                        if (checkPrepaidGas) {
                             Rustle::Logger().Info("Find prepaid_gas check in ft_transfer_call at ", &I.getDebugLoc());
                             *os << "@True\n";
                             return false;
@@ -84,4 +84,4 @@ namespace {
 char PrepaidGas::ID = 0;
 static llvm::RegisterPass<PrepaidGas> X("prepaid-gas", "", false /* Only looks at CFG */, false /* Analysis Pass */);
 
-static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &Builder, llvm::legacy::PassManagerBase &PM) { PM.add(new PrepaidGas()); });
+static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &builder, llvm::legacy::PassManagerBase &PM) { PM.add(new PrepaidGas()); });

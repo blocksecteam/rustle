@@ -58,9 +58,9 @@ namespace {
                             bool handlePromise = false;
                             bool usedInReturn  = false;
 
-                            std::set<Value *> pm_users;
-                            Rustle::simpleFindUsers(callInst->getArgOperand(0), pm_users, true);  // find users of promises
-                            for (auto i : pm_users) {
+                            std::set<Value *> pmUsers;
+                            Rustle::simpleFindUsers(callInst->getArgOperand(0), pmUsers, true);  // find users of promises
+                            for (auto i : pmUsers) {
                                 if (auto retInst = dyn_cast<ReturnInst>(i)) {  // find if store location is used in return value of `F`
                                     usedInReturn = true;
                                     break;
@@ -99,4 +99,4 @@ namespace {
 char UnhandledPromise::ID = 0;
 static llvm::RegisterPass<UnhandledPromise> X("unhandled-promise", "functions calling external function", false /* Only looks at CFG */, false /* Analysis Pass */);
 
-static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &Builder, llvm::legacy::PassManagerBase &PM) { PM.add(new UnhandledPromise()); });
+static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &builder, llvm::legacy::PassManagerBase &PM) { PM.add(new UnhandledPromise()); });

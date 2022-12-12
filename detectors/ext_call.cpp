@@ -24,16 +24,16 @@ namespace {
         static char ID;
 
       private:
-        std::vector<std::string> ext_call_traits;
+        std::vector<std::string> extCallTraits;
         llvm::raw_fd_ostream *os = nullptr;
 
       public:
         ExtCall() : ModulePass(ID) {
             std::ifstream is;
             is.open(Rustle::ext_call_trait_file);
-            std::string ext_call_trait;
-            while (is >> ext_call_trait) {
-                ext_call_traits.push_back(ext_call_trait);
+            std::string extCallTrait;
+            while (is >> extCallTrait) {
+                extCallTraits.push_back(extCallTrait);
             }
             is.close();
 
@@ -61,8 +61,8 @@ namespace {
                         if (CallBase *callInst = dyn_cast<CallBase>(&I)) {
                             if (!callInst->getCalledFunction())
                                 continue;
-                            for (auto ext_call_trait : ext_call_traits)
-                                if (Rustle::isInstCallFunc(&I, Regex(ext_call_trait))) {
+                            for (auto extCallTrait : extCallTraits)
+                                if (Rustle::isInstCallFunc(&I, Regex(extCallTrait))) {
                                     Rustle::Logger().Info("Function <", F.getName(), "> calls\n\t<", callInst->getCalledFunction()->getName(), ">\n\tat ", I.getDebugLoc());
                                     *os << F.getName() << "@" << I.getDebugLoc()->getFilename() << "@" << I.getDebugLoc().getLine() << "\n";
                                 }
@@ -77,4 +77,4 @@ namespace {
 char ExtCall::ID = 0;
 static llvm::RegisterPass<ExtCall> X("ext-call", "functions calling external function", false /* Only looks at CFG */, false /* Analysis Pass */);
 
-static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &Builder, llvm::legacy::PassManagerBase &PM) { PM.add(new ExtCall()); });
+static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &builder, llvm::legacy::PassManagerBase &PM) { PM.add(new ExtCall()); });

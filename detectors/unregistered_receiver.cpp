@@ -75,17 +75,17 @@ namespace {
                             }
                         }
                     } else {
-                        int next_receiver_offset = -1;
+                        int nextReceiverOffset = -1;
                         for (int i = 0; i < callInst->arg_size(); i++) {
                             if (usersOfReceiverId.count(callInst->getArgOperand(i))) {  // whether passing ft_transfer's arg receiver to next level
-                                next_receiver_offset = i;
+                                nextReceiverOffset = i;
                                 break;
                             }
                         }
-                        if (next_receiver_offset == -1)  // not found, skip this Instruction
+                        if (nextReceiverOffset == -1)  // not found, skip this Instruction
                             continue;
 
-                        if (callInst->getCalledFunction() && allowUnregisteredReceiver(callInst->getCalledFunction(), callInst->getCalledFunction()->getArg(next_receiver_offset))) {
+                        if (callInst->getCalledFunction() && allowUnregisteredReceiver(callInst->getCalledFunction(), callInst->getCalledFunction()->getArg(nextReceiverOffset))) {
                             return true;
                         }
                     }
@@ -141,4 +141,4 @@ char UnregisteredReceiver::ID = 0;
 static llvm::RegisterPass<UnregisteredReceiver> X("unregistered-receiver", "", false /* Only looks at CFG */, false /* Analysis Pass */);
 
 static llvm::RegisterStandardPasses Y(
-    llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &Builder, llvm::legacy::PassManagerBase &PM) { PM.add(new UnregisteredReceiver()); });
+    llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &builder, llvm::legacy::PassManagerBase &PM) { PM.add(new UnregisteredReceiver()); });

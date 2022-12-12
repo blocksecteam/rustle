@@ -28,12 +28,12 @@ namespace {
 
         std::set<std::string> callbacks;
 
-        bool isInstPrivilege(llvm::Instruction *I, int const depth = 1) {
+        bool isInstPrivilege(llvm::Instruction *I, int const DEPTH = 1) {
             using namespace llvm;
             Regex const static regex_predecessor = Regex("near_sdk[0-9]+environment[0-9]+env[0-9]+predecessor_account_id");
             Regex const static regex_eq          = Regex("near_sdk\\.\\.types\\.\\.account_id\\.\\.AccountId.+core\\.\\.cmp\\.\\.PartialEq");
 
-            if (depth < 0)
+            if (DEPTH < 0)
                 return false;
 
             if (Rustle::isInstCallFunc(I, regex_predecessor)) {  // has called `predecessor_account_id`, check whether calls `PartialEq` in current function
@@ -48,7 +48,7 @@ namespace {
                     for (BasicBlock &BB : *(callInst->getCalledFunction())) {  // check callee function
                         for (Instruction &i : BB) {
                             if (CallBase *callInst = dyn_cast<llvm::CallBase>(&i)) {
-                                if (isInstPrivilege(&i, depth - 1)) {
+                                if (isInstPrivilege(&i, DEPTH - 1)) {
                                     return true;
                                 }
                             }
@@ -68,9 +68,9 @@ namespace {
 
             std::ifstream is;
             is.open(Rustle::callback_file);
-            std::string callback_line;
-            while (is >> callback_line) {
-                callbacks.insert(callback_line.substr(0, callback_line.find('@')));
+            std::string callbackLine;
+            while (is >> callbackLine) {
+                callbacks.insert(callbackLine.substr(0, callbackLine.find('@')));
             }
             is.close();
         }
@@ -140,4 +140,4 @@ namespace {
 char YoctoAttach::ID = 0;
 static llvm::RegisterPass<YoctoAttach> X("yocto-attach", "functions calling external function", false /* Only looks at CFG */, false /* Analysis Pass */);
 
-static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &Builder, llvm::legacy::PassManagerBase &PM) { PM.add(new YoctoAttach()); });
+static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &builder, llvm::legacy::PassManagerBase &PM) { PM.add(new YoctoAttach()); });

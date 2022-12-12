@@ -8,8 +8,8 @@ namespace Rustle {
     void simpleFindUsers(llvm::Value *value, std::set<llvm::Value *> &set, bool restrictCrossFunction, bool disableCrossFunction) {
         using namespace llvm;
 
-        auto const valueType = value->getType();
-        if (!valueType || valueType->isLabelTy())
+        auto const VALUE_TYPE = value->getType();
+        if (!VALUE_TYPE || VALUE_TYPE->isLabelTy())
             return;
 
         if (set.find(value) != set.end())
@@ -17,16 +17,16 @@ namespace Rustle {
 
         set.insert(value);
 
-        if (auto CallInst = dyn_cast<CallBase>(value)) {
-            for (unsigned i = 0; i < CallInst->arg_size(); i++) {
-                if (!disableCrossFunction && CallInst->getCalledFunction() && (!restrictCrossFunction || set.count(CallInst->getArgOperand(i))))
-                    simpleFindUsers(CallInst->getCalledFunction()->getArg(i), set, restrictCrossFunction, disableCrossFunction);  // cross-function
-                if (CallInst->getCalledFunction() && CallInst->getCalledFunction()->getName().contains("core..convert..Into") && CallInst->arg_size() >= 2 && set.count(CallInst->getArgOperand(1))) {
-                    simpleFindUsers(CallInst->getArgOperand(0), set, restrictCrossFunction, disableCrossFunction);  // add `xxx.into()` as user of `xxx`
+        if (auto callInst = dyn_cast<CallBase>(value)) {
+            for (unsigned i = 0; i < callInst->arg_size(); i++) {
+                if (!disableCrossFunction && callInst->getCalledFunction() && (!restrictCrossFunction || set.count(callInst->getArgOperand(i))))
+                    simpleFindUsers(callInst->getCalledFunction()->getArg(i), set, restrictCrossFunction, disableCrossFunction);  // cross-function
+                if (callInst->getCalledFunction() && callInst->getCalledFunction()->getName().contains("core..convert..Into") && callInst->arg_size() >= 2 && set.count(callInst->getArgOperand(1))) {
+                    simpleFindUsers(callInst->getArgOperand(0), set, restrictCrossFunction, disableCrossFunction);  // add `xxx.into()` as user of `xxx`
                 }
             }
-        } else if (auto StInst = dyn_cast<StoreInst>(value)) {
-            simpleFindUsers(StInst->getPointerOperand(), set, restrictCrossFunction, disableCrossFunction);
+        } else if (auto stInst = dyn_cast<StoreInst>(value)) {
+            simpleFindUsers(stInst->getPointerOperand(), set, restrictCrossFunction, disableCrossFunction);
         }
 
         for (auto *U : value->users()) {
@@ -34,44 +34,44 @@ namespace Rustle {
         }
     }
 
-    void findUsers(llvm::Value *value, std::set<llvm::Value *> &set, const int GEPOffset, int depth) {
+    void findUsers(llvm::Value *value, std::set<llvm::Value *> &set, const int GEP_OFFSET, int depth) {
         using namespace llvm;
         if (depth <= 0)
             return;
         if (set.count(value) == 1)
             return;
 
-        auto const valueType = value->getType();
+        auto const VALUE_TYPE = value->getType();
 
-        if (!valueType || valueType->isLabelTy())
+        if (!VALUE_TYPE || VALUE_TYPE->isLabelTy())
             return;
 
         set.insert(value);
 
-        if (auto UnaInst = dyn_cast<UnaryInstruction>(value)) {  // alloca, cast, extract, freeze, load, unaryOp, VAA
-            if (GEPOffset != -1) {
-                if (auto BCInst = dyn_cast<BitCastInst>(value)) {
-                    std::string resType = printToString(BCInst->getDestTy()), srcType = printToString(BCInst->getSrcTy());
-                    if (GEPOffset != 0 && (StringRef(resType).contains("solana_program::pubkey::Pubkey") && StringRef(srcType).contains("solana_program::account_info::AccountInfo") ||
-                                              (StringRef(resType).contains("anchor_lang::prelude::Pubkey") && StringRef(srcType).contains("anchor_lang::prelude::AccountInfo"))))
+        if (auto unaInst = dyn_cast<UnaryInstruction>(value)) {  // alloca, cast, extract, freeze, load, unaryOp, VAA
+            if (GEP_OFFSET != -1) {
+                if (auto bcInst = dyn_cast<BitCastInst>(value)) {
+                    std::string resType = printToString(bcInst->getDestTy()), srcType = printToString(bcInst->getSrcTy());
+                    if (GEP_OFFSET != 0 && (StringRef(resType).contains("solana_program::pubkey::Pubkey") && StringRef(srcType).contains("solana_program::account_info::AccountInfo") ||
+                                               (StringRef(resType).contains("anchor_lang::prelude::Pubkey") && StringRef(srcType).contains("anchor_lang::prelude::AccountInfo"))))
                         return;  // BitCast Not allowed for Offset!=0
                 }
             }
-            for (auto *U : UnaInst->users())
-                findUsers(U, set, GEPOffset, depth - 1);
-        } else if (auto BinOpInst = dyn_cast<BinaryOperator>(value)) {
-            for (auto *U : BinOpInst->users())
-                findUsers(U, set, GEPOffset, depth - 1);
-        } else if (auto GEPInst = dyn_cast<GetElementPtrInst>(value)) {
-            bool goFurther = GEPOffset == -1;
+            for (auto *U : unaInst->users())
+                findUsers(U, set, GEP_OFFSET, depth - 1);
+        } else if (auto binOpInst = dyn_cast<BinaryOperator>(value)) {
+            for (auto *U : binOpInst->users())
+                findUsers(U, set, GEP_OFFSET, depth - 1);
+        } else if (auto gepInst = dyn_cast<GetElementPtrInst>(value)) {
+            bool goFurther = GEP_OFFSET == -1;
 
             if (!goFurther) {
-                std::string resType = printToString(GEPInst->getResultElementType()), srcType = printToString(GEPInst->getSourceElementType());
+                std::string resType = printToString(gepInst->getResultElementType()), srcType = printToString(gepInst->getSourceElementType());
 
-                switch (dyn_cast<ConstantInt>(GEPInst->getOperand(GEPInst->getNumOperands() - 1))->getZExtValue()) {
+                switch (dyn_cast<ConstantInt>(gepInst->getOperand(gepInst->getNumOperands() - 1))->getZExtValue()) {
                     // more cases can be set
                     case 3:  // owner field
-                        if (GEPOffset == 3 && (StringRef(resType).contains("solana_program::pubkey::Pubkey") && StringRef(srcType).contains("solana_program::account_info::AccountInfo")) ||
+                        if (GEP_OFFSET == 3 && (StringRef(resType).contains("solana_program::pubkey::Pubkey") && StringRef(srcType).contains("solana_program::account_info::AccountInfo")) ||
                             (StringRef(resType).contains("anchor_lang::prelude::Pubkey") && StringRef(srcType).contains("anchor_lang::prelude::AccountInfo")))
                             goFurther = true;
                         break;
@@ -81,36 +81,36 @@ namespace Rustle {
             }
 
             if (goFurther)
-                for (auto *U : GEPInst->users())
-                    findUsers(U, set, GEPOffset, depth - 1);
-        } else if (auto StInst = dyn_cast<StoreInst>(value)) {
-            findUsers(StInst->getPointerOperand(), set, GEPOffset, depth - 1);
-        } else if (auto CallInst = dyn_cast<CallBase>(value)) {
-            if (CallInst->getCalledFunction() && CallInst->getCalledFunction()->getName().startswith("llvm.memcpy") && CallInst->getArgOperand(0)) {
-                for (auto *U : CallInst->getArgOperand(0)->users())  // memcpy target
-                    findUsers(U, set, GEPOffset, depth - 1);
-                if (auto CstInst = dyn_cast<CastInst>(CallInst->getArgOperand(0))) {  // memcpy target pointer
-                    if (CstInst->getOperand(0)) {
-                        for (auto *U : CstInst->getOperand(0)->users())
-                            findUsers(U, set, GEPOffset, depth - 1);
+                for (auto *U : gepInst->users())
+                    findUsers(U, set, GEP_OFFSET, depth - 1);
+        } else if (auto stInst = dyn_cast<StoreInst>(value)) {
+            findUsers(stInst->getPointerOperand(), set, GEP_OFFSET, depth - 1);
+        } else if (auto callInst = dyn_cast<CallBase>(value)) {
+            if (callInst->getCalledFunction() && callInst->getCalledFunction()->getName().startswith("llvm.memcpy") && callInst->getArgOperand(0)) {
+                for (auto *U : callInst->getArgOperand(0)->users())  // memcpy target
+                    findUsers(U, set, GEP_OFFSET, depth - 1);
+                if (auto cstInst = dyn_cast<CastInst>(callInst->getArgOperand(0))) {  // memcpy target pointer
+                    if (cstInst->getOperand(0)) {
+                        for (auto *U : cstInst->getOperand(0)->users())
+                            findUsers(U, set, GEP_OFFSET, depth - 1);
                     }
                 }
-            } else if (CallInst->getCalledFunction() && CallInst->getCalledFunction()->getName().contains("core..cmp")) {
+            } else if (callInst->getCalledFunction() && callInst->getCalledFunction()->getName().contains("core..cmp")) {
                 // ends here, skip compare function
-            } else if (GEPOffset != -1 && CallInst->getCalledFunction() && Regex("solana_program[0-9]+program_pack[0-9]+Pack[0-9]+unpack").match(CallInst->getCalledFunction()->getName())) {
+            } else if (GEP_OFFSET != -1 && callInst->getCalledFunction() && Regex("solana_program[0-9]+program_pack[0-9]+Pack[0-9]+unpack").match(callInst->getCalledFunction()->getName())) {
                 // ends here, skip unpack result for owner-check
-            } else if (CallInst->getCalledFunction() && CallInst->getCalledFunction()->getName().contains("core..convert..Into") && CallInst->arg_size() >= 2 &&
-                       set.count(CallInst->getArgOperand(1))) {
-                findUsers(CallInst->getArgOperand(0), set, GEPOffset, depth - 1);  // add `xxx.into()` as user of `xxx`
+            } else if (callInst->getCalledFunction() && callInst->getCalledFunction()->getName().contains("core..convert..Into") && callInst->arg_size() >= 2 &&
+                       set.count(callInst->getArgOperand(1))) {
+                findUsers(callInst->getArgOperand(0), set, GEP_OFFSET, depth - 1);  // add `xxx.into()` as user of `xxx`
             } else {
                 // for (unsigned i = 0; i < CallInst->getCalledFunction()->arg_size(); i++)
                 //     findUsers(CallInst->getCalledFunction()->getArg(i), set, GEPOffset, depth - 1);  // cross function
-                for (unsigned i = 0; i < CallInst->arg_size(); i++)
-                    findUsers(CallInst->getArgOperand(i), set, GEPOffset, depth - 1);  // function args
-                for (auto *U : CallInst->users())
-                    findUsers(U, set, GEPOffset, depth - 1);
+                for (unsigned i = 0; i < callInst->arg_size(); i++)
+                    findUsers(callInst->getArgOperand(i), set, GEP_OFFSET, depth - 1);  // function args
+                for (auto *U : callInst->users())
+                    findUsers(U, set, GEP_OFFSET, depth - 1);
             }
-        } else if (auto Inst = dyn_cast<Instruction>(value)) {
+        } else if (auto inst = dyn_cast<Instruction>(value)) {
             // ignore other instructions
         } else {
             for (auto *U : value->users()) {
@@ -139,7 +139,7 @@ namespace Rustle {
     }
 
     namespace {  // Hide this func
-        bool _isFuncCallFunc_Rec(llvm::CallGraphNode *node, llvm::Regex const &regex, std::vector<llvm::CallGraphNode *> &callStack) {
+        bool isFuncCallFuncRec(llvm::CallGraphNode *node, llvm::Regex const &regex, std::vector<llvm::CallGraphNode *> &callStack) {
             if (!node)
                 return false;
 
@@ -155,7 +155,7 @@ namespace Rustle {
                     continue;
 
                 callStack.push_back(callee.second);
-                if (_isFuncCallFunc_Rec(callee.second, regex, callStack))
+                if (isFuncCallFuncRec(callee.second, regex, callStack))
                     return true;
                 callStack.pop_back();
             }
@@ -175,7 +175,7 @@ namespace Rustle {
 
                 std::vector<llvm::CallGraphNode *> callStack;
                 callStack.push_back(CG[callInst->getCalledFunction()]);
-                return _isFuncCallFunc_Rec(CG[callInst->getCalledFunction()], regex, callStack);
+                return isFuncCallFuncRec(CG[callInst->getCalledFunction()], regex, callStack);
             }
         }
         return false;
@@ -188,7 +188,7 @@ namespace Rustle {
 
         std::vector<llvm::CallGraphNode *> callStack;
         callStack.push_back(CG[F]);
-        return _isFuncCallFunc_Rec(CG[F], regex, callStack);
+        return isFuncCallFuncRec(CG[F], regex, callStack);
     }
 
     void findFunctionCallerRec(llvm::Function *F, std::set<llvm::Function *> &set, int depth) {
@@ -259,16 +259,16 @@ namespace Rustle {
                         // outs() << "callInst->arg_size(): " << callInst->arg_size() << "\n";
 
                         // outs() << "args_op: ";
-                        int user_no = -1;
+                        int userNo = -1;
                         for (auto i = 0; i < callInst->arg_size(); i++) {
                             if (callInst->getArgOperand(i) == prevUser)
-                                user_no = i;
+                                userNo = i;
                             // outs() << *callInst->getArgOperand(i) << " | ";
                         }
                         // outs() << "\n";
 
                         // outs() << "user_no: " << user_no << "\n";
-                        if (user_no == -1) {  // user not found in args
+                        if (userNo == -1) {  // user not found in args
                             // outs() << "[ERR] user not found in args\n";
                             return Mode::Unknown;
                         }
@@ -286,7 +286,7 @@ namespace Rustle {
                         // outs() << "\n\n";
 
                         prevUser = user;
-                        user     = callInst->getCalledFunction()->getArg(user_no);
+                        user     = callInst->getCalledFunction()->getArg(userNo);
                         return getMode(user, prevUser);
                         // outs() << "getCalledOperand: " << callInst->getCalledOperand()[user_no] << "\n";
                     }
@@ -316,9 +316,9 @@ namespace Rustle {
         Value *castValue = nullptr;               // pointer to llvm::Value of member that has been cast from struct pointer, also serves as a flag
         std::pair<std::string, unsigned> target;  // pair of struct name and member offset
 
-        if (auto GEPInst = dyn_cast<GetElementPtrInst>(I)) {  // for offset > 0
+        if (auto gepInst = dyn_cast<GetElementPtrInst>(I)) {  // for offset > 0
             for (auto i : vars) {
-                std::string srcMeta = printToString(GEPInst->getSourceElementType());
+                std::string srcMeta = printToString(gepInst->getSourceElementType());
                 if (srcMeta.find('=') == std::string::npos)
                     continue;
                 std::string structName = srcMeta.substr(1, srcMeta.find('=') - 2);
@@ -326,7 +326,7 @@ namespace Rustle {
 
                 /* Control exact match */
                 // if (structName.find(i.first) != std::string::npos && dyn_cast<ConstantInt>(GEPInst->getOperand(GEPInst->getNumOperands() - 1))->equalsInt(i.second)) {
-                if (structName == i.first && dyn_cast<ConstantInt>(GEPInst->getOperand(GEPInst->getNumOperands() - 1))->equalsInt(i.second)) {
+                if (structName == i.first && dyn_cast<ConstantInt>(gepInst->getOperand(gepInst->getNumOperands() - 1))->equalsInt(i.second)) {
                     castValue = dyn_cast<Value>(I);
                     target    = i;
                     break;
@@ -408,8 +408,8 @@ namespace Rustle {
                                      // also serves as a flag
         std::string target;          // pair of struct name and member offset
 
-        if (auto GEPInst = dyn_cast<GetElementPtrInst>(I)) {  // for offset > 0
-            std::string srcMeta = printToString(GEPInst->getSourceElementType());
+        if (auto gepInst = dyn_cast<GetElementPtrInst>(I)) {  // for offset > 0
+            std::string srcMeta = printToString(gepInst->getSourceElementType());
             if (srcMeta.find('=') == std::string::npos)
                 ;
             else if (srcMeta.size() >= 2) {

@@ -54,27 +54,27 @@ namespace {
                         if (!callInst->getCalledFunction())
                             continue;
                         if (Rustle::regexPromiseResult.match(callInst->getCalledFunction()->getName())) {
-                            BasicBlock *SuccessfulBlock = nullptr;
+                            BasicBlock *successfulBlock = nullptr;
 
-                            std::set<Value *> pm_rs_users;
-                            Rustle::simpleFindUsers(callInst->getArgOperand(0), pm_rs_users, false, true);  // callInst->getArgOperand(0) is the return value of `promise_result`
-                            for (auto i : pm_rs_users) {
+                            std::set<Value *> pmRsUsers;
+                            Rustle::simpleFindUsers(callInst->getArgOperand(0), pmRsUsers, false, true);  // callInst->getArgOperand(0) is the return value of `promise_result`
+                            for (auto i : pmRsUsers) {
                                 if (auto switchInst = dyn_cast<SwitchInst>(i)) {
                                     for (auto caseIt : switchInst->cases()) {
                                         if (caseIt.getCaseValue()->equalsInt(1)) {  // PromiseResult::Successful == 1
-                                            SuccessfulBlock = caseIt.getCaseSuccessor();
+                                            successfulBlock = caseIt.getCaseSuccessor();
                                             break;
                                         }
                                     }
                                 }
-                                if (SuccessfulBlock)
+                                if (successfulBlock)
                                     break;
                             }
 
-                            if (SuccessfulBlock) {
+                            if (successfulBlock) {
                                 bool hasNewBlock = true;
 
-                                auto currentBlock = SuccessfulBlock;
+                                auto currentBlock = successfulBlock;
                                 while (hasNewBlock) {
                                     hasNewBlock = false;
 
@@ -96,9 +96,9 @@ namespace {
                                             bool usedInReturn = false;
                                             bool useSelf      = false;
 
-                                            std::set<Value *> st_loc_users;
-                                            Rustle::simpleFindUsers(storeInst->getPointerOperand(), st_loc_users);  // find users of store location
-                                            for (auto i : st_loc_users) {
+                                            std::set<Value *> stLocUsers;
+                                            Rustle::simpleFindUsers(storeInst->getPointerOperand(), stLocUsers);  // find users of store location
+                                            for (auto i : stLocUsers) {
                                                 if (auto retInst = dyn_cast<ReturnInst>(i)) {  // find if store location is used in return value of `F`
 
                                                     // [!] below is code to strictly check whether return type equals stored value's type, but it's unnecessary in most cases
@@ -109,9 +109,9 @@ namespace {
                                                 }
                                             }
 
-                                            std::set<Value *> self_users;
-                                            Rustle::simpleFindUsers(F.getArg(0), self_users);  // find users of `&self`
-                                            for (auto i : self_users) {
+                                            std::set<Value *> selfUsers;
+                                            Rustle::simpleFindUsers(F.getArg(0), selfUsers);  // find users of `&self`
+                                            for (auto i : selfUsers) {
                                                 if (i == storeInst->getPointerOperand()) {
                                                     useSelf = true;
                                                     break;
@@ -142,4 +142,4 @@ namespace {
 char Reentrancy::ID = 0;
 static llvm::RegisterPass<Reentrancy> X("reentrancy", "", false /* Only looks at CFG */, false /* Analysis Pass */);
 
-static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &Builder, llvm::legacy::PassManagerBase &PM) { PM.add(new Reentrancy()); });
+static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &builder, llvm::legacy::PassManagerBase &PM) { PM.add(new Reentrancy()); });

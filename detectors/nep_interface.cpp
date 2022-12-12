@@ -20,7 +20,7 @@
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
 
-static llvm::cl::opt<unsigned> nepId("nep-id", llvm::cl::desc("Specify the id of nep, refer to https://github.com/near/NEPs for more"), llvm::cl::value_desc("id"));
+static llvm::cl::opt<unsigned> NepId("nep-id", llvm::cl::desc("Specify the id of nep, refer to https://github.com/near/NEPs for more"), llvm::cl::value_desc("id"));
 
 /**
  * @example {
@@ -28,7 +28,7 @@ static llvm::cl::opt<unsigned> nepId("nep-id", llvm::cl::desc("Specify the id of
  * }
  *
  */
-static const std::unordered_map<unsigned, std::set<llvm::StringRef>> positionalFuncsMap = {
+static const std::unordered_map<unsigned, std::set<llvm::StringRef>> POSITIONAL_FUNCS_MAP = {
     {141, {"ft_transfer", "ft_transfer_call", "ft_on_transfer", "ft_total_supply", "ft_balance_of"}},
     {145, {"storage_deposit", "storage_withdraw", "storage_unregister", "storage_balance_bounds", "storage_balance_of"}},
 };
@@ -45,7 +45,7 @@ static const std::unordered_map<unsigned, std::set<llvm::StringRef>> positionalF
  * }
  *
  */
-static const std::unordered_map<unsigned, std::set<std::set<llvm::StringRef>>> optionalFuncsMap = {
+static const std::unordered_map<unsigned, std::set<std::set<llvm::StringRef>>> OPTIONAL_FUNCS_MAP = {
     {
         141,
         {
@@ -76,8 +76,8 @@ namespace {
         bool runOnModule(llvm::Module &M) override {
             using namespace llvm;
 
-            if (positionalFuncsMap.count(nepId.getValue()) == 0)
-                Rustle::Logger().Warning("Invalid nep-id: ", nepId.getValue());
+            if (POSITIONAL_FUNCS_MAP.count(NepId.getValue()) == 0)
+                Rustle::Logger().Warning("Invalid nep-id: ", NepId.getValue());
 
             std::set<StringRef> funcSet;
 
@@ -87,8 +87,8 @@ namespace {
                 funcSet.insert(F.getName());
             }
 
-            auto const &positionalFuncs = positionalFuncsMap.at(nepId.getValue());  // existence has been checked
-            auto const &optionalFuncs   = optionalFuncsMap.count(nepId.getValue()) ? optionalFuncsMap.at(nepId.getValue()) : std::set<std::set<llvm::StringRef>>();
+            auto const &positionalFuncs = POSITIONAL_FUNCS_MAP.at(NepId.getValue());  // existence has been checked
+            auto const &optionalFuncs   = OPTIONAL_FUNCS_MAP.count(NepId.getValue()) ? OPTIONAL_FUNCS_MAP.at(NepId.getValue()) : std::set<std::set<llvm::StringRef>>();
 
             for (auto const &func : positionalFuncs) {
                 if (funcSet.count(func)) {
@@ -114,4 +114,4 @@ namespace {
 char UnsavedChanges::ID = 0;
 
 static llvm::RegisterPass<UnsavedChanges> X("nep-interface", "", false /* Only looks at CFG */, false /* Analysis Pass */);
-static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &Builder, llvm::legacy::PassManagerBase &PM) { PM.add(new UnsavedChanges()); });
+static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &builder, llvm::legacy::PassManagerBase &PM) { PM.add(new UnsavedChanges()); });
