@@ -5,7 +5,10 @@
  */
 #include "near_core.h"
 
-#include "llvm/Analysis/MemorySSA.h"
+#include <fstream>
+#include <set>
+#include <string>
+
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/DebugInfoMetadata.h"
 #include "llvm/IR/DebugLoc.h"
@@ -17,10 +20,6 @@
 #include "llvm/Support/Regex.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
-
-#include <fstream>
-#include <set>
-#include <string>
 
 namespace {
     struct Reentrancy : public llvm::FunctionPass {

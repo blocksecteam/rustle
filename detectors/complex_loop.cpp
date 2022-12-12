@@ -5,23 +5,22 @@
  */
 #include "near_core.h"
 
+#include <fstream>
+#include <numeric>
+#include <vector>
+
 #include "llvm/Analysis/LoopInfo.h"
 #include "llvm/Analysis/LoopPass.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/DebugInfoMetadata.h"
 #include "llvm/IR/DebugLoc.h"
 #include "llvm/IR/Instruction.h"
-#include "llvm/Pass.h"
-
 #include "llvm/IR/LegacyPassManager.h"
+#include "llvm/Pass.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Regex.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
-
-#include <fstream>
-#include <numeric>
-#include <vector>
 
 namespace {
     struct ComplexLoop : public llvm::LoopPass {

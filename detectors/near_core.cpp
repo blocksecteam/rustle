@@ -1,5 +1,9 @@
 #include "near_core.h"
 
+#include "llvm/IR/Instructions.h"
+#include "llvm/IR/IntrinsicInst.h"
+#include "llvm/IR/Metadata.h"
+
 namespace Rustle {
     void simpleFindUsers(llvm::Value *value, std::set<llvm::Value *> &set, bool restrictCrossFunction, bool disableCrossFunction) {
         using namespace llvm;

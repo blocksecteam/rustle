@@ -7,15 +7,10 @@
 
 #include <set>
 
-#include "llvm/IR/BasicBlock.h"
-#include "llvm/IR/DebugInfoMetadata.h"
-#include "llvm/IR/DebugLoc.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/InstrTypes.h"
-#include "llvm/IR/Instructions.h"
-#include "llvm/Pass.h"
-
 #include "llvm/IR/LegacyPassManager.h"
+#include "llvm/Pass.h"
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Regex.h"

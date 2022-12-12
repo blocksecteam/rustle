@@ -7,17 +7,10 @@
 #include <vector>
 
 #include "llvm/Analysis/CallGraph.h"
-#include "llvm/IR/BasicBlock.h"
-#include "llvm/IR/DebugInfoMetadata.h"
 #include "llvm/IR/DebugLoc.h"
 #include "llvm/IR/Function.h"
-#include "llvm/IR/Instructions.h"
-#include "llvm/IR/IntrinsicInst.h"
-#include "llvm/IR/Metadata.h"
-#include "llvm/Pass.h"
 #include "llvm/Support/Regex.h"
 #include "llvm/Support/raw_ostream.h"
-#include "llvm/Transforms/IPO/PassManagerBuilder.h"
 
 namespace Rustle {
     // tool config

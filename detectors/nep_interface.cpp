@@ -9,19 +9,11 @@
 #include <set>
 #include <unordered_map>
 
-#include "llvm/IR/BasicBlock.h"
-#include "llvm/IR/DebugInfoMetadata.h"
-#include "llvm/IR/DebugLoc.h"
+#include "llvm/ADT/StringRef.h"
 #include "llvm/IR/Function.h"
-#include "llvm/IR/InstrTypes.h"
-#include "llvm/IR/Instruction.h"
-#include "llvm/IR/Instructions.h"
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/Value.h"
 #include "llvm/Pass.h"
-
-#include "llvm/ADT/StringRef.h"
-#include "llvm/Support/Casting.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Regex.h"
