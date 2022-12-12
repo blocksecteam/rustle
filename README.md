@@ -2,7 +2,7 @@
 
 <img src="./logo.png" alt="Rustle" width="500"/>
 
-[![Unit-Test Status](https://img.shields.io/github/workflow/status/blocksecteam/rustle/unit-test?label=unit-test)](https://github.com/blocksecteam/rustle/actions/workflows/unit-test.yml)
+[![CI Status](https://img.shields.io/github/workflow/status/blocksecteam/rustle/ci?label=ci)](https://github.com/blocksecteam/rustle/actions/workflows/ci.yml)
 [![Build-Image Status](https://img.shields.io/github/workflow/status/blocksecteam/rustle/build-image?label=build-image)](https://github.com/blocksecteam/rustle/actions/workflows/build-image.yml)
 [![License: AGPL v3](https://img.shields.io/github/license/blocksecteam/rustle)](LICENSE)
 [![AwesomeNEAR](https://img.shields.io/badge/AwesomeNEAR-Rustle-blue)](https://awesomenear.com/rustle)
