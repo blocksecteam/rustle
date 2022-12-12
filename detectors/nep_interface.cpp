@@ -79,8 +79,6 @@ namespace {
             if (positionalFuncsMap.count(nepId.getValue()) == 0)
                 Rustle::Logger().Warning("Invalid nep-id: ", nepId.getValue());
 
-            CallGraph CG(M);
-
             std::set<StringRef> funcSet;
 
             for (auto &F : M.functions()) {
@@ -89,8 +87,8 @@ namespace {
                 funcSet.insert(F.getName());
             }
 
-            auto const &positionalFuncs = positionalFuncsMap.at(nepId.getValue());
-            auto const &optionalFuncs   = optionalFuncsMap.at(nepId.getValue());
+            auto const &positionalFuncs = positionalFuncsMap.at(nepId.getValue());  // existence has been checked
+            auto const &optionalFuncs   = optionalFuncsMap.count(nepId.getValue()) ? optionalFuncsMap.at(nepId.getValue()) : std::set<std::set<llvm::StringRef>>();
 
             for (auto const &func : positionalFuncs) {
                 if (funcSet.count(func)) {
