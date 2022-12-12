@@ -143,7 +143,8 @@ assign_positional_args 1 "${_positionals[@]}"
 # [ <-- needed because of Argbash
 
 TOP=$(realpath $(dirname "${BASH_SOURCE[0]}"))
-DETECTORS="div-before-mul ext-call inconsistency incorrect-json-type lock-callback non-callback-private non-private-callback prepaid-gas promise-result reentrancy round self-transfer tautology timestamp transfer unhandled-promise unsafe-math unused-ret upgrade-func yocto-attach complex-loop public-interface dup-collection-id storage-gas unregistered-receiver unsaved-changes"
+DETECTORS="div-before-mul ext-call inconsistency incorrect-json-type lock-callback non-callback-private non-private-callback prepaid-gas promise-result reentrancy round self-transfer tautology timestamp transfer unhandled-promise unsafe-math unused-ret upgrade-func yocto-attach complex-loop public-interface dup-collection-id storage-gas unregistered-receiver unsaved-changes
+nep141-interface nep145-interface"
 
 # export environs
 export NEAR_SRC_DIR=$(realpath $_arg_src_dir)

@@ -253,6 +253,17 @@ unsaved-changes: tg_ir
 	fi
 	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/unsaved_changes.so -unsaved-changes {} -o /dev/null
 
+nep%-interface: tg_ir
+	@rm -f ${TMP_DIR}/.$@.tmp
+	@make -C detectors nep_interface.so
+	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
+		figlet $@ -w 200 ; \
+	else \
+		echo -e "\e[31m[!] Source not found\e[0m" ; \
+	fi
+	echo ${NEP_ID}
+	cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/nep_interface.so -nep-interface --nep-id $* {} -o /dev/null
+
 tautology:
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@if test $(shell find ${NEAR_SRC_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
