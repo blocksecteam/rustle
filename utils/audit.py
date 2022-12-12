@@ -69,6 +69,7 @@ unique_collection_id_log = ''  # log can be printed without processing
 
 os.system("ls " + TMP_PATH + "/.*.tmp | xargs -i sh -c 'mv {} {}.org; rustfilt -i {}.org -o {}; rm {}.org'")
 
+PRINT_LOG_NOT_FOUND = False
 
 try:
     with open(TMP_PATH + '/.callback.tmp', 'r') as f:
@@ -76,56 +77,64 @@ try:
             func, file = line.strip().split('@')
             callback_func_set.add((func, file))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 try:
     with open(TMP_PATH + '/.promise-result.tmp', 'r') as f:
         for line in f:
             func, file, line = line.strip().split('@')
             promise_results_set.add((func, file, int(line)))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 try:
     with open(TMP_PATH + '/.ext-call.tmp', 'r') as f:
         for line in f:
             func, file, line = line.strip().split('@')
             ext_call_set.add((func, file, int(line)))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 try:
     with open(TMP_PATH + '/.reentrancy.tmp', 'r') as f:
         for line in f:
             func, file, line = line.strip().split('@')
             reentrancy_set.add((func, file, int(line)))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 try:
     with open(TMP_PATH + '/.complex-loop.tmp', 'r') as f:
         for line in f:
             func, file, line = line.strip().split('@')
             complex_loop_set.add((func, file, int(line)))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 try:
     with open(TMP_PATH + '/.transfer.tmp', 'r') as f:
         for line in f:
             func, file, line = line.strip().split('@')
             transfer_set.add((func, file, int(line)))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 try:
     with open(TMP_PATH + '/.round.tmp', 'r') as f:
         for line in f:
             func, file, line = line.strip().split('@')
             round_set.add((func, file, int(line)))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 try:
     with open(TMP_PATH + '/.div-before-mul.tmp', 'r') as f:
         for line in f:
             func, file, line = line.strip().split('@')
             div_before_mul_set.add((func, file, int(line)))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
     # with open(TMP_PATH + '/.deadcode.tmp', 'r') as f:
     #     for line in f:
     #         func, line = line.strip().split('@')
@@ -136,14 +145,16 @@ try:
             func, file, line = line.strip().split('@')
             unsafe_math_set.add((func, file, int(line)))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 try:
     with open(TMP_PATH + '/.upgrade-func.tmp', 'r') as f:
         for line in f:
             func, file = line.strip().split('@')
             upgrade_func_set.add((func, file))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 try:
     with open(TMP_PATH + '/.self-transfer.tmp', 'r') as f:
         for line in f:
@@ -151,14 +162,16 @@ try:
             check = check.lower() == 'true'
             self_transfer_set.add((func, check))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 try:
     with open(TMP_PATH + '/.timestamp.tmp', 'r') as f:
         for line in f:
             func, file, line = line.strip().split('@')
             timestamp_set.add((func, file, int(line)))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 try:
     with open(TMP_PATH + '/.prepaid-gas.tmp', 'r') as f:
         for line in f:
@@ -166,21 +179,24 @@ try:
             check = check.lower() == 'true'
             prepaid_gas_set.add((func, check))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 try:
     with open(TMP_PATH + '/.unhandled-promise.tmp', 'r') as f:
         for line in f:
             func, file, line = line.strip().split('@')
             unhandled_promise_set.add((func, file, int(line)))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 try:
     with open(TMP_PATH + '/.yocto-attach.tmp', 'r') as f:
         for line in f:
             func, file = line.strip().split('@')
             yocto_attach_set.add((func, file))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 try:
     with open(TMP_PATH + '/.unused-ret.tmp', 'r') as f:
         for line in f:
@@ -189,52 +205,60 @@ try:
                 unused_ret_dict[caller] = set()
             unused_ret_dict[caller].add((line, callee))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 try:
     with open(TMP_PATH + '/.inconsistency.tmp', 'r') as f:
         inconsistency_dict = json.load(f)
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 try:
     with open(TMP_PATH + '/.lock-callback.tmp', 'r') as f:
         for line in f:
             func, file = line.strip().split('@')
             lock_callback_set.add((func, file))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 try:
     with open(TMP_PATH + '/.non-callback-private.tmp', 'r') as f:
         for line in f:
             func, file = line.strip().split('@')
             non_cb_private_set.add((func, file))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 try:
     with open(TMP_PATH + '/.non-private-callback.tmp', 'r') as f:
         for line in f:
             func, file = line.strip().split('@')
             non_pri_callback_set.add((func, file))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 try:
     with open(TMP_PATH + '/.incorrect-json-type.tmp', 'r') as f:
         for line in f:
             func, file, note = line.strip().split('@')
             incorrect_json_set.add((func, file, note))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 try:
     with open(TMP_PATH + '/.public-interface.tmp', 'r') as f:
         for line in f:
             func, file = line.strip().split('@')
             public_interface_set.add((func, file))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 try:
     with open(TMP_PATH + '/.dup-collection-id.tmp', 'r') as f:
         unique_collection_id_log = f.read()
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 
 try:
     with open(TMP_PATH + '/.storage-gas.tmp', 'r') as f:
@@ -243,7 +267,8 @@ try:
             check = check.lower() == 'true'
             storage_gas_set.add((func, check))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 
 try:
     with open(TMP_PATH + '/.unregistered-receiver.tmp', 'r') as f:
@@ -252,7 +277,8 @@ try:
             check = check.lower() == 'true'
             unregistered_receiver_set.add((func, check))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 
 try:
     with open(TMP_PATH + '/.unsaved-changes.tmp', 'r') as f:
@@ -260,7 +286,8 @@ try:
             func, file, line = line.strip().split('@')
             unsaved_changes_set.add((func, file, int(line)))
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 
 try:
     with open(TMP_PATH + '/.struct-members.tmp', 'r') as f:
@@ -274,7 +301,8 @@ try:
                 memType = f.readline().strip()
                 structMember_dict[structName][memName] = memType  # <memberName, memberType>
 except Exception as e:
-    print("Tmp log not found: ", e)
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
 
 # print(inconsistency_dict)
 
