@@ -192,7 +192,14 @@ do
     fi
 done
 
-make -C $TOP audit-report
+for detector in ${builtin_detectors[@]}
+do
+    if [[ $detector -eq 0 ]]  # has runned this detector
+    then
+        make -C $TOP audit-report
+        break
+    fi
+done
 
 make -C $TOP clean_tmp
 
