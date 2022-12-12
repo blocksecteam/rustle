@@ -1,4 +1,4 @@
-name: unit-test
+name: ci
 
 on:
   workflow_dispatch:
@@ -14,8 +14,18 @@ on:
       - 'utils/**'
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
 
-  build-image-and-test:
+    - name: Install tools
+      run: sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)" 15 all
+
+    - name: Lint
+      run: make lint
+
+  unit-test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3

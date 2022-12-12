@@ -383,4 +383,6 @@ lint:
 	for file in $(wildcard detectors/*.cpp) ; do \
 		${LLVM_DIR}/bin/clang-tidy --quiet --fix $$file -- ${CXXFLAGS} ${LDFLAGS} ; \
 	done
+
+format:
 	${LLVM_DIR}/bin/clang-format -i detectors/*.cpp detectors/*.h
