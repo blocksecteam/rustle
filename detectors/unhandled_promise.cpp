@@ -60,8 +60,8 @@ namespace {
 
                             std::set<Value *> pmUsers;
                             Rustle::simpleFindUsers(callInst->getArgOperand(0), pmUsers, true);  // find users of promises
-                            for (auto i : pmUsers) {
-                                if (auto retInst = dyn_cast<ReturnInst>(i)) {  // find if store location is used in return value of `F`
+                            for (auto *i : pmUsers) {
+                                if (auto *retInst = dyn_cast<ReturnInst>(i)) {  // find if store location is used in return value of `F`
                                     usedInReturn = true;
                                     break;
                                 }
@@ -74,7 +74,7 @@ namespace {
                             if (F.arg_size() >= 1 && F.getArg(0) == callInst->getArgOperand(0)) {  // the return value of callInst will be returned by F directly
                                 usedInReturn = true;
                             } else {  // find if it's handled by other function
-                                for (auto user : callInst->getArgOperand(0)->users()) {
+                                for (auto *user : callInst->getArgOperand(0)->users()) {
                                     if (llvm::CallBase *callThen = llvm::dyn_cast<llvm::CallBase>(user)) {
                                         if (Regex("(.+near_sdk[0-9]+promise[0-9]+Promise[0-9]+([_a-z]+)[0-9]+[0-9a-z]+)").match(callThen->getCalledFunction()->getName())) {
                                             handlePromise = true;

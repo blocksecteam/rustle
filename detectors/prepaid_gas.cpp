@@ -56,8 +56,8 @@ namespace {
 
                         std::set<Value *> prepaidGasUsers;
                         Rustle::findUsers(&I, prepaidGasUsers);
-                        for (auto i : prepaidGasUsers) {
-                            if (auto callBase = dyn_cast<CallBase>(i)) {
+                        for (auto *i : prepaidGasUsers) {
+                            if (auto *callBase = dyn_cast<CallBase>(i)) {
                                 if (Rustle::isInstCallFunc(callBase, Rustle::regexPartialOrd)) {
                                     checkPrepaidGas = true;
                                     break;

@@ -37,13 +37,12 @@ namespace {
             if (Rustle::debug_print_function)
                 Rustle::Logger().Debug("Checking function ", F.getName());
 
-            bool found = false;
             for (BasicBlock &BB : F)
                 for (Instruction &I : BB) {
                     if (!I.getDebugLoc().get() || Rustle::regexForLibLoc.match(I.getDebugLoc().get()->getFilename()))
                         continue;
 
-                    if (auto callInst = dyn_cast<CallBase>(&I)) {
+                    if (auto *callInst = dyn_cast<CallBase>(&I)) {
                         if (callInst->getCalledFunction())
                             *os << callInst->getCalledFunction()->getName() << "@" << callInst->getDebugLoc()->getFilename() << "@" << callInst->getDebugLoc()->getLine() << "\n";
                     }

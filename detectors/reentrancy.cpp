@@ -38,7 +38,7 @@ namespace {
         bool runOnFunction(llvm::Function &F) override {
             using namespace llvm;
 
-            StringRef funcFileName;
+            StringRef const funcFileName;
 
             if (!Rustle::debug_check_all_func && Rustle::regexForLibFunc.match(F.getName()))
                 return false;
@@ -58,8 +58,8 @@ namespace {
 
                             std::set<Value *> pmRsUsers;
                             Rustle::simpleFindUsers(callInst->getArgOperand(0), pmRsUsers, false, true);  // callInst->getArgOperand(0) is the return value of `promise_result`
-                            for (auto i : pmRsUsers) {
-                                if (auto switchInst = dyn_cast<SwitchInst>(i)) {
+                            for (auto *i : pmRsUsers) {
+                                if (auto *switchInst = dyn_cast<SwitchInst>(i)) {
                                     for (auto caseIt : switchInst->cases()) {
                                         if (caseIt.getCaseValue()->equalsInt(1)) {  // PromiseResult::Successful == 1
                                             successfulBlock = caseIt.getCaseSuccessor();
@@ -74,7 +74,7 @@ namespace {
                             if (successfulBlock) {
                                 bool hasNewBlock = true;
 
-                                auto currentBlock = successfulBlock;
+                                auto *currentBlock = successfulBlock;
                                 while (hasNewBlock) {
                                     hasNewBlock = false;
 
@@ -82,7 +82,7 @@ namespace {
 
                                     for (Instruction &I : *currentBlock) {
                                         // branch inst, branch between basic block
-                                        if (auto branchInst = dyn_cast<BranchInst>(&I)) {
+                                        if (auto *branchInst = dyn_cast<BranchInst>(&I)) {
                                             for (unsigned i = 0; i < branchInst->getNumSuccessors(); i++) {
                                                 if (branchInst->getSuccessor(i)->getName().startswith("bb")) {  // ignore panic or so
                                                     currentBlock = branchInst->getSuccessor(i);
@@ -92,14 +92,14 @@ namespace {
                                         }
 
                                         // store inst, check store
-                                        if (auto storeInst = dyn_cast<StoreInst>(&I)) {
+                                        if (auto *storeInst = dyn_cast<StoreInst>(&I)) {
                                             bool usedInReturn = false;
                                             bool useSelf      = false;
 
                                             std::set<Value *> stLocUsers;
                                             Rustle::simpleFindUsers(storeInst->getPointerOperand(), stLocUsers);  // find users of store location
-                                            for (auto i : stLocUsers) {
-                                                if (auto retInst = dyn_cast<ReturnInst>(i)) {  // find if store location is used in return value of `F`
+                                            for (auto *i : stLocUsers) {
+                                                if (auto *retInst = dyn_cast<ReturnInst>(i)) {  // find if store location is used in return value of `F`
 
                                                     // [!] below is code to strictly check whether return type equals stored value's type, but it's unnecessary in most cases
                                                     // if (retInst->getReturnValue() && storeInst->getValueOperand()->getType() == retInst->getReturnValue()->getType()) {
@@ -111,7 +111,7 @@ namespace {
 
                                             std::set<Value *> selfUsers;
                                             Rustle::simpleFindUsers(F.getArg(0), selfUsers);  // find users of `&self`
-                                            for (auto i : selfUsers) {
+                                            for (auto *i : selfUsers) {
                                                 if (i == storeInst->getPointerOperand()) {
                                                     useSelf = true;
                                                     break;

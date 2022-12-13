@@ -50,7 +50,7 @@ namespace {
             CallGraph CG(M);
 
             for (auto &F : M.functions()) {
-                StringRef funcFileName;
+                StringRef const funcFileName;
 
                 if (!Rustle::debug_check_all_func && Rustle::regexForLibFunc.match(F.getName()))
                     continue;
@@ -60,7 +60,7 @@ namespace {
                 bool hasStorageExpansion = false;
 
                 for (BasicBlock &BB : F) {
-                    bool isPrivilege = false;
+                    bool const isPrivilege = false;
                     for (Instruction &I : BB) {
                         if (!I.getDebugLoc().get() || Rustle::regexForLibLoc.match(I.getDebugLoc().get()->getFilename()))
                             continue;
@@ -84,7 +84,7 @@ namespace {
                         std::set<Function *> setCallers;
                         Rustle::findFunctionCallerRec(&F, setCallers, 2);  // only consider callers with limited depth, avoid false negative
 
-                        for (auto caller : setCallers) {
+                        for (auto *caller : setCallers) {
                             hasGasCheck |= Rustle::isFuncCallFuncRec(caller, CG, regexStorageUse);
                             if (hasGasCheck)
                                 break;

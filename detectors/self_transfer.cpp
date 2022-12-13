@@ -49,7 +49,7 @@ namespace {
                     if (Rustle::isInstCallFunc(&I, Rustle::regexPartialEq)) {
                         bool useReceiverId = false;
                         for (int i = 0; i < dyn_cast<CallBase>(&I)->arg_size(); i++) {
-                            std::string typeName = Rustle::printToString(dyn_cast<CallBase>(&I)->getArgOperand(i)->getType());
+                            std::string const typeName = Rustle::printToString(dyn_cast<CallBase>(&I)->getArgOperand(i)->getType());
                             if (StringRef(typeName).contains("%\"near_sdk::types::account_id::AccountId\"") || StringRef(typeName).contains("%\"alloc::string::String\"")) {
                                 useReceiverId = true;
                                 break;
@@ -58,7 +58,7 @@ namespace {
 
                         if (useReceiverId)
                             return true;
-                    } else if (auto callInst = dyn_cast<CallBase>(&I)) {
+                    } else if (auto *callInst = dyn_cast<CallBase>(&I)) {
                         int nextReceiverOffset = -1;
                         for (int i = 0; i < callInst->arg_size(); i++) {
                             if (usersOfReceiverId.count(callInst->getArgOperand(i))) {  // whether passing ft_transfer's arg receiver to next level

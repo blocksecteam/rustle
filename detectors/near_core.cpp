@@ -8,7 +8,7 @@ namespace Rustle {
     void simpleFindUsers(llvm::Value *value, std::set<llvm::Value *> &set, bool restrictCrossFunction, bool disableCrossFunction) {
         using namespace llvm;
 
-        auto const VALUE_TYPE = value->getType();
+        auto *const VALUE_TYPE = value->getType();
         if (!VALUE_TYPE || VALUE_TYPE->isLabelTy())
             return;
 
@@ -17,7 +17,7 @@ namespace Rustle {
 
         set.insert(value);
 
-        if (auto callInst = dyn_cast<CallBase>(value)) {
+        if (auto *callInst = dyn_cast<CallBase>(value)) {
             for (unsigned i = 0; i < callInst->arg_size(); i++) {
                 if (!disableCrossFunction && callInst->getCalledFunction() && (!restrictCrossFunction || set.count(callInst->getArgOperand(i))))
                     simpleFindUsers(callInst->getCalledFunction()->getArg(i), set, restrictCrossFunction, disableCrossFunction);  // cross-function
@@ -25,7 +25,7 @@ namespace Rustle {
                     simpleFindUsers(callInst->getArgOperand(0), set, restrictCrossFunction, disableCrossFunction);  // add `xxx.into()` as user of `xxx`
                 }
             }
-        } else if (auto stInst = dyn_cast<StoreInst>(value)) {
+        } else if (auto *stInst = dyn_cast<StoreInst>(value)) {
             simpleFindUsers(stInst->getPointerOperand(), set, restrictCrossFunction, disableCrossFunction);
         }
 
@@ -41,17 +41,17 @@ namespace Rustle {
         if (set.count(value) == 1)
             return;
 
-        auto const VALUE_TYPE = value->getType();
+        auto *const VALUE_TYPE = value->getType();
 
         if (!VALUE_TYPE || VALUE_TYPE->isLabelTy())
             return;
 
         set.insert(value);
 
-        if (auto unaInst = dyn_cast<UnaryInstruction>(value)) {  // alloca, cast, extract, freeze, load, unaryOp, VAA
+        if (auto *unaInst = dyn_cast<UnaryInstruction>(value)) {  // alloca, cast, extract, freeze, load, unaryOp, VAA
             if (GEP_OFFSET != -1) {
-                if (auto bcInst = dyn_cast<BitCastInst>(value)) {
-                    std::string resType = printToString(bcInst->getDestTy()), srcType = printToString(bcInst->getSrcTy());
+                if (auto *bcInst = dyn_cast<BitCastInst>(value)) {
+                    std::string const resType = printToString(bcInst->getDestTy()), srcType = printToString(bcInst->getSrcTy());
                     if (GEP_OFFSET != 0 && (StringRef(resType).contains("solana_program::pubkey::Pubkey") && StringRef(srcType).contains("solana_program::account_info::AccountInfo") ||
                                                (StringRef(resType).contains("anchor_lang::prelude::Pubkey") && StringRef(srcType).contains("anchor_lang::prelude::AccountInfo"))))
                         return;  // BitCast Not allowed for Offset!=0
@@ -59,14 +59,14 @@ namespace Rustle {
             }
             for (auto *U : unaInst->users())
                 findUsers(U, set, GEP_OFFSET, depth - 1);
-        } else if (auto binOpInst = dyn_cast<BinaryOperator>(value)) {
+        } else if (auto *binOpInst = dyn_cast<BinaryOperator>(value)) {
             for (auto *U : binOpInst->users())
                 findUsers(U, set, GEP_OFFSET, depth - 1);
-        } else if (auto gepInst = dyn_cast<GetElementPtrInst>(value)) {
+        } else if (auto *gepInst = dyn_cast<GetElementPtrInst>(value)) {
             bool goFurther = GEP_OFFSET == -1;
 
             if (!goFurther) {
-                std::string resType = printToString(gepInst->getResultElementType()), srcType = printToString(gepInst->getSourceElementType());
+                std::string const resType = printToString(gepInst->getResultElementType()), srcType = printToString(gepInst->getSourceElementType());
 
                 switch (dyn_cast<ConstantInt>(gepInst->getOperand(gepInst->getNumOperands() - 1))->getZExtValue()) {
                     // more cases can be set
@@ -83,13 +83,13 @@ namespace Rustle {
             if (goFurther)
                 for (auto *U : gepInst->users())
                     findUsers(U, set, GEP_OFFSET, depth - 1);
-        } else if (auto stInst = dyn_cast<StoreInst>(value)) {
+        } else if (auto *stInst = dyn_cast<StoreInst>(value)) {
             findUsers(stInst->getPointerOperand(), set, GEP_OFFSET, depth - 1);
-        } else if (auto callInst = dyn_cast<CallBase>(value)) {
+        } else if (auto *callInst = dyn_cast<CallBase>(value)) {
             if (callInst->getCalledFunction() && callInst->getCalledFunction()->getName().startswith("llvm.memcpy") && callInst->getArgOperand(0)) {
                 for (auto *U : callInst->getArgOperand(0)->users())  // memcpy target
                     findUsers(U, set, GEP_OFFSET, depth - 1);
-                if (auto cstInst = dyn_cast<CastInst>(callInst->getArgOperand(0))) {  // memcpy target pointer
+                if (auto *cstInst = dyn_cast<CastInst>(callInst->getArgOperand(0))) {  // memcpy target pointer
                     if (cstInst->getOperand(0)) {
                         for (auto *U : cstInst->getOperand(0)->users())
                             findUsers(U, set, GEP_OFFSET, depth - 1);
@@ -110,7 +110,7 @@ namespace Rustle {
                 for (auto *U : callInst->users())
                     findUsers(U, set, GEP_OFFSET, depth - 1);
             }
-        } else if (auto inst = dyn_cast<Instruction>(value)) {
+        } else if (auto *inst = dyn_cast<Instruction>(value)) {
             // ignore other instructions
         } else {
             for (auto *U : value->users()) {
@@ -124,12 +124,12 @@ namespace Rustle {
     bool isInstCallFunc(llvm::Instruction *I, llvm::Regex const &regex) {
         if (llvm::CallBase *callInst = llvm::dyn_cast<llvm::CallBase>(I)) {
             if (callInst->getCalledFunction()) {
-                llvm::StringRef calleeName = callInst->getCalledFunction()->getName();
+                llvm::StringRef const calleeName = callInst->getCalledFunction()->getName();
                 if (regex.match(calleeName)) {
                     return true;
                 }
                 if (debug_print_derive_pack && calleeName == "llvm.dbg.declare" && callInst->getArgOperand(0)) {
-                    std::string argMetadata = printToString(llvm::dyn_cast<llvm::MetadataAsValue>(callInst->getArgOperand(0))->getMetadata());
+                    std::string const argMetadata = printToString(llvm::dyn_cast<llvm::MetadataAsValue>(callInst->getArgOperand(0))->getMetadata());
                     if (regex.match(llvm::StringRef(argMetadata)))
                         return true;
                 }
@@ -197,7 +197,7 @@ namespace Rustle {
             return;
 
         for (auto &ui : F->uses()) {
-            if (auto callInst = dyn_cast<CallBase>(ui.getUser())) {
+            if (auto *callInst = dyn_cast<CallBase>(ui.getUser())) {
                 // Function *caller = callInst->getParent()->getParent();
                 Function *caller = callInst->getFunction();
 
@@ -221,13 +221,13 @@ namespace Rustle {
             using namespace llvm;
 
             // outs() << "user: " << *user << "\n";
-            if (dyn_cast<LoadInst>(user)) {
+            if (isa<LoadInst>(user)) {
                 // outs() << "load\n";
                 return Mode::Read;
-            } else if (dyn_cast<StoreInst>(user)) {
+            } else if (isa<StoreInst>(user)) {
                 // outs() << "store\n";
                 return Mode::Write;
-            } else if (auto mcpyInst = dyn_cast<MemCpyInst>(user)) {
+            } else if (auto *mcpyInst = dyn_cast<MemCpyInst>(user)) {
                 // outs() << "mcpyInst: " << *mcpyInst << "\n";
                 // outs() << "prevUser:                 " << *prevUser << "\n";
                 // outs() << "mcpyInst->getRawDest():   " << *mcpyInst->getRawDest() << "\n";
@@ -238,7 +238,7 @@ namespace Rustle {
                     return Mode::Read;
                 else
                     return Mode::Unknown;
-            } else if (auto callInst = dyn_cast<CallBase>(user)) {
+            } else if (auto *callInst = dyn_cast<CallBase>(user)) {
                 // _ZN8near_sdk11collections13unordered_set21UnorderedSet$LT$T$GT$6insert17hf8c99f299d0290bbE
                 if (callInst->getCalledFunction()) {
                     if (Regex("near_sdk[0-9]+collections([0-9a-zA-Z]|_+)+(\\$|[0-9a-zA-Z])+(insert_raw|remove_raw|remove|insert|clear|iter|extend|as_vector|keys|values|range|push|pop|replace|swap_"
@@ -297,7 +297,7 @@ namespace Rustle {
                 if (user->getNumUses() > 0) {
                     prevUser   = user;
                     int result = Mode::Unknown;
-                    for (auto i : user->users()) {
+                    for (auto *i : user->users()) {
                         user = dyn_cast<Instruction>(i);
                         result |= getMode(user, prevUser);
                     }
@@ -316,9 +316,9 @@ namespace Rustle {
         Value *castValue = nullptr;               // pointer to llvm::Value of member that has been cast from struct pointer, also serves as a flag
         std::pair<std::string, unsigned> target;  // pair of struct name and member offset
 
-        if (auto gepInst = dyn_cast<GetElementPtrInst>(I)) {  // for offset > 0
+        if (auto *gepInst = dyn_cast<GetElementPtrInst>(I)) {  // for offset > 0
             for (auto i : vars) {
-                std::string srcMeta = printToString(gepInst->getSourceElementType());
+                std::string const srcMeta = printToString(gepInst->getSourceElementType());
                 if (srcMeta.find('=') == std::string::npos)
                     continue;
                 std::string structName = srcMeta.substr(1, srcMeta.find('=') - 2);
@@ -332,12 +332,12 @@ namespace Rustle {
                     break;
                 }
             }
-        } else if (auto CI = dyn_cast<CastInst>(I)) {  // for offset = 0
+        } else if (auto *CI = dyn_cast<CastInst>(I)) {  // for offset = 0
             for (auto i : vars) {
                 if (i.second != 0)  // skip offset > 0
                     continue;
 
-                std::string srcMeta = printToString(CI->getSrcTy());
+                std::string const srcMeta = printToString(CI->getSrcTy());
                 if (srcMeta.find(i.first) == std::string::npos)
                     continue;
 
@@ -367,7 +367,7 @@ namespace Rustle {
         if (I->getNumUses() > 0) {
             Value *user     = dyn_cast<Value>(*I->user_begin());
             Value *prevUser = I;
-            int mode        = getMode(user, prevUser);
+            int const mode  = getMode(user, prevUser);
             switch (mode) {
                 case Mode::RW:
                     return std::make_pair(target, Mode::Write);
@@ -408,8 +408,8 @@ namespace Rustle {
                                      // also serves as a flag
         std::string target;          // pair of struct name and member offset
 
-        if (auto gepInst = dyn_cast<GetElementPtrInst>(I)) {  // for offset > 0
-            std::string srcMeta = printToString(gepInst->getSourceElementType());
+        if (auto *gepInst = dyn_cast<GetElementPtrInst>(I)) {  // for offset > 0
+            std::string const srcMeta = printToString(gepInst->getSourceElementType());
             if (srcMeta.find('=') == std::string::npos)
                 ;
             else if (srcMeta.size() >= 2) {
@@ -425,7 +425,7 @@ namespace Rustle {
                     }
                 }
             }
-        } else if (auto CI = dyn_cast<CastInst>(I)) {  // for offset = 0
+        } else if (auto *CI = dyn_cast<CastInst>(I)) {  // for offset = 0
             std::string srcMeta = printToString(CI->getSrcTy());
             if (srcMeta[0] == '%' && srcMeta[srcMeta.size() - 1] == '*') {
                 std::string structName = srcMeta.substr(1, srcMeta.size() - 2);  // remove '%' and '*'
@@ -457,7 +457,7 @@ namespace Rustle {
         if (I->getNumUses() > 0) {
             Value *user     = dyn_cast<Value>(*I->user_begin());
             Value *prevUser = I;
-            int mode        = getMode(user, prevUser);
+            int const mode  = getMode(user, prevUser);
             switch (mode) {
                 case Mode::RW:
                     return std::make_pair(target, Mode::Write);

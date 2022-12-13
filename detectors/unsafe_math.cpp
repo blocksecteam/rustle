@@ -29,7 +29,7 @@ namespace {
         bool useSafeMath(llvm::Instruction *I) {
             using namespace llvm;
 
-            if (auto callInst = dyn_cast<CallBase>(I)) {
+            if (auto *callInst = dyn_cast<CallBase>(I)) {
                 if (callInst->getCalledFunction())  // !!! important
                     if (Regex("llvm\\..+\\.with\\.overflow\\.").match(callInst->getCalledFunction()->getName()) || Regex("core.+num.+checked_").match(callInst->getCalledFunction()->getName())) {
                         return true;
@@ -55,7 +55,7 @@ namespace {
 
             for (BasicBlock &BB : F) {
                 for (Instruction &I : BB) {
-                    auto debugLoc = I.getDebugLoc().get();
+                    auto *debugLoc = I.getDebugLoc().get();
                     if (!debugLoc || Rustle::regexForLibLoc.match(debugLoc->getFilename()))
                         continue;
 
@@ -69,7 +69,7 @@ namespace {
                         opName[0] != 'f') {  // exclude float
                         bool foundUserDefVar = false;
                         // check result
-                        if (auto b = dyn_cast<BinaryOperator>(&I))
+                        if (auto *b = dyn_cast<BinaryOperator>(&I))
                             if (b->getName() != "")
                                 foundUserDefVar = true;
                         // check operands

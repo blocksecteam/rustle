@@ -54,7 +54,7 @@ namespace {
             int count = 0;
             for (BasicBlock &BB : *F) {
                 for (Instruction &I : BB) {
-                    if (auto callInst = dyn_cast<CallBase>(&I)) {
+                    if (auto *callInst = dyn_cast<CallBase>(&I)) {
                         count += functionInstNum(callInst->getCalledFunction(), depth - 1);
                     } else
                         count++;
@@ -82,7 +82,7 @@ namespace {
             int loopInstSize = 0;
             for (BasicBlock *BB : L->getBlocks()) {
                 for (Instruction &I : *BB) {
-                    if (auto callInst = dyn_cast<CallBase>(&I)) {
+                    if (auto *callInst = dyn_cast<CallBase>(&I)) {
                         loopInstSize += functionInstNum(callInst->getCalledFunction());
                     } else
                         loopInstSize++;

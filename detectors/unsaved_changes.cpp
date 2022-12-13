@@ -50,10 +50,9 @@ namespace {
         bool runOnModule(llvm::Module &M) override {
             using namespace llvm;
 
-            CallGraph CG(M);
+            CallGraph const CG(M);
 
             for (auto &F : M.functions()) {
-                StringRef funcFileName;
 
                 if (!Rustle::debug_check_all_func && Rustle::regexForLibFunc.match(F.getName()))
                     continue;
@@ -85,7 +84,7 @@ namespace {
 
                             Value *unwrappedValue = nullptr;
 
-                            for (auto user : usersOfGet) {
+                            for (auto *user : usersOfGet) {
                                 if (dyn_cast<CallBase>(user) && Rustle::isInstCallFunc(dyn_cast<CallBase>(user), regexAllUnwrap)) {
                                     unwrappedValue = dyn_cast<CallBase>(user)->getArgOperand(0);
                                     break;
@@ -101,8 +100,8 @@ namespace {
 
                             Instruction *instChangeValue = nullptr;
 
-                            for (auto user : usersOfUnwrappedValue) {
-                                if (dyn_cast<StoreInst>(user)) {
+                            for (auto *user : usersOfUnwrappedValue) {
+                                if (isa<StoreInst>(user)) {
                                     instChangeValue = dyn_cast<StoreInst>(user);
                                     break;
                                 }
@@ -110,7 +109,7 @@ namespace {
 
                             if (instChangeValue != nullptr) {
                                 Instruction *instInsertValue = nullptr;
-                                for (auto user : usersOfUnwrappedValue) {
+                                for (auto *user : usersOfUnwrappedValue) {
                                     if (dyn_cast<CallBase>(user) && Rustle::isInstCallFunc(dyn_cast<CallBase>(user), regexMapInsert)) {
                                         instInsertValue = dyn_cast<CallBase>(user);
                                         break;

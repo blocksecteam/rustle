@@ -35,7 +35,7 @@ namespace {
         bool runOnModule(llvm::Module &M) override {
             using namespace llvm;
 
-            CallGraph CG(M);
+            CallGraph const CG(M);
 
             for (auto &F : M.functions()) {
                 if (!Rustle::debug_check_all_func && Rustle::regexForLibFunc.match(F.getName()))

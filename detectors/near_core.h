@@ -112,8 +112,8 @@ namespace Rustle {
     template <typename T>
     std::string printToString(T *whatever) {
         std::string srcMeta;
-        llvm::raw_string_ostream os_src(srcMeta);
-        whatever->print(os_src);
+        llvm::raw_string_ostream osSrc(srcMeta);
+        whatever->print(osSrc);
         return srcMeta;
     }
 

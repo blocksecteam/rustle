@@ -37,7 +37,7 @@ namespace {
             using namespace llvm;
 
             // llvm.[mul, smul, umul, fmul]
-            if (auto callInst = dyn_cast<CallBase>(I)) {
+            if (auto *callInst = dyn_cast<CallBase>(I)) {
                 if (callInst->getCalledFunction())  // !!! important
                     if (Regex("llvm\\.[a-z]?mul\\.with\\.overflow\\.").match(callInst->getCalledFunction()->getName()))
                         return true;
@@ -94,7 +94,7 @@ namespace {
                         Rustle::simpleFindUsers(&I, set, true);
                         bool found = false;
                         for (auto &i : set) {
-                            if (auto inst = dyn_cast<Instruction>(i)) {
+                            if (auto *inst = dyn_cast<Instruction>(i)) {
                                 if (!inst->getDebugLoc().get() || Rustle::regexForLibLoc.match(inst->getDebugLoc().get()->getFilename()))
                                     continue;
                                 if (isMul(inst) || isLlvmMul(inst)) {
@@ -109,7 +109,7 @@ namespace {
                         if (found) {
                             std::vector<llvm::DebugLoc> mulLoc;
                             for (auto &i : set) {
-                                if (auto inst = dyn_cast<Instruction>(i)) {
+                                if (auto *inst = dyn_cast<Instruction>(i)) {
                                     if (!inst->getDebugLoc().get() || Rustle::regexForLibLoc.match(inst->getDebugLoc().get()->getFilename()))
                                         continue;
                                     if (isMul(inst) || isLlvmMul(inst)) {
