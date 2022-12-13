@@ -25,19 +25,29 @@ jobs:
     - name: Lint
       run: make lint
 
-    - name: Something needs to be fixed?
-      run: |
-        if test -f "clang-tidy-fixes.yaml"; then
-          exit 1
-        fi
+    - id: check_file
+      uses: andstor/file-existence-action@v2
+      with:
+        files: "clang-tidy-fixes.yaml"
 
-  # unit-test:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v3
+    - name: Upload fix file when something needs to be fixed?
+      uses: actions/upload-artifact@v3
+      if: steps.check_file.outputs.files_exists == 'true'
+      with:
+        name: clang-tidy-fixes
+        path: clang-tidy-fixes.yaml
 
-  #   - name: Build the docker image
-  #     run: docker build --build-arg UID=`id -u` --build-arg GID=`id -g` -t rustle .
+    - name: Exit when something needs to be fixed?
+      if: steps.check_file.outputs.files_exists == 'true'
+      run: exit 1
 
-  #   - name: Run the Docker image for unit test
-  #     run: docker run -v `pwd`:/rustle -w /rustle rustle scripts/unit_test.sh
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build the docker image
+      run: docker build --build-arg UID=`id -u` --build-arg GID=`id -g` -t rustle .
+
+    - name: Run the Docker image for unit test
+      run: docker run -v `pwd`:/rustle -w /rustle rustle scripts/unit_test.sh
