@@ -380,9 +380,10 @@ compile_flags.txt:
 	echo ${LLVM_CLANG} ${CXXFLAGS} ${LDFLAGS} | sed 's/\s/\n/g' > compile_flags.txt
 
 lint:
-	for file in $(wildcard detectors/*.cpp) ; do \
-		${LLVM_DIR}/bin/clang-tidy --quiet --fix $$file -- ${CXXFLAGS} ${LDFLAGS} ; \
-	done
+	${LLVM_DIR}/bin/clang-tidy --quiet --export-fixes=clang-tidy-fixes.yaml detectors/*.cpp -- ${CXXFLAGS}
+
+lint-fix:
+	${LLVM_DIR}/bin/clang-apply-replacements --style=file ${TOP}
 
 format:
 	${LLVM_DIR}/bin/clang-format -i detectors/*.cpp detectors/*.h

@@ -1,6 +1,5 @@
 ---
-# Checks: '-*,clang-diagnostic-*,llvm-*,misc-*,-misc-const-correctness,-misc-unused-parameters,-misc-non-private-member-variables-in-classes,-misc-no-recursion,readability-identifier-naming'
-Checks: '-*,readability-identifier-naming'
+Checks: '-*,clang-diagnostic-*,llvm-*,misc-*,-llvm-else-after-return,-misc-no-recursion,,-misc-unused-parameters,readability-identifier-naming'
 CheckOptions:
   - key:             readability-identifier-naming.ClassCase
     value:           CamelCase
@@ -17,7 +16,7 @@ CheckOptions:
   - key:             readability-identifier-naming.StaticVariableCase
     value:           CamelCase
   - key:             readability-identifier-naming.ConstantCase
-    value:           UPPER_CASE
+    value:           aNy_CasE
   - key:             readability-identifier-naming.ConstantIgnoredRegexp
     value:           "(debug|regex).+"
   - key:             readability-identifier-naming.MemberCase
@@ -30,10 +29,4 @@ CheckOptions:
     value:           camelBack
   - key:             readability-identifier-naming.VariableIgnoredRegexp
     value:           "[A-Z]{1,2}"
-  - key:             readability-identifier-naming.IgnoreMainLikeFunctions
-    value:           1
-  - key:             readability-redundant-member-init.IgnoreBaseInCopyConstructors
-    value:           1
-  - key:             modernize-use-default-member-init.UseAssignment
-    value:           1
 ...

@@ -25,13 +25,19 @@ jobs:
     - name: Lint
       run: make lint
 
-  unit-test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
+    - name: Something needs to be fixed?
+      run: |
+        if test -f "clang-tidy-fixes.yaml"; then
+          exit 1
+        fi
 
-    - name: Build the docker image
-      run: docker build --build-arg UID=`id -u` --build-arg GID=`id -g` -t rustle .
+  # unit-test:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v3
 
-    - name: Run the Docker image for unit test
-      run: docker run -v `pwd`:/rustle -w /rustle rustle scripts/unit_test.sh
+  #   - name: Build the docker image
+  #     run: docker build --build-arg UID=`id -u` --build-arg GID=`id -g` -t rustle .
+
+  #   - name: Run the Docker image for unit test
+  #     run: docker run -v `pwd`:/rustle -w /rustle rustle scripts/unit_test.sh
