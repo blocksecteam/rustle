@@ -229,7 +229,7 @@ storage-gas: tg_ir
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
-		echo -e "\e[31m[!] Source not found\e[0m" ; \
+		echo -e "\e[31m[!] Source not found\e[0m" ;  #]] \
 	fi
 	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/storage_gas.so -storage-gas {} -o /dev/null
 
@@ -239,7 +239,7 @@ unregistered-receiver: tg_ir
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
-		echo -e "\e[31m[!] Source not found\e[0m" ; \
+		echo -e "\e[31m[!] Source not found\e[0m" ;  #]] \
 	fi
 	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/unregistered_receiver.so -unregistered-receiver {} -o /dev/null
 
@@ -249,7 +249,7 @@ unsaved-changes: tg_ir
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
-		echo -e "\e[31m[!] Source not found\e[0m" ; \
+		echo -e "\e[31m[!] Source not found\e[0m" ;  #]] \
 	fi
 	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/unsaved_changes.so -unsaved-changes {} -o /dev/null
 
@@ -259,7 +259,7 @@ nep%-interface: tg_ir
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
 	else \
-		echo -e "\e[31m[!] Source not found\e[0m" ; \
+		echo -e "\e[31m[!] Source not found\e[0m" ;  #]] \
 	fi
 	echo ${NEP_ID}
 	cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/nep_interface.so -nep-interface --nep-id $* {} -o /dev/null
