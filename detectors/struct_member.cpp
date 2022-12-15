@@ -42,7 +42,7 @@ namespace {
                 for (Instruction &I : BB) {
                     if (!I.getDebugLoc().get() || Rustle::regexForLibLoc.match(I.getDebugLoc().get()->getFilename()))
                         continue;
-                    auto result       = Rustle::usingStruct(&I, vars);
+                    auto result             = Rustle::usingStruct(&I, vars);
                     std::string const name  = result.first;
                     Rustle::Mode const mode = result.second;
                     if (name != "") {  // Found

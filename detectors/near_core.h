@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <set>
@@ -100,6 +101,14 @@ namespace Rustle {
             *os << "\e[33m[!] ";
             printOne(args...);
             *os << "\e[0m\n";
+        }
+        template <typename... Args>
+        void Error(Args... args) {
+            *os << "\e[33m[ERROR] ";
+            printOne(args...);
+            printOne("\n        Exiting...");
+            *os << "\e[0m\n";
+            std::exit(1);
         }
     };
 

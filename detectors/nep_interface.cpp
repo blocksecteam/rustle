@@ -20,7 +20,7 @@
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
 
-static llvm::cl::opt<unsigned> NepId("nep-id", llvm::cl::desc("Specify the id of nep, refer to https://github.com/near/NEPs for more"), llvm::cl::value_desc("id"));
+static llvm::cl::opt<unsigned> NepIdArg("nep-id", llvm::cl::desc("Specify the id of nep, refer to https://github.com/near/NEPs for more"), llvm::cl::value_desc("id"));
 
 /**
  * @example {
@@ -28,7 +28,7 @@ static llvm::cl::opt<unsigned> NepId("nep-id", llvm::cl::desc("Specify the id of
  * }
  *
  */
-static const std::unordered_map<unsigned, std::set<llvm::StringRef>> POSITIONAL_FUNCS_MAP = {
+static const std::unordered_map<unsigned, std::set<llvm::StringRef>> positionalFuncsMap = {
     {141, {"ft_transfer", "ft_transfer_call", "ft_on_transfer", "ft_total_supply", "ft_balance_of"}},
     {145, {"storage_deposit", "storage_withdraw", "storage_unregister", "storage_balance_bounds", "storage_balance_of"}},
 };
@@ -45,7 +45,7 @@ static const std::unordered_map<unsigned, std::set<llvm::StringRef>> POSITIONAL_
  * }
  *
  */
-static const std::unordered_map<unsigned, std::set<std::set<llvm::StringRef>>> OPTIONAL_FUNCS_MAP = {
+static const std::unordered_map<unsigned, std::set<std::set<llvm::StringRef>>> optionalFuncMap = {
     {
         141,
         {
@@ -76,8 +76,10 @@ namespace {
         bool runOnModule(llvm::Module &M) override {
             using namespace llvm;
 
-            if (POSITIONAL_FUNCS_MAP.count(NepId.getValue()) == 0)
-                Rustle::Logger().Warning("Invalid nep-id: ", NepId.getValue());
+            auto const &nepId = NepIdArg.getValue();
+
+            if (positionalFuncsMap.count(nepId) == 0)  // check the existence of nepId
+                Rustle::Logger().Error("Invalid nep-id ", nepId);
 
             std::set<StringRef> funcSet;
 
@@ -87,9 +89,10 @@ namespace {
                 funcSet.insert(F.getName());
             }
 
-            auto const &positionalFuncs = POSITIONAL_FUNCS_MAP.at(NepId.getValue());  // existence has been checked
-            auto const &optionalFuncs   = OPTIONAL_FUNCS_MAP.count(NepId.getValue()) ? OPTIONAL_FUNCS_MAP.at(NepId.getValue()) : std::set<std::set<llvm::StringRef>>();
+            auto const &positionalFuncs = positionalFuncsMap.at(nepId);  // existence has been checked
+            auto const &optionalFuncs   = optionalFuncMap.count(nepId) ? optionalFuncMap.at(nepId) : std::set<std::set<llvm::StringRef>>();
 
+            // Checking positional functions' implementation
             for (auto const &func : positionalFuncs) {
                 if (funcSet.count(func)) {
                     Rustle::Logger().Info("Implemented:   ", func);
@@ -97,6 +100,8 @@ namespace {
                     Rustle::Logger().Warning("Unimplemented: ", func);
                 }
             }
+
+            // Checking optional functions' implementation
             for (auto const &funcGroup : optionalFuncs) {
                 for (auto const &func : funcGroup) {
                     if (funcSet.count(func)) {
