@@ -47,7 +47,7 @@ tg_ir:
 	@mkdir -p ${TMP_DIR}
 	@make -C ${TOP} get-packages-name
 	@cat ${TMP_DIR}/.packages-name.tmp | xargs -i find ${NEAR_TG_DIR} -name '{}*.bc' > ${TMP_DIR}/.bitcodes.tmp
-	
+
 
 get-packages-name:
 	@python3 ./utils/getPackagesName.py
@@ -261,7 +261,7 @@ nep%-interface: tg_ir
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ;  #]] \
 	fi
-	@echo -e "\e[33m[*] Checking interfaces of NEP-$*\e[0m"  #]] 
+	@echo -e "\e[33m[*] Checking interfaces of NEP-$*\e[0m"  #]]
 	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/nep_interface.so -nep-interface --nep-id $* {} -o /dev/null
 
 tautology:
@@ -359,7 +359,7 @@ clean: clean_pass clean_example clean_tg
 clean_pass:
 	make -C detectors clean
 clean_example:
-	find examples -name "Cargo.toml" | xargs -i cargo clean --manifest-path={} 
+	find examples -name "Cargo.toml" | xargs -i cargo clean --manifest-path={}
 clean_tg:
 	@for i in ${TG_MANIFESTS} ; do \
 		cargo clean --manifest-path=$$i ; \

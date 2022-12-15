@@ -21,6 +21,6 @@ MaxEmptyLinesToKeep: 1
 NamespaceIndentation: All
 BreakInheritanceList: BeforeColon
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
-AllowShortBlocksOnASingleLine: Empty  
+AllowShortBlocksOnASingleLine: Empty
 ...
 

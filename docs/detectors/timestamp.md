@@ -20,7 +20,7 @@ impl Lottery{
     fn get_winner(&self) -> u32 {
         let current_time = env::block_timestamp();
         let winner_id = self.generate_winner(&current_time);
-        
+
         winner_id
     }
 }

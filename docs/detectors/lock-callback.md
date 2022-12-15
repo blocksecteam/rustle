@@ -38,5 +38,5 @@ pub fn callback_transfer(&mut self, order_id: u32) {
 
 In this sample, the contract first deletes the order and then transfers the token. If the transfer fails, the order should be recovered in `callback_transfer`.
 
-However, there is an `assert` in the callback function, if it fails, the order wouldn't be recovered. 
+However, there is an `assert` in the callback function, if it fails, the order wouldn't be recovered.
 

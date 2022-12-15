@@ -7,7 +7,7 @@
 
 ### Description
 
-Before transferring tokens to the receiver, the contract should check whether the receiver is the sender itself. Otherwise, attackers may mint infinite tokens by abusing this vulnerability. 
+Before transferring tokens to the receiver, the contract should check whether the receiver is the sender itself. Otherwise, attackers may mint infinite tokens by abusing this vulnerability.
 
 Check [Stader\_\_NEAR Incident Report — 08/16/2022 | by Stader Labs | Medium](https://blog.staderlabs.com/stader-near-incident-report-08-16-2022-afe077ffd549) and [Ensure that sender and receiver are not the same in ft_transfer · stader-labs/near-liquid-token@04480ab (github.com)](https://github.com/stader-labs/near-liquid-token/commit/04480abe4585b75a663e1d7fae673da7d7fe7ea3) for more details.
 

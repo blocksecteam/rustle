@@ -39,4 +39,4 @@ ext_fungible_token::ft_transfer(
 ))
 ```
 
-In these samples, both the native token transfer and the NEP 141 token transfer can be detected by **Rustle**. 
+In these samples, both the native token transfer and the NEP 141 token transfer can be detected by **Rustle**.
