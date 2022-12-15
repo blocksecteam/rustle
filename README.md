@@ -7,7 +7,7 @@
 [![License: AGPL v3](https://img.shields.io/github/license/blocksecteam/rustle)](LICENSE)
 [![AwesomeNEAR](https://img.shields.io/badge/AwesomeNEAR-Rustle-blue)](https://awesomenear.com/rustle)
 
-Rustle is an automatic static analyzer for NEAR smart contracts in Rust. It can help to locate tens of different vulnerabilities in NEAR smart contracts. 
+Rustle is an automatic static analyzer for NEAR smart contracts in Rust. It can help to locate tens of different vulnerabilities in NEAR smart contracts.
 According to [DefiLlama](https://defillama.com/chain/Near), among the top 10 DApps in NEAR, 8 are audited by BlockSec. With rich audit experience and a deep understanding of NEAR protocol, we build this tool and share it with the community.
 
 ## Get started
@@ -24,15 +24,19 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)" 15
 
 # install Python toolchain
-sudo apt install python3 python3-pip python3-tk   
+sudo apt install python3 python3-pip
 pip3 install -r utils/requirements.txt  # you need to clone this repo first
 
 # add WASM target
 rustup target add wasm32-unknown-unknown
 
 # install other components
-sudo apt install libudev-dev figlet
+sudo apt install figlet
 cargo install rustfilt
+
+# [optional] useful tools for developing
+LLVM_VERSION=
+sudo apt install clangd-$LLVM_VERSION clang-format-$LLVM_VERSION clang-tidy-$LLVM_VERSION
 ```
 
 #### Docker
