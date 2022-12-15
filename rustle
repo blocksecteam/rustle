@@ -143,8 +143,7 @@ assign_positional_args 1 "${_positionals[@]}"
 # [ <-- needed because of Argbash
 
 TOP=$(realpath $(dirname "${BASH_SOURCE[0]}"))
-DETECTORS="div-before-mul ext-call inconsistency incorrect-json-type lock-callback non-callback-private non-private-callback prepaid-gas promise-result reentrancy round self-transfer tautology timestamp transfer unhandled-promise unsafe-math unused-ret upgrade-func yocto-attach complex-loop public-interface dup-collection-id storage-gas unregistered-receiver unsaved-changes
-nep141-interface nep145-interface"
+DETECTORS="div-before-mul ext-call inconsistency incorrect-json-type lock-callback non-callback-private non-private-callback prepaid-gas promise-result reentrancy round self-transfer tautology timestamp transfer unhandled-promise unsafe-math unused-ret upgrade-func yocto-attach complex-loop public-interface dup-collection-id storage-gas unregistered-receiver unsaved-changes"
 
 # export environs
 export NEAR_SRC_DIR=$(realpath $_arg_src_dir)
@@ -183,10 +182,10 @@ for i in "${input_detectors[@]}"
 do
     if [[ "$i" != "" ]]
     then
-        if [[ ${builtin_detectors[$i]} -eq 1 ]]
+        if [[ ${builtin_detectors[$i]} -eq 1 || $i =~ nep[0-9]+-interface ]]
         then
             make -C $TOP $i
-            builtin_detectors[$i]=0 # mark as used
+            builtin_detectors[$i]=0  # mark as used
         else
             echo -e "\e[31m[!] Invalid or repeated detector type: $i\e[0m"  # ]]
         fi

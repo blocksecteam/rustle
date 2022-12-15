@@ -24,16 +24,66 @@ static llvm::cl::opt<unsigned> NepIdArg("nep-id", llvm::cl::desc("Specify the id
 
 /**
  * @example {
- *     {nep-id, {func1, func2, func3, ...}},
+ *     {
+ *         nep-id,  // NEP Title
+ *         {func1, func2, func3, ...},
+ *     },
  * }
  *
  */
 static const std::unordered_map<unsigned, std::set<llvm::StringRef>> positionalFuncsMap = {
-    {141, {"ft_transfer", "ft_transfer_call", "ft_on_transfer", "ft_total_supply", "ft_balance_of"}},
-    {145, {"storage_deposit", "storage_withdraw", "storage_unregister", "storage_balance_bounds", "storage_balance_of"}},
+    {
+        141,  // Fungible Token Standard
+        {"ft_transfer", "ft_transfer_call", "ft_total_supply", "ft_balance_of"},
+    },
+    {
+        145,  // Storage Management
+        {"storage_deposit", "storage_withdraw", "storage_unregister", "storage_balance_bounds", "storage_balance_of"},
+    },
+    {
+        148,  // Fungible Token Metadata
+        {"ft_metadata"},
+    },
+    {
+        171,  // Non Fungible Token Standard
+        {"nft_transfer", "nft_transfer_call", "nft_token"},
+    },
+    {
+        177,  // Non Fungible Token Metadata
+        {"nft_metadata"},
+    },
+    {
+        178,  // Non Fungible Token Approval Management
+        {"nft_approve", "nft_revoke", "nft_revoke_all", "nft_is_approved"},
+    },
+    {
+        181,  // Non Fungible Token Enumeration
+        {"nft_total_supply", "nft_tokens", "nft_supply_for_owner", "nft_tokens_for_owner"},
+    },
+    {
+        199,  // Non Fungible Token Royalties and Payouts
+        {},
+    },
+    {
+        245,  // Multi Token Standard
+        {"mt_transfer", "mt_batch_transfer", "mt_transfer_call", "mt_batch_transfer_call", "mt_token", "mt_balance_of", "mt_batch_balance_of", "mt_supply", "mt_batch_supply"},
+    },
+    {
+        297,  // Events Standard
+        {},
+    },
+    {
+        330,  // Source Metadata
+        {},
+    },
+    {
+        366,  // Meta Transactions
+        {},
+    },
 };
 
 /**
+ * @brief functions without specified names, the names are up to developers, here only provide some possible name options
  * @example {
  *     {
  *         nep-id,
@@ -53,8 +103,16 @@ static const std::unordered_map<unsigned, std::set<std::set<llvm::StringRef>>> o
         },
     },
     {
-        145,
-        {},
+        171,
+        {
+            {"nft_resolve_transfer", "resolve_transfer"},
+        },
+    },
+    {
+        245,
+        {
+            {"mft_resolve_transfer", "resolve_transfer"},
+        },
     },
 };
 
@@ -79,7 +137,7 @@ namespace {
             auto const &nepId = NepIdArg.getValue();
 
             if (positionalFuncsMap.count(nepId) == 0)  // check the existence of nepId
-                Rustle::Logger().Error("Invalid nep-id ", nepId);
+                Rustle::Logger().Error("Invalid nep-id: ", nepId);
 
             std::set<StringRef> funcSet;
 
@@ -92,7 +150,7 @@ namespace {
             auto const &positionalFuncs = positionalFuncsMap.at(nepId);  // existence has been checked
             auto const &optionalFuncs   = optionalFuncMap.count(nepId) ? optionalFuncMap.at(nepId) : std::set<std::set<llvm::StringRef>>();
 
-            // Checking positional functions' implementation
+            // check positional functions' implementation
             for (auto const &func : positionalFuncs) {
                 if (funcSet.count(func)) {
                     Rustle::Logger().Info("Implemented:   ", func);
@@ -101,7 +159,7 @@ namespace {
                 }
             }
 
-            // Checking optional functions' implementation
+            // check optional functions' implementation
             for (auto const &funcGroup : optionalFuncs) {
                 for (auto const &func : funcGroup) {
                     if (funcSet.count(func)) {
@@ -109,6 +167,13 @@ namespace {
                         break;  // skip current group
                     }
                 }
+            }
+
+            // check resolver of transfer call
+            switch (nepId) {
+                case 141: break;
+                case 171: break;
+                default: break;
             }
 
             return false;
