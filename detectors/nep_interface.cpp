@@ -6,7 +6,13 @@
  */
 #include "near_core.h"
 
+#include <algorithm>
+#include <llvm-15/llvm/IR/InstrTypes.h>
+#include <llvm-15/llvm/IR/Instruction.h>
+#include <llvm-15/llvm/IR/Value.h>
+#include <llvm-15/llvm/Support/Casting.h>
 #include <set>
+#include <string>
 #include <unordered_map>
 
 #include "llvm/ADT/StringRef.h"
@@ -19,8 +25,6 @@
 #include "llvm/Support/Regex.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
-
-static llvm::cl::opt<unsigned> NepIdArg("nep-id", llvm::cl::desc("Specify the id of nep, refer to https://github.com/near/NEPs for more"), llvm::cl::value_desc("id"));
 
 /**
  * @example {
@@ -111,23 +115,26 @@ static const std::unordered_map<unsigned, std::set<std::set<llvm::StringRef>>> o
     {
         245,
         {
-            {"mft_resolve_transfer", "resolve_transfer"},
+            {"mt_resolve_transfer", "resolve_transfer"},
         },
     },
 };
+
+static llvm::cl::opt<unsigned> NepIdArg("nep-id", llvm::cl::desc("Specify the id of nep, refer to https://github.com/near/NEPs for more"), llvm::cl::value_desc("id"));
 
 namespace {
     struct UnsavedChanges : public llvm::ModulePass {
         static char ID;
 
       private:
-        llvm::raw_fd_ostream *os = nullptr;
+        llvm::raw_fd_ostream *os     = nullptr;
+        llvm::Regex const regex_then = llvm::Regex("near_sdk[0-9]+promise[0-9]+Promise[0-9]+then");
 
       public:
         UnsavedChanges() : ModulePass(ID) {
             std::error_code EC;
 
-            os = new llvm::raw_fd_ostream(std::string(getenv("TMP_DIR")) + std::string("/.nep-interface.tmp"), EC, llvm::sys::fs::OpenFlags::OF_Append);
+            os = new llvm::raw_fd_ostream(std::string(getenv("TMP_DIR")) + std::string("/.nep" + std::to_string(NepIdArg.getValue()) + "-interface.tmp"), EC, llvm::sys::fs::OpenFlags::OF_Append);
         }
         ~UnsavedChanges() { os->close(); }
 
@@ -151,29 +158,91 @@ namespace {
             auto const &optionalFuncs   = optionalFuncMap.count(nepId) ? optionalFuncMap.at(nepId) : std::set<std::set<llvm::StringRef>>();
 
             // check positional functions' implementation
-            for (auto const &func : positionalFuncs) {
-                if (funcSet.count(func)) {
-                    Rustle::Logger().Info("Implemented:   ", func);
+            for (StringRef const &func : positionalFuncs) {
+                if (std::find_if(funcSet.begin(), funcSet.end(), [func](StringRef const &funcName) { return funcName == func || Regex("[0-9]+" + func.str() + "[0-9]+").match(funcName); }) !=
+                    funcSet.end()) {
+                    Rustle::Logger().Info("Implemented: ", func);
                 } else {
                     Rustle::Logger().Warning("Unimplemented: ", func);
                 }
             }
 
-            // check optional functions' implementation
-            for (auto const &funcGroup : optionalFuncs) {
-                for (auto const &func : funcGroup) {
-                    if (funcSet.count(func)) {
-                        Rustle::Logger().Info("Implemented:   ", func);
-                        break;  // skip current group
-                    }
-                }
-            }
+            // // check optional functions' implementation
+            // for (auto const &funcGroup : optionalFuncs) {
+            //     for (auto const &func : funcGroup) {
+            //         if (std::find_if(funcSet.begin(), funcSet.end(),
+            //                 [func](StringRef const &funcName)
+            //                 { return funcName == func || Regex("[0-9]+" + func.str() + "[0-9]+").match(funcName); }) != funcSet.end()) {
+            //             Rustle::Logger().Info("Implemented:   ", func);
+            //             break;  // skip current group
+            //         }
+            //     }
+            // }
 
             // check resolver of transfer call
-            switch (nepId) {
-                case 141: break;
-                case 171: break;
-                default: break;
+            std::set<unsigned> static const nepWithResolver = {141, 171, 245};
+            if (nepWithResolver.count(nepId)) {
+                bool foundResolver = false;
+                for (auto &F : M) {
+                    // only check function xx_transfer_call
+                    switch (nepId) {
+                        case 141:
+                            if (F.getName() != "ft_transfer_call" && !Regex("[0-9]+ft_transfer_call[0-9]+").match(F.getName()))
+                                continue;
+                            break;
+                        case 171:
+                            if (F.getName() != "nft_transfer_call" && !Regex("[0-9]+nft_transfer_call[0-9]+").match(F.getName()))
+                                continue;
+                            break;
+                        case 245:
+                            if (F.getName() != "mt_transfer_call" && !Regex("[0-9]+mt_transfer_call[0-9]+").match(F.getName()))
+                                continue;
+                            break;
+                    }
+
+                    for (auto &BB : F) {
+                        for (auto &I : BB) {
+                            llvm::Regex regexOnTransfer;
+                            switch (nepId) {
+                                case 141: regexOnTransfer = Regex("[0-9]+ft_on_transfer[0-9]+"); break;
+                                case 171: regexOnTransfer = Regex("[0-9]+nft_on_transfer[0-9]+"); break;
+                                case 245: regexOnTransfer = Regex("[0-9]+mt_on_transfer[0-9]+"); break;
+                            }
+
+                            if (Rustle::isInstCallFunc(&I, regexOnTransfer)) {
+                                std::set<Value *> usersPromiseOfOnTransfer;
+                                if (dyn_cast<CallBase>(&I)->arg_size() >= 1) {
+                                    Rustle::simpleFindUsers(dyn_cast<CallBase>(&I)->getArgOperand(0), usersPromiseOfOnTransfer);
+                                    for (auto *userOfOnTransfer : usersPromiseOfOnTransfer) {
+                                        if (isa<CallBase>(userOfOnTransfer) && Rustle::isInstCallFunc(dyn_cast<Instruction>(userOfOnTransfer), regex_then)) {
+                                            auto const *nextPromiseResult = dyn_cast<CallBase>(userOfOnTransfer)->getArgOperand(dyn_cast<CallBase>(userOfOnTransfer)->arg_size() - 1);  // last arg
+                                            for (auto *userOfResolveTransfer : nextPromiseResult->users()) {
+                                                if (isa<CallBase>(userOfResolveTransfer) && userOfResolveTransfer != userOfOnTransfer) {
+                                                    // Rustle::Logger().Info("Implemented(resolver): ",dyn_cast<CallBase>(userOfResolveTransfer)->getCalledFunction()->getName());
+                                                    switch (nepId) {
+                                                        case 141: Rustle::Logger().Info("Implemented: resolver of ft_transfer_call"); break;
+                                                        case 171: Rustle::Logger().Info("Implemented: resolver of nft_transfer_call"); break;
+                                                        case 245: Rustle::Logger().Info("Implemented: resolver of mt_transfer_call"); break;
+                                                    }
+                                                    foundResolver = true;
+                                                    goto EXIT_FINDING_RESOLVER;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                EXIT_FINDING_RESOLVER:
+                    if (!foundResolver) {
+                        switch (nepId) {
+                            case 141: Rustle::Logger().Warning("Unimplemented: resolver of ft_transfer_call"); break;
+                            case 171: Rustle::Logger().Warning("Unimplemented: resolver of nft_transfer_call"); break;
+                            case 245: Rustle::Logger().Warning("Unimplemented: resolver of mt_transfer_call"); break;
+                        }
+                    }
+                }
             }
 
             return false;
