@@ -10,7 +10,7 @@ CheckOptions:
   - key:             readability-identifier-naming.FunctionCase
     value:           camelBack
   - key:             readability-identifier-naming.FunctionIgnoredRegexp
-    value:           "Debug|Info|Warning"
+    value:           "Debug|Info|Warning|Error"
   - key:             readability-identifier-naming.GlobalVariableCase
     value:           CamelCase
   - key:             readability-identifier-naming.StaticVariableCase

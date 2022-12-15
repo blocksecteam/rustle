@@ -1,6 +1,6 @@
 .PHONY: pass analysis echo tg_ir audit audit-report \
 	transfer div-before-mul shared-var-get-shared shared-var-get-invoke unsafe-math reentrancy round variable struct-member admin-func public-func tautology lock-callback non-callback-private non-private-callback incorrect-json-type complex-loop \
-	clean clean_pass clean_demo clean_tg clean_tmp compile_flags.txt
+	clean clean_pass clean_demo clean_tg clean_tmp lint lint-diff lint-fix
 
 SHELL := /bin/bash # Use bash syntax
 
@@ -261,8 +261,8 @@ nep%-interface: tg_ir
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ;  #]] \
 	fi
-	echo ${NEP_ID}
-	cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/nep_interface.so -nep-interface --nep-id $* {} -o /dev/null
+	@echo -e "\e[33m[*] Checking interfaces of NEP-$*\e[0m"  #]] 
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/nep_interface.so -nep-interface --nep-id $* {} -o /dev/null
 
 tautology:
 	@rm -f ${TMP_DIR}/.$@.tmp
@@ -375,8 +375,7 @@ compile_commands.json: clean_pass
 		bear -- make -C detectors pass ; \
 	fi
 
-compile_flags.txt:
-	rm -f compile_commands.json
+compile_flags.txt: Makefile
 	echo ${LLVM_CLANG} ${CXXFLAGS} ${LDFLAGS} | sed 's/\s/\n/g' > compile_flags.txt
 
 lint:
