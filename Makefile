@@ -46,7 +46,7 @@ tg_ir:
 	done
 	@mkdir -p ${TMP_DIR}
 	@make -C ${TOP} get-packages-name
-	@cat ${TMP_DIR}/.packages-name.tmp | xargs -i find ${NEAR_TG_DIR} -name '{}.bc' > ${TMP_DIR}/.bitcodes.tmp
+	@cat ${TMP_DIR}/.packages-name.tmp | xargs -i find ${NEAR_TG_DIR} -name '{}*.bc' > ${TMP_DIR}/.bitcodes.tmp
 	
 
 get-packages-name:
