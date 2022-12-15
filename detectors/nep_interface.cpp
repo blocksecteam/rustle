@@ -7,19 +7,18 @@
 #include "near_core.h"
 
 #include <algorithm>
-#include <llvm-15/llvm/IR/InstrTypes.h>
-#include <llvm-15/llvm/IR/Instruction.h>
-#include <llvm-15/llvm/IR/Value.h>
-#include <llvm-15/llvm/Support/Casting.h>
 #include <set>
 #include <string>
 #include <unordered_map>
 
 #include "llvm/ADT/StringRef.h"
 #include "llvm/IR/Function.h"
+#include "llvm/IR/InstrTypes.h"
+#include "llvm/IR/Instruction.h"
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/Value.h"
 #include "llvm/Pass.h"
+#include "llvm/Support/Casting.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Regex.h"
