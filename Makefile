@@ -380,6 +380,7 @@ compile_flags.txt:
 	echo ${LLVM_CLANG} ${CXXFLAGS} ${LDFLAGS} | sed 's/\s/\n/g' > compile_flags.txt
 
 lint:
+	rm -f clang-tidy-fixes.yaml
 	${LLVM_DIR}/bin/clang-tidy --quiet --export-fixes=clang-tidy-fixes.yaml detectors/*.cpp -- ${CXXFLAGS}
 
 lint-fix:
