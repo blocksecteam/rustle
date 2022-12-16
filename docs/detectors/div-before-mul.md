@@ -7,10 +7,9 @@
 
 ### Description
 
-Find division before multiplication like `3 / 2 * 6 == 6`, which has different result compared with `3 * 6 / 2 == 9`. This can result in precision loss.
+Find division before multiplication like `3 / 2 * 6 == 6`, which has a different result compared with `3 * 6 / 2 == 9`. This can result in precision loss.
 
 It is suggested to conduct multiplication before division.
-
 
 ### Sample code
 
