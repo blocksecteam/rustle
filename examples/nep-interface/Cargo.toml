@@ -1,0 +1,23 @@
+[package]
+name = "near-contract-standards"
+version = "4.1.1"
+authors = ["Near Inc <hello@near.org>"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+categories = ["wasm"]
+repository = "https://github.com/near/near-sdk-rs"
+homepage = "https://near-sdk.io"
+documentation = "https://docs.rs/near-contract-standards"
+description = """
+NEAR smart contracts standard library.
+"""
+
+[dependencies]
+near-sdk = "~4.1.1"
+serde = "1"
+serde_json = "1"
+schemars = "0.8"
+
+[features]
+default = ["abi"]
+abi = ["near-sdk/abi"]

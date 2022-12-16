@@ -172,6 +172,7 @@ _arg_detector=$(echo $_arg_detector | sed 's/\bhigh\b/unhandled-promise,non-priv
 _arg_detector=$(echo $_arg_detector | sed 's/\bmedium\b/div-before-mul,round,lock-callback,yocto-attach,dup-collection-id,unregistered-receiver/g')
 _arg_detector=$(echo $_arg_detector | sed 's/\blow\b/prepaid-gas,non-callback-private,unused-ret,upgrade-func,tautology,storage-gas/g')
 _arg_detector=$(echo $_arg_detector | sed 's/\binfo\b/inconsistency,timestamp,ext-call,promise-result,transfer,complex-loop,public-interface/g')
+_arg_detector=$(echo $_arg_detector | sed 's/\bnep-interface\b/nep141-interface,nep145-interface,nep148-interface,nep171-interface,nep177-interface,nep178-interface,nep181-interface,nep245-interface/g')
 
 # run audit
 

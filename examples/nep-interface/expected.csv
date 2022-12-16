@@ -1,0 +1,2 @@
+"file","name","high","medium","low","info"
+"global","global",,"Unimplemented NEP interfaces: nft_metadata, mt_balance_of, mt_batch_balance_of, mt_batch_supply, mt_batch_transfer, mt_batch_transfer_call, mt_supply, mt_token, mt_transfer, mt_transfer_call;","No upgrade function found;",
