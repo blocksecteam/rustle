@@ -290,7 +290,7 @@ except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
 try:
-    for filename in glob.glob(TMP_PATH + '/.nep*-interface.tmp'):
+    for filename in sorted(glob.glob(TMP_PATH + '/.nep*-interface.tmp')):
         with open(filename, 'r') as f:
             for line in f:
                 unimplemented_interface_list.append(line.strip())
