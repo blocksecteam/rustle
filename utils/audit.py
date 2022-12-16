@@ -51,6 +51,7 @@ incorrect_json_set = set()     # func, file, note
 storage_gas_set = set()        # func, check
 unregistered_receiver_set = set() # func, check
 unsaved_changes_set = set()    # func, file, line
+unimplemented_interface_list = list() # func
 
 
 # deadcode_set = set()
@@ -285,6 +286,14 @@ try:
         for line in f:
             func, file, line = line.strip().split('@')
             unsaved_changes_set.add((func, file, int(line)))
+except Exception as e:
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
+try:
+    for filename in glob.glob(TMP_PATH + '/.nep*-interface.tmp'):
+        with open(filename, 'r') as f:
+            for line in f:
+                unimplemented_interface_list.append(line.strip())
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
@@ -542,6 +551,11 @@ summary_info = ''
 if len(upgrade_func_set) == 0:
     summary_low += 'No upgrade function found; '
 summary_medium += unique_collection_id_log
+if len(unimplemented_interface_list) > 0:
+    summary_medium += 'Unimplemented NEP interface' + ('' if len(unimplemented_interface_list) == 1 else 's') + ': '
+    for func in unimplemented_interface_list:
+        summary_medium += func + ', '
+    summary_medium = summary_medium[:-2] + '; '
 
 summary_writer.value_matrix.append(['global', 'global', summary_high.strip(), summary_medium.strip(), summary_low.strip(), summary_info.strip()])
 

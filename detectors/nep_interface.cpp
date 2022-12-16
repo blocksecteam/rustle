@@ -163,6 +163,7 @@ namespace {
                     Rustle::Logger().Info("Implemented: ", func);
                 } else {
                     Rustle::Logger().Warning("Unimplemented: ", func);
+                    *os << func << '\n';
                 }
             }
 
@@ -236,9 +237,18 @@ namespace {
                 EXIT_FINDING_RESOLVER:
                     if (!foundResolver) {
                         switch (nepId) {
-                            case 141: Rustle::Logger().Warning("Unimplemented: resolver of ft_transfer_call"); break;
-                            case 171: Rustle::Logger().Warning("Unimplemented: resolver of nft_transfer_call"); break;
-                            case 245: Rustle::Logger().Warning("Unimplemented: resolver of mt_transfer_call"); break;
+                            case 141:
+                                Rustle::Logger().Warning("Unimplemented: resolver of ft_transfer_call");
+                                *os << "resolver of ft_transfer_call\n";
+                                break;
+                            case 171:
+                                Rustle::Logger().Warning("Unimplemented: resolver of nft_transfer_call");
+                                *os << "resolver of nft_transfer_call\n";
+                                break;
+                            case 245:
+                                Rustle::Logger().Warning("Unimplemented: resolver of mt_transfer_call");
+                                *os << "resolver of mt_transfer_call\n";
+                                break;
                         }
                     }
                 }
