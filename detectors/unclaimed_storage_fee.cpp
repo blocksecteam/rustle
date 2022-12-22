@@ -113,8 +113,6 @@ namespace {
         bool runOnModule(llvm::Module &M) override {
             using namespace llvm;
 
-            CallGraph CG(M);
-
             for (auto &F : M.functions()) {
                 StringRef const funcFileName;
 
