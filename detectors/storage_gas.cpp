@@ -26,21 +26,11 @@ namespace {
       private:
         llvm::raw_fd_ostream *os = nullptr;
 
-        std::set<std::string> callbacks;
-
       public:
         StorageGas() : ModulePass(ID) {
             std::error_code EC;
 
             os = new llvm::raw_fd_ostream(std::string(getenv("TMP_DIR")) + std::string("/.storage-gas.tmp"), EC, llvm::sys::fs::OpenFlags::OF_Append);
-
-            std::ifstream is;
-            is.open(Rustle::callback_file);
-            std::string callbackLine;
-            while (is >> callbackLine) {
-                callbacks.insert(callbackLine.substr(0, callbackLine.find('@')));
-            }
-            is.close();
         }
         ~StorageGas() { os->close(); }
 

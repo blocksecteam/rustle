@@ -255,7 +255,6 @@ unsaved-changes: tg_ir
 
 nep%-interface: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
-	@rm -f ${TMP_DIR}/.nep*-interface.tmp
 	@make -C detectors nep_interface.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
 		figlet $@ -w 200 ; \
