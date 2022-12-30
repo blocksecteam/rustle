@@ -112,6 +112,7 @@ All vulnerabilities **Rustle** can find.
 | `upgrade-func`          | [no upgrade function in contract](docs/detectors/upgrade-func.md)                           | Low      |
 | `tautology`             | [tautology used in conditional branch](docs/detectors/tautology.md)                         | Low      |
 | `storage-gas`           | [missing balance check for storage expansion](docs/detectors/storage-gas.md)                | Low      |
+| `unclaimed-storage-fee` | [missing balance check before storage unregister](docs/detectors/unclaimed-storage-fee.md)  | Low      |
 | `inconsistency`         | [use of similar but slightly different symbol](docs/detectors/inconsistency.md)             | Info     |
 | `timestamp`             | [find all uses of `timestamp`](docs/detectors/timestamp.md)                                 | Info     |
 | `complex-loop`          | [find all loops with complex logic which may lead to DoS](docs/detectors/complex-loop.md)   | Info     |

@@ -264,6 +264,16 @@ nep%-interface: tg_ir
 	@echo -e "\e[33m[*] Checking interfaces of NEP-$*\e[0m"  #]]
 	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/nep_interface.so -nep-interface --nep-id $* {} -o /dev/null
 
+unclaimed-storage-fee: tg_ir
+	@rm -f ${TMP_DIR}/.$@.tmp
+	@make -C detectors unclaimed_storage_fee.so
+	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
+		figlet $@ -w 200 ; \
+	else \
+		echo -e "\e[31m[!] Source not found\e[0m" ;  #]] \
+	fi
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/unclaimed_storage_fee.so -unclaimed-storage-fee {} -o /dev/null
+
 tautology:
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@if test $(shell find ${NEAR_SRC_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \

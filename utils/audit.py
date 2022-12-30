@@ -33,25 +33,26 @@ for i in os.listdir(CSV_PATH):
     # if i.startswith('near_audit-') and i.endswith('.csv'):
     os.remove(CSV_PATH + '/' + i)
 
-promise_results_set = set()    # func, file, line
-ext_call_set = set()           # func, file, line
-reentrancy_set = set()         # func, file, line
-complex_loop_set = set()       # func, file, line
-transfer_set = set()           # func, file, line
-round_set = set()              # func, file, line
-div_before_mul_set = set()     # func, file, line
-unsafe_math_set = set()        # func, file, line
-upgrade_func_set = set()       # func, file
-self_transfer_set = set()      # func, check
-timestamp_set = set()          # func, file, line
-prepaid_gas_set = set()        # func, check
-unhandled_promise_set = set()  # func, file, line
-yocto_attach_set = set()       # func, file
-incorrect_json_set = set()     # func, file, note
-storage_gas_set = set()        # func, check
-unregistered_receiver_set = set() # func, check
-unsaved_changes_set = set()    # func, file, line
-unimplemented_interface_list = list() # func
+promise_results_set = set()            # func, file, line
+ext_call_set = set()                   # func, file, line
+reentrancy_set = set()                 # func, file, line
+complex_loop_set = set()               # func, file, line
+transfer_set = set()                   # func, file, line
+round_set = set()                      # func, file, line
+div_before_mul_set = set()             # func, file, line
+unsafe_math_set = set()                # func, file, line
+upgrade_func_set = set()               # func, file
+self_transfer_set = set()              # func, check
+timestamp_set = set()                  # func, file, line
+prepaid_gas_set = set()                # func, check
+unhandled_promise_set = set()          # func, file, line
+yocto_attach_set = set()               # func, file
+incorrect_json_set = set()             # func, file, note
+storage_gas_set = set()                # func, check
+unregistered_receiver_set = set()      # func, check
+unsaved_changes_set = set()            # func, file, line
+unimplemented_interface_list = list()  # func
+unclaimed_storage_fee_set = set()      # func, check
 
 
 # deadcode_set = set()
@@ -80,6 +81,7 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     with open(TMP_PATH + '/.promise-result.tmp', 'r') as f:
         for line in f:
@@ -88,6 +90,7 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     with open(TMP_PATH + '/.ext-call.tmp', 'r') as f:
         for line in f:
@@ -96,6 +99,7 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     with open(TMP_PATH + '/.reentrancy.tmp', 'r') as f:
         for line in f:
@@ -104,6 +108,7 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     with open(TMP_PATH + '/.complex-loop.tmp', 'r') as f:
         for line in f:
@@ -112,6 +117,7 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     with open(TMP_PATH + '/.transfer.tmp', 'r') as f:
         for line in f:
@@ -120,6 +126,7 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     with open(TMP_PATH + '/.round.tmp', 'r') as f:
         for line in f:
@@ -128,6 +135,7 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     with open(TMP_PATH + '/.div-before-mul.tmp', 'r') as f:
         for line in f:
@@ -136,10 +144,7 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
-    # with open(TMP_PATH + '/.deadcode.tmp', 'r') as f:
-    #     for line in f:
-    #         func, line = line.strip().split('@')
-    #         deadcode_set.add((func, int(line)))
+
 try:
     with open(TMP_PATH + '/.unsafe-math.tmp', 'r') as f:
         for line in f:
@@ -148,6 +153,7 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     with open(TMP_PATH + '/.upgrade-func.tmp', 'r') as f:
         for line in f:
@@ -156,6 +162,7 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     with open(TMP_PATH + '/.self-transfer.tmp', 'r') as f:
         for line in f:
@@ -165,6 +172,7 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     with open(TMP_PATH + '/.timestamp.tmp', 'r') as f:
         for line in f:
@@ -173,6 +181,7 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     with open(TMP_PATH + '/.prepaid-gas.tmp', 'r') as f:
         for line in f:
@@ -182,6 +191,7 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     with open(TMP_PATH + '/.unhandled-promise.tmp', 'r') as f:
         for line in f:
@@ -190,6 +200,7 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     with open(TMP_PATH + '/.yocto-attach.tmp', 'r') as f:
         for line in f:
@@ -198,6 +209,7 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     with open(TMP_PATH + '/.unused-ret.tmp', 'r') as f:
         for line in f:
@@ -208,12 +220,14 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     with open(TMP_PATH + '/.inconsistency.tmp', 'r') as f:
         inconsistency_dict = json.load(f)
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     with open(TMP_PATH + '/.lock-callback.tmp', 'r') as f:
         for line in f:
@@ -222,6 +236,7 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     with open(TMP_PATH + '/.non-callback-private.tmp', 'r') as f:
         for line in f:
@@ -230,6 +245,7 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     with open(TMP_PATH + '/.non-private-callback.tmp', 'r') as f:
         for line in f:
@@ -238,6 +254,7 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     with open(TMP_PATH + '/.incorrect-json-type.tmp', 'r') as f:
         for line in f:
@@ -246,6 +263,7 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     with open(TMP_PATH + '/.public-interface.tmp', 'r') as f:
         for line in f:
@@ -254,6 +272,7 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     with open(TMP_PATH + '/.dup-collection-id.tmp', 'r') as f:
         unique_collection_id_log = f.read()
@@ -289,6 +308,7 @@ try:
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
+
 try:
     for filename in sorted(glob.glob(TMP_PATH + '/.nep*-interface.tmp')):
         file_unimplemented_interface_list = []
@@ -296,6 +316,16 @@ try:
             for line in f:
                 file_unimplemented_interface_list.append(line.strip())
         unimplemented_interface_list.extend(sorted(file_unimplemented_interface_list))
+except Exception as e:
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
+
+try:
+    with open(TMP_PATH + '/.unclaimed-storage-fee.tmp', 'r') as f:
+        for line in f:
+            func, check = line.strip().split('@')
+            check = check.lower() == 'true'
+            unclaimed_storage_fee_set.add((func, check))
 except Exception as e:
     if PRINT_LOG_NOT_FOUND:
         print("Tmp log not found: ", e)
@@ -511,6 +541,11 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
                 hasPrint = True
         if hasPrint:
             note_high = note_high.rstrip() + '>; '
+
+        for func_string, hasCheck in unclaimed_storage_fee_set:
+            if hasCheck == False and structFuncNameMatch(func_string, func['struct'], func['struct_trait'], func_name, path):
+                note_low += 'require balance check for storage fee; '
+                break
 
         with open(path, 'r') as file:
             string = re.sub('//[^\n]+\n', '\n', file.read())
