@@ -28,12 +28,12 @@ namespace {
 
         std::set<std::string> callbacks;
 
-        bool isInstPrivilege(llvm::Instruction *I, int const DEPTH = 1) {
+        bool isInstPrivilege(llvm::Instruction *I, int const depth = 1) {
             using namespace llvm;
             Regex const static regex_predecessor = Regex("near_sdk[0-9]+environment[0-9]+env[0-9]+predecessor_account_id");
             Regex const static regex_eq          = Regex("near_sdk\\.\\.types\\.\\.account_id\\.\\.AccountId.+core\\.\\.cmp\\.\\.PartialEq");
 
-            if (DEPTH < 0)
+            if (depth < 0)
                 return false;
 
             if (Rustle::isInstCallFunc(I, regex_predecessor)) {  // has called `predecessor_account_id`, check whether calls `PartialEq` in current function
@@ -48,7 +48,7 @@ namespace {
                     for (BasicBlock &BB : *(callInst->getCalledFunction())) {  // check callee function
                         for (Instruction &i : BB) {
                             if (CallBase *callInst = dyn_cast<llvm::CallBase>(&i)) {
-                                if (isInstPrivilege(&i, DEPTH - 1)) {
+                                if (isInstPrivilege(&i, depth - 1)) {
                                     return true;
                                 }
                             }
