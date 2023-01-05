@@ -31,9 +31,53 @@ namespace {
       public:
         NftApprovalCheck() : FunctionPass(ID) {
             std::error_code EC;
-            os = new llvm::raw_fd_ostream(std::string(getenv("TMP_DIR")) + std::string("/.self-transfer.tmp"), EC, llvm::sys::fs::OpenFlags::OF_Append);
+            os = new llvm::raw_fd_ostream(std::string(getenv("TMP_DIR")) + std::string("/.nft-approval-check.tmp"), EC, llvm::sys::fs::OpenFlags::OF_Append);
         }
         ~NftApprovalCheck() { os->close(); }
+
+        bool hasApprovalCheck(llvm::Function *F, unsigned approvalIdOffset) {
+            using namespace llvm;
+
+            // Use implementation in `near_contract_standards`
+            if (regex_standard_nft_transfer_or_call.match(F->getName()))
+                return true;
+
+            std::set<Value *> usersOfApprovalId;
+            Rustle::findUsers(F->getArg(approvalIdOffset), usersOfApprovalId);
+
+            for (BasicBlock &BB : *F) {
+                for (Instruction &I : BB) {
+                    if (Rustle::isInstCallFunc(&I, Rustle::regexPartialEq)) {
+                        bool useReceiverId = false;
+                        // for (int i = 0; i < dyn_cast<CallBase>(&I)->arg_size(); i++) {
+                        //     std::string const typeName = Rustle::printToString(dyn_cast<CallBase>(&I)->getArgOperand(i)->getType());
+                        //     if (StringRef(typeName).contains("%\"near_sdk::types::account_id::AccountId\"") || StringRef(typeName).contains("%\"alloc::string::String\"")) {
+                        //         useReceiverId = true;
+                        //         break;
+                        //     }
+                        // }
+
+                        // if (useReceiverId)
+                        //     return true;
+                    } else if (auto *callInst = dyn_cast<CallBase>(&I)) {
+                        int nextApprovalIdOffset = -1;
+                        for (int i = 0; i < callInst->arg_size(); i++) {
+                            if (usersOfApprovalId.count(callInst->getArgOperand(i))) {  // whether passing ft_transfer's arg receiver to next level
+                                nextApprovalIdOffset = i;
+                                break;
+                            }
+                        }
+                        if (nextApprovalIdOffset == -1)  // not found, skip this Instruction
+                            continue;
+
+                        if (callInst->getCalledFunction() && hasApprovalCheck(callInst->getCalledFunction(), nextApprovalIdOffset)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
 
         bool runOnFunction(llvm::Function &F) override {
             using namespace llvm;
@@ -48,6 +92,14 @@ namespace {
 
                 Rustle::Logger().Info("Find ft_transfer \e[34m", F.getName());
                 *os << F.getName();
+
+                if (hasApprovalCheck(&F, 3)) {
+                    Rustle::Logger().Info("Find approval check for\e[34m nft transfer");
+                    *os << "@True\n";
+                } else {
+                    Rustle::Logger().Warning("Lack approval check for\e[34m nft transfer");
+                    *os << "@False\n";
+                }
             }
 
             return false;
