@@ -23,9 +23,9 @@ namespace {
       private:
         llvm::raw_fd_ostream *os = nullptr;
 
-        const llvm::Regex regex_ft_transfer_or_call    = llvm::Regex("near_contract_standards..fungible_token..core_impl..FungibleToken\\$.+[0-9]ft_transfer(_call)?[0-9]");
-        const llvm::Regex regex_ft_transfer_trait      = llvm::Regex("near_contract_standards..fungible_token..core..FungibleTokenCore\\$.+[0-9]ft_transfer[0-9]");
-        const llvm::Regex regex_ft_transfer_call_trait = llvm::Regex("near_contract_standards..fungible_token..core..FungibleTokenCore\\$.+[0-9]ft_transfer_call[0-9]");
+        const llvm::Regex regex_standard_ft_transfer_or_call = llvm::Regex("near_contract_standards.+fungible_token.+core_impl.+FungibleToken.+[0-9](ft_transfer(_call)?|internal_transfer)[0-9]");
+        const llvm::Regex regex_ft_transfer_trait            = llvm::Regex("near_contract_standards\\.\\.fungible_token\\.\\.core\\.\\.FungibleTokenCore\\$.+[0-9]ft_transfer[0-9]");
+        const llvm::Regex regex_ft_transfer_call_trait       = llvm::Regex("near_contract_standards\\.\\.fungible_token\\.\\.core\\.\\.FungibleTokenCore\\$.+[0-9]ft_transfer_call[0-9]");
 
       public:
         SelfTransfer() : FunctionPass(ID) {
@@ -38,7 +38,7 @@ namespace {
             using namespace llvm;
 
             // Use implementation in `near_contract_standards`
-            if (regex_ft_transfer_or_call.match(F->getName()))
+            if (regex_standard_ft_transfer_or_call.match(F->getName()))
                 return true;
 
             std::set<Value *> usersOfReceiverId;
