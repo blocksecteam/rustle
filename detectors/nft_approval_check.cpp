@@ -23,10 +23,11 @@ namespace {
       private:
         llvm::raw_fd_ostream *os = nullptr;
 
-        const llvm::Regex regex_standard_nft_transfer_or_call = llvm::Regex("near_contract_standards..non_fungible_token..core_impl..NonFungibleToken\\$.+[0-9]nft_transfer(_call)?[0-9]");
-        const llvm::Regex regex_nft_transfer_or_call          = llvm::Regex("[0-9]nft_transfer(_call)?[0-9]");
-        const llvm::Regex regex_nft_transfer_trait            = llvm::Regex("near_contract_standards..non_fungible_token..core..NonFungibleTokenCore\\$.+[0-9]nft_transfer[0-9]");
-        const llvm::Regex regex_nft_transfer_call_trait       = llvm::Regex("near_contract_standards..non_fungible_token..core..NonFungibleTokenCore\\$.+[0-9]nft_transfer_call[0-9]");
+        const llvm::Regex regex_standard_nft_transfer_or_call =
+            llvm::Regex("near_contract_standards.+non_fungible_token.+core_impl.+NonFungibleToken.+[0-9](nft_transfer(_call)?|internal_transfer)[0-9]");
+        const llvm::Regex regex_nft_transfer_or_call    = llvm::Regex("[0-9]nft_transfer(_call)?[0-9]");
+        const llvm::Regex regex_nft_transfer_trait      = llvm::Regex("near_contract_standards\\.\\.non_fungible_token\\.\\.core\\.\\.NonFungibleTokenCore\\$.+[0-9]nft_transfer[0-9]");
+        const llvm::Regex regex_nft_transfer_call_trait = llvm::Regex("near_contract_standards\\.\\.non_fungible_token\\.\\.core\\.\\.NonFungibleTokenCore\\$.+[0-9]nft_transfer_call[0-9]");
 
       public:
         NftApprovalCheck() : FunctionPass(ID) {
@@ -38,17 +39,20 @@ namespace {
         bool hasApprovalCheck(llvm::Function *F, unsigned approvalIdOffset) {
             using namespace llvm;
 
+            Rustle::Logger().Debug(F->getName());
+            Rustle::Logger().Debug(F->getArg(approvalIdOffset));
+
             // Use implementation in `near_contract_standards`
             if (regex_standard_nft_transfer_or_call.match(F->getName()))
                 return true;
 
             std::set<Value *> usersOfApprovalId;
-            Rustle::findUsers(F->getArg(approvalIdOffset), usersOfApprovalId);
+            Rustle::simpleFindUsers(F->getArg(approvalIdOffset), usersOfApprovalId, false, true);
 
             for (BasicBlock &BB : *F) {
                 for (Instruction &I : BB) {
                     if (Rustle::isInstCallFunc(&I, Rustle::regexPartialEq)) {
-                        bool useReceiverId = false;
+                        // bool useReceiverId = false;
                         // for (int i = 0; i < dyn_cast<CallBase>(&I)->arg_size(); i++) {
                         //     std::string const typeName = Rustle::printToString(dyn_cast<CallBase>(&I)->getArgOperand(i)->getType());
                         //     if (StringRef(typeName).contains("%\"near_sdk::types::account_id::AccountId\"") || StringRef(typeName).contains("%\"alloc::string::String\"")) {
@@ -69,6 +73,10 @@ namespace {
                         }
                         if (nextApprovalIdOffset == -1)  // not found, skip this Instruction
                             continue;
+
+                        Rustle::Logger().Debug(callInst);
+                        Rustle::Logger().Debug(nextApprovalIdOffset);
+                        Rustle::Logger().Debug(callInst->getArgOperand(nextApprovalIdOffset));
 
                         if (callInst->getCalledFunction() && hasApprovalCheck(callInst->getCalledFunction(), nextApprovalIdOffset)) {
                             return true;
