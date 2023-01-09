@@ -108,7 +108,7 @@ impl NonFungibleTokenCore for NFT {
     ) {
         assert_one_yocto();
         let sender_id = env::predecessor_account_id();
-        self.internal_transfer(&sender_id, &receiver_id, &token_id, approval_id, memo);
+        self.internal_transfer_unsafe(&sender_id, &receiver_id, &token_id, approval_id, memo);
     }
 
     fn nft_transfer_call(
@@ -234,6 +234,47 @@ impl NFT {
                     actual_approval_id, approval_id
                 )
             );
+            Some(sender_id)
+        } else {
+            None
+        };
+
+        require!(
+            &owner_id != receiver_id,
+            "Current and next owner must differ"
+        );
+
+        self.internal_transfer_unguarded(token_id, &owner_id, receiver_id);
+
+        NFT::emit_transfer(&owner_id, receiver_id, token_id, sender_id, memo);
+
+        // return previous owner & approvals
+        (owner_id, approved_account_ids)
+    }
+
+    #[allow(unused)]
+    pub(crate) fn internal_transfer_unsafe(
+        &mut self,
+        sender_id: &AccountId,
+        receiver_id: &AccountId,
+        #[allow(clippy::ptr_arg)] token_id: &TokenId,
+        approval_id: Option<u64>,
+        memo: Option<String>,
+    ) -> (AccountId, Option<HashMap<AccountId, u64>>) {
+        let owner_id = self
+            .owner_by_id
+            .get(token_id)
+            .unwrap_or_else(|| env::panic_str("Token not found"));
+
+        // clear approvals, if using Approval Management extension
+        // this will be rolled back by a panic if sending fails
+        let approved_account_ids = self
+            .approvals_by_id
+            .as_mut()
+            .and_then(|by_id| by_id.remove(token_id));
+
+        // check if authorized
+        let sender_id = if sender_id != &owner_id {
             Some(sender_id)
         } else {
             None
