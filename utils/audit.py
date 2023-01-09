@@ -53,6 +53,7 @@ unregistered_receiver_set = set()      # func, check
 unsaved_changes_set = set()            # func, file, line
 unimplemented_interface_list = list()  # func
 unclaimed_storage_fee_set = set()      # func, check
+nft_approval_check_set = set()         # func, check
 
 
 # deadcode_set = set()
@@ -331,6 +332,16 @@ except Exception as e:
         print("Tmp log not found: ", e)
 
 try:
+    with open(TMP_PATH + '/.nft-approval-check.tmp', 'r') as f:
+        for line in f:
+            func, check = line.strip().split('@')
+            check = check.lower() == 'true'
+            nft_approval_check_set.add((func, check))
+except Exception as e:
+    if PRINT_LOG_NOT_FOUND:
+        print("Tmp log not found: ", e)
+
+try:
     with open(TMP_PATH + '/.struct-members.tmp', 'r') as f:
         structNum = int(f.readline())
         for i in range(structNum):
@@ -545,6 +556,11 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
         for func_string, hasCheck in unclaimed_storage_fee_set:
             if hasCheck == False and structFuncNameMatch(func_string, func['struct'], func['struct_trait'], func_name, path):
                 note_low += 'require balance check for storage fee; '
+                break
+
+        for func_string, hasCheck in nft_approval_check_set:
+            if hasCheck == False and structFuncNameMatch(func_string, func['struct'], func['struct_trait'], func_name, path):
+                note_high += 'require approval_id check; '
                 break
 
         with open(path, 'r') as file:
