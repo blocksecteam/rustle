@@ -284,6 +284,16 @@ nft-approval-check: tg_ir
 	fi
 	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/$(subst -,_,$@).so -$@ {} -o /dev/null
 
+nft-owner-check: tg_ir
+	@rm -f ${TMP_DIR}/.$@.tmp
+	@make -C detectors $(subst -,_,$@).so
+	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
+		figlet $@ -w 200 ; \
+	else \
+		echo -e "\e[31m[!] Source not found\e[0m" ;  #]] \
+	fi
+	@cat ${TMP_DIR}/.bitcodes.tmp | xargs -i $(LLVM_OPT) ${OPTFLAGS} -load detectors/$(subst -,_,$@).so -$@ {} -o /dev/null
+
 tautology:
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@if test $(shell find ${NEAR_SRC_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
