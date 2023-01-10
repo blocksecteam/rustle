@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-import pytablewriter
+from pytablewriter.writer.text._csv import CsvTableWriter
+from pytablewriter.writer.text._json import JsonTableWriter
 import sys
 from tqdm import tqdm
 from core import *
@@ -363,10 +364,12 @@ except Exception as e:
 #     callback_func_set.update(findCallbackFunc(path))
 
 
-summary_writer = pytablewriter.CsvTableWriter()
+summary_writer = CsvTableWriter()
 summary_writer.headers = ["file", "name", "high", "medium", "low", "info"]
-json_summary_writer = pytablewriter.JsonTableWriter()
+summary_value_matrix = []
+json_summary_writer = JsonTableWriter()
 json_summary_writer.headers = ["file", "name", "high", "medium", "low", "info"]
+json_value_matrix = []
 
 '''
 add per-function note
@@ -374,10 +377,11 @@ add per-function note
 for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
     if '/src/' not in path:
         continue
-    writer = pytablewriter.CsvTableWriter()
+    writer = CsvTableWriter()
     writer.headers = [
         "name", "struct", "description", "modifier", "macro", "visibility", "status", "type", "high", "medium", "low", "info"
     ]
+    value_matrix = []
     results = findFunc(path)
     # print(results)
     for func in results:
@@ -578,17 +582,18 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
         note_low = note_low.strip()
         note_info = note_info.strip()
 
-        writer.value_matrix.append([func_name, func['struct'], '', func['modifier'], func['macro'],
-                                   func['visibility'], 'working', func_type, note_high, note_medium, note_low, note_info])
+        value_matrix.append([func_name, func['struct'], '', func['modifier'], func['macro'], func['visibility'],
+                             'working', func_type, note_high, note_medium, note_low, note_info])
         if note_high != '' or note_medium != '' or note_low != '' or note_info != '':
-            summary_writer.value_matrix.append([path[len(PROJ_PATH):].lstrip('/'), func_name, note_high, note_medium, note_low, note_info])
-            json_summary_writer.value_matrix.append([path[len(PROJ_PATH):].lstrip('/'), func_name, note_high, note_medium, note_low, note_info])
+            summary_value_matrix.append([path[len(PROJ_PATH):].lstrip('/'), func_name, note_high, note_medium, note_low, note_info])
+            json_value_matrix.append([path[len(PROJ_PATH):].lstrip('/'), func_name, note_high, note_medium, note_low, note_info])
 
     var_results = findGlobalVar(path)
     for func_name in var_results.keys():
-        writer.value_matrix.append([func_name, '', '', 'N/A', 'N/A', var_results[func_name]['visibility'],
-                                   'working', var_results[func_name]['type'], '', '', '', ''])
+        value_matrix.append([func_name, '', '', 'N/A', 'N/A', var_results[func_name]['visibility'],
+                             'working', var_results[func_name]['type'], '', '', '', ''])
 
+    writer.value_matrix = value_matrix
     # writer.write_table()
     with open(CSV_PATH + '/near_audit-' + path.replace(PROJ_PATH, '').lstrip('/').replace('/', '-') + '.csv', 'w') as file:
         writer.stream = file
@@ -610,12 +615,14 @@ if len(unimplemented_interface_list) > 0:
         summary_medium += func + ', '
     summary_medium = summary_medium[:-2] + '; '
 
-summary_writer.value_matrix.append(['global', 'global', summary_high.strip(), summary_medium.strip(), summary_low.strip(), summary_info.strip()])
+summary_value_matrix.append(['global', 'global', summary_high.strip(), summary_medium.strip(), summary_low.strip(), summary_info.strip()])
 
+summary_writer.value_matrix = summary_value_matrix
 with open(CSV_PATH + '/summary.csv', 'w') as sum_file:
     summary_writer.stream = sum_file
     summary_writer.write_table()
 
+json_summary_writer.value_matrix = json_value_matrix
 with open(CSV_PATH + '/summary.json', 'w') as sum_file:
     json_summary_writer.stream = sum_file
     json_summary_writer.write_table()
