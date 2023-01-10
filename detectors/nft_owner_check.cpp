@@ -49,11 +49,7 @@ namespace {
         bool runOnModule(llvm::Module &M) override {
             using namespace llvm;
 
-            CallGraph CG(M);
-
             for (auto &F : M.functions()) {
-                StringRef funcFileName;
-
                 if (!Rustle::debug_check_all_func && Rustle::regexForLibFunc.match(F.getName()))
                     continue;
                 if (F.getName().contains("$closure$") || !regex_nft_approve_function.match(F.getName()))  // only check selected functions
