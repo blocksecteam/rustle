@@ -123,35 +123,33 @@ namespace Rustle {
 
     bool isFuncPrivileged(llvm::Function *F, int const depth) {
         using namespace llvm;
+
         Regex const static regex_predecessor = Regex("near_sdk[0-9]+environment[0-9]+env[0-9]+predecessor_account_id");
         Regex const static regex_eq          = Regex("near_sdk\\.\\.types\\.\\.account_id\\.\\.AccountId.+core\\.\\.cmp\\.\\.PartialEq");
+
+        if (F == nullptr)
+            return false;
 
         if (depth < 0)
             return false;
 
         for (BasicBlock &BB : *F) {
-            bool isPrivilege = false;
             for (Instruction &I : BB) {
                 if (!I.getDebugLoc().get() || Rustle::regexForLibLoc.match(I.getDebugLoc().get()->getFilename()))
                     continue;
 
-                if (Rustle::isInstCallFunc(&I, regex_predecessor)) {  // has called `predecessor_account_id`, check whether calls `PartialEq` in current function
+                if (Rustle::isInstCallFunc(&I, regex_predecessor)) {
+                    // has called `predecessor_account_id`, check whether calls `PartialEq` in current function
                     for (BasicBlock &BB : *F) {
                         for (Instruction &i : BB) {
                             if (Rustle::isInstCallFunc(&i, regex_eq))
                                 return true;
                         }
                     }
-                } else if (CallBase *callInst = dyn_cast<llvm::CallBase>(&I)) {    // other call inst
-                    if (callInst->getCalledFunction()) {                           // returns null if this is an indirect function
-                        for (BasicBlock &BB : *(callInst->getCalledFunction())) {  // check callee function
-                            for (Instruction &i : BB) {
-                                if (CallBase *callInst = dyn_cast<llvm::CallBase>(&i)) {
-                                    if (isFuncPrivileged(callInst->getCalledFunction(), depth - 1)) {
-                                        return true;
-                                    }
-                                }
-                            }
+                } else if (CallBase *callInst = dyn_cast<llvm::CallBase>(&I)) {            // other call inst
+                    if (callInst->getCalledFunction()) {                                   // indirect function invocation returns null
+                        if (isFuncPrivileged(callInst->getCalledFunction(), depth - 1)) {  // check callee function
+                            return true;
                         }
                     }
                 }
