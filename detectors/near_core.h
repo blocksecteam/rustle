@@ -158,6 +158,16 @@ namespace Rustle {
     void findUsers(llvm::Value *value, std::set<llvm::Value *> &set, const int GEPOffset = -1, int depth = __INT32_MAX__);
 
     /**
+     * @brief find if a function is privileged, recursion is allowed
+     *
+     * @param F target function
+     * @param depth depth of recursion
+     * @return true
+     * @return false
+     */
+    bool isFuncPrivileged(llvm::Function *F, int const depth = 2);
+
+    /**
      * @brief
      *
      * @param I

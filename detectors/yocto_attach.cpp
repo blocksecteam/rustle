@@ -28,38 +28,6 @@ namespace {
 
         std::set<std::string> callbacks;
 
-        bool isInstPrivilege(llvm::Instruction *I, int const depth = 1) {
-            using namespace llvm;
-            Regex const static regex_predecessor = Regex("near_sdk[0-9]+environment[0-9]+env[0-9]+predecessor_account_id");
-            Regex const static regex_eq          = Regex("near_sdk\\.\\.types\\.\\.account_id\\.\\.AccountId.+core\\.\\.cmp\\.\\.PartialEq");
-
-            if (depth < 0)
-                return false;
-
-            if (Rustle::isInstCallFunc(I, regex_predecessor)) {  // has called `predecessor_account_id`, check whether calls `PartialEq` in current function
-                for (BasicBlock &BB : *(I->getFunction())) {
-                    for (Instruction &i : BB) {
-                        if (Rustle::isInstCallFunc(&i, regex_eq))
-                            return true;
-                    }
-                }
-            } else if (CallBase *callInst = dyn_cast<llvm::CallBase>(I)) {     // other call inst
-                if (callInst->getCalledFunction()) {                           // returns null if this is an indirect function
-                    for (BasicBlock &BB : *(callInst->getCalledFunction())) {  // check callee function
-                        for (Instruction &i : BB) {
-                            if (CallBase *callInst = dyn_cast<llvm::CallBase>(&i)) {
-                                if (isInstPrivilege(&i, depth - 1)) {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            // not a call inst
-            return false;
-        }
-
       public:
         YoctoAttach() : ModulePass(ID) {
             std::error_code EC;
@@ -91,44 +59,31 @@ namespace {
                 if (Rustle::debug_print_function)
                     Rustle::Logger().Debug("Checking function ", F.getName());
 
-                for (BasicBlock &BB : F) {
-                    bool isPrivilege = false;
-                    for (Instruction &I : BB) {
-                        if (!I.getDebugLoc().get() || Rustle::regexForLibLoc.match(I.getDebugLoc().get()->getFilename()))
-                            continue;
+                if (Rustle::isFuncPrivileged(&F)) {  // is privilege function, check assert_one_yocto usage
+                    bool foundYoctoCheck = false;
+                    for (BasicBlock &BB : F) {
+                        for (Instruction &I : BB) {
+                            if (!I.getDebugLoc().get() || Rustle::regexForLibLoc.match(I.getDebugLoc().get()->getFilename()))
+                                continue;
 
-                        if (isInstPrivilege(&I)) {
-                            isPrivilege = true;
-                            break;
+                            if (funcFileName.empty())
+                                if (I.getDebugLoc().get())
+                                    funcFileName = I.getDebugLoc().get()->getFilename();
+
+                            Regex const static regex_assert_yocto = Regex("near_sdk[0-9]+utils[0-9]+assert_one_yocto");
+                            if (Rustle::isInstCallFuncRec(&I, CG, regex_assert_yocto)) {
+                                Rustle::Logger().Info("Found yocto check for function ", F.getName(), " at ", I.getDebugLoc());
+
+                                foundYoctoCheck = true;
+                                break;
+                            }
                         }
                     }
 
-                    if (isPrivilege) {  // is privilege function, check assert_one_yocto usage
-                        bool foundYoctoCheck = false;
-                        for (BasicBlock &BB : F) {
-                            for (Instruction &I : BB) {
-                                if (!I.getDebugLoc().get() || Rustle::regexForLibLoc.match(I.getDebugLoc().get()->getFilename()))
-                                    continue;
+                    if (!foundYoctoCheck) {
+                        Rustle::Logger().Warning("No yocto check for function ", F.getName());
 
-                                if (funcFileName.empty())
-                                    if (I.getDebugLoc().get())
-                                        funcFileName = I.getDebugLoc().get()->getFilename();
-
-                                Regex const static regex_assert_yocto = Regex("near_sdk[0-9]+utils[0-9]+assert_one_yocto");
-                                if (Rustle::isInstCallFuncRec(&I, CG, regex_assert_yocto)) {
-                                    Rustle::Logger().Info("Found yocto check for function ", F.getName(), " at ", I.getDebugLoc());
-
-                                    foundYoctoCheck = true;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (!foundYoctoCheck) {
-                            Rustle::Logger().Warning("No yocto check for function ", F.getName());
-
-                            *os << F.getName() << "@" << funcFileName << "\n";
-                        }
+                        *os << F.getName() << "@" << funcFileName << "\n";
                     }
                 }
             }
