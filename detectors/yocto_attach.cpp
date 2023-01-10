@@ -93,6 +93,6 @@ namespace {
 }  // namespace
 
 char YoctoAttach::ID = 0;
-static llvm::RegisterPass<YoctoAttach> X("yocto-attach", "functions calling external function", false /* Only looks at CFG */, false /* Analysis Pass */);
+static llvm::RegisterPass<YoctoAttach> X("yocto-attach", "", false /* Only looks at CFG */, false /* Analysis Pass */);
 
 static llvm::RegisterStandardPasses Y(llvm::PassManagerBuilder::EP_EarlyAsPossible, [](const llvm::PassManagerBuilder &builder, llvm::legacy::PassManagerBase &PM) { PM.add(new YoctoAttach()); });
