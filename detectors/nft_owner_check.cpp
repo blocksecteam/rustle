@@ -1,6 +1,6 @@
 /**
  * @file nft_owner_check.cpp
- * @brief check if there is an `assert_one_yocto` in privilege function
+ * @brief check if there is an owner check in priviledged function
  *
  */
 #include "near_core.h"
