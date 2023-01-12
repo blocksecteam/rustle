@@ -1,0 +1,3 @@
+"file","name","high","medium","low","info"
+"src/lib.rs","nft_revoke_all","require owner check;",,,
+"global","global",,,"No upgrade function found;",

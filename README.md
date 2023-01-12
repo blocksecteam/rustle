@@ -100,6 +100,7 @@ All vulnerabilities **Rustle** can find.
 | `incorrect-json-type`   | [incorrect type used in parameters or return values](docs/detectors/incorrect-json-type.md) | High     |
 | `unsaved-changes`       | [changes to collections are not saved](docs/detectors/unsaved-changes.md)                   | High     |
 | `nft-approval-check`    | [find `nft_transfer` without check of `approval id`](docs/detectors/nft-approval-check.md)  | High     |
+| `nft-owner-check`       | [find approve or revoke functions without owner check](docs/detectors/nft-owner-check.md)   | High     |
 | `div-before-mul`        | [precision loss due to incorrect operation order](docs/detectors/div-before-mul.md)         | Medium   |
 | `round`                 | [rounding without specifying ceil or floor](docs/detectors/round.md)                        | Medium   |
 | `lock-callback`         | [panic in callback function may lock contract](docs/detectors/lock-callback.md)             | Medium   |
