@@ -4,9 +4,9 @@
 ## What's Changed
 
 * add 3 new detectors
-    * [unclaimed-storage-fee](/docs/detectors/unclaimed-storage-fee.md): find functions without balance check before storage unregister (based on NEP145)
-    * [nft-approval-check](/docs/detectors/nft-approval-check.md): find `nft_transfer` without checking `approval id` (based on NEP171)
-    * [nft-owner-check](/docs/detectors/nft-owner-check.md): find approve or revoke functions without owner check (based on NEP178)
+    * [unclaimed-storage-fee](/docs/detectors/unclaimed-storage-fee.md): find functions without balance check before storage unregister (based on [NEP-145](https://github.com/near/NEPs/blob/master/neps/nep-0145.md))
+    * [nft-approval-check](/docs/detectors/nft-approval-check.md): find `nft_transfer` without checking `approval id` (based on [NEP-171](https://github.com/near/NEPs/blob/master/neps/nep-0171.md))
+    * [nft-owner-check](/docs/detectors/nft-owner-check.md): find approve or revoke functions without owner check (based on [NEP-178](https://github.com/near/NEPs/blob/master/neps/nep-0178.md))
 * add new detector group `nep-ft`, `nep-storage` and `nep-nft`
 
 **Full Changelog**: https://github.com/blocksecteam/rustle/compare/v1.2...v1.3
