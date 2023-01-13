@@ -57,7 +57,7 @@ namespace {
                             *os << F.getName() << "@" << I.getDebugLoc()->getFilename() << "@" << I.getDebugLoc().getLine() << "\n";
                         } else if (Rustle::isInstCallFuncRec(&I, CG, Rustle::regexNep141Transfer)) {
                             found = true;
-                            Rustle::Logger().Warning("Found NEP141 transfer at ", &I.getDebugLoc());
+                            Rustle::Logger().Warning("Found NEP-141 transfer at ", &I.getDebugLoc());
                             *os << F.getName() << "@" << I.getDebugLoc()->getFilename() << "@" << I.getDebugLoc().getLine() << "\n";
                         }
                     }

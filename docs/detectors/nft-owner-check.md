@@ -7,7 +7,7 @@
 
 ### Description
 
-In the design of the [NEP178](https://github.com/near/NEPs/blob/master/neps/nep-0178.md), the owner of the NFT can approve or revoke approvals by using the specified interfaces (ie, `nft_approve`, `nft_revoke` and `nft_revoke_all`). An owner check should be implemented for these interfaces to make sure they are callable to the owner only, otherwise, anyone can modify the approvals of the NFT. 
+In the design of the [NEP-178](https://github.com/near/NEPs/blob/master/neps/nep-0178.md), the owner of the NFT can approve or revoke approvals by using the specified interfaces (ie, `nft_approve`, `nft_revoke` and `nft_revoke_all`). An owner check should be implemented for these interfaces to make sure they are callable to the owner only, otherwise, anyone can modify the approvals of the NFT. 
 
 ### Sample code
 

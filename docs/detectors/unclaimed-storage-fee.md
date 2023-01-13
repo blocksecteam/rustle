@@ -7,7 +7,7 @@
 
 ### Description
 
-According to [NEP145](https://github.com/near/NEPs/blob/master/neps/nep-0145.md#5-account-gracefully-closes-registration), if the owner of an account tries to close the account, he needs to unregister the storage with a zero balance unless the `force` flag is set. So the implementation of NEP145 should comply with this rule.
+According to [NEP-145](https://github.com/near/NEPs/blob/master/neps/nep-0145.md#5-account-gracefully-closes-registration), if the owner of an account tries to close the account, he needs to unregister the storage with a zero balance unless the `force` flag is set. So the implementation of NEP-145 should comply with this rule.
 
 ### Sample code
 

@@ -91,7 +91,7 @@ A CSV-format report will be generated in the directory "./audit-result".
 
 All vulnerabilities **Rustle** can find.
 
-| Detector Id             | Description                                                                                 | Severity |
+| Detector ID             | Description                                                                                 | Severity |
 | ----------------------- | ------------------------------------------------------------------------------------------- | -------- |
 | `unhandled-promise`     | [find `Promises` that are not handled](docs/detectors/unhandled-promise.md)                 | High     |
 | `non-private-callback`  | [missing macro `#[private]` for callback functions](docs/detectors/non-private-callback.md) | High     |
@@ -128,13 +128,18 @@ All vulnerabilities **Rustle** can find.
 
 Apart from the groups by severity level, **Rustle** provides some detector groups by corresponding NEP. Currently, **Rustle** supports the following groups.
 
-| Detector-Group Id | Included Detectors                                           |
-| ----------------- | ------------------------------------------------------------ |
-| `nep-ft`          | `nep141-interface`, `self-transfer`, `unregistered-receiver` |
-| `nep-storage`     | `nep145-interface`, `unclaimed-storage-fee`                  |
-| `nep-nft`         | `nep171-interface`, `nft-approval-check`, `nft-owner-check`  |
+[nep141]: https://github.com/near/NEPs/blob/master/neps/nep-0141.md
+[nep145]: https://github.com/near/NEPs/blob/master/neps/nep-0145.md
+[nep171]: https://github.com/near/NEPs/blob/master/neps/nep-0171.md
+[nep178]: https://github.com/near/NEPs/blob/master/neps/nep-0178.md
 
-## Add new detector
+| NEP                                  | Detector Group ID | Detector IDs                                                 |
+| ------------------------------------ | ----------------- | ------------------------------------------------------------ |
+| [NEP-141][nep141]                    | `nep-ft`          | `nep141-interface`, `self-transfer`, `unregistered-receiver` |
+| [NEP-145][nep145]                    | `nep-storage`     | `nep145-interface`, `unclaimed-storage-fee`                  |
+| [NEP-171][nep171], [NEP-178][nep178] | `nep-nft`         | `nep171-interface`, `nft-approval-check`, `nft-owner-check`  |
+
+## Add new detectors
 
 1. Fork this repo to your account.
 2. Put the new detector under [/detectors](/detectors/) (for the LLVM detector written in C++, add a build target in [detectors/Makefile](/detectors/Makefile)).
