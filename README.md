@@ -65,7 +65,8 @@ docker exec -it -w /rustle rustle bash
 * `tg_dir`: Path to the contract build target. Defaults to be same as `src_dir`.
 * `detector`: The detector list. It can be used to pass multiple *detectors* or *groups* separated by `,`. Defaults to `all`.
     * pass `all` *group* to enable all detectors.
-    * pass `high`, `medium`, `low` and `info` *groups* to enable detector groups with different severity
+    * pass `high`, `medium`, `low` and `info` *groups* to enable detector groups with different severity (refer to [Detectors](#detectors))
+    * pass `nep-ft`, `nep-storage` and `nep-nft` *groups* to enable detectors implemented for specified NEP (refer to [NEP detector groups](#nep-detector-groups))
     * pass *detector ids* in the [table](#detectors) to enable those detectors
 * `output`: Path where audit reports will be generated in. Defaults to `./audit-result`.
 
@@ -122,6 +123,16 @@ All vulnerabilities **Rustle** can find.
 | `promise-result`        | [find all uses of promise result](docs/detectors/promise-result.md)                         | Info     |
 | `transfer`              | [find all transfer actions](docs/detectors/transfer.md)                                     | Info     |
 | `public-interface`      | [find all public interfaces](docs/detectors/public-interface.md)                            | Info     |
+
+### NEP detector groups
+
+Apart from the groups by severity level, **Rustle** provides some detector groups by corresponding NEP. Currently, **Rustle** supports the following groups.
+
+| Detector-Group Id | Included Detectors                                           |
+| ----------------- | ------------------------------------------------------------ |
+| `nep-ft`          | `nep141-interface`, `self-transfer`, `unregistered-receiver` |
+| `nep-storage`     | `nep145-interface`, `unclaimed-storage-fee`                  |
+| `nep-nft`         | `nep171-interface`, `nft-approval-check`, `nft-owner-check`  |
 
 ## Add new detector
 
