@@ -3,7 +3,7 @@ name: generate-changelog-from-release
 on:
   workflow_dispatch:
   release:
-    types: [published]
+    types: [published, edited]
 
 jobs:
   changelog:
