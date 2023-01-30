@@ -8,10 +8,11 @@ on:
     paths:
       - 'detectors/**'
       - 'utils/**'
+      - 'Makefile'
+      - 'rustle'
+      - 'rust-toolchain.toml'
+      - '.clang-tidy'
   pull_request:
-    paths:
-      - 'detectors/**'
-      - 'utils/**'
 
 jobs:
   check:
