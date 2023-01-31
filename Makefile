@@ -16,7 +16,7 @@ LLVM_OPT    = ${LLVM_DIR}/bin/opt
 
 # Flags
 INCLUDE = -I${TOP}/detectors
-CXXFLAGS = $(shell $(LLVM_CONFIG) --cxxflags) ${INCLUDE} -Wl,-znodelete -fno-rtti -fPIC
+CXXFLAGS = $(shell $(LLVM_CONFIG) --cxxflags) ${INCLUDE} -fno-rtti -fPIC
 LDFLAGS = $(shell $(LLVM_CONFIG) --ldflags) -shared
 
 OPTFLAGS = -enable-new-pm=0
