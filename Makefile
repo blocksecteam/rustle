@@ -418,7 +418,7 @@ compile_commands.json: clean_pass
 	fi
 
 compile_flags.txt: Makefile
-	echo ${LLVM_CLANG} ${CXXFLAGS} ${LDFLAGS} | sed 's/\s/\n/g' > compile_flags.txt
+	echo ${LLVM_CLANG} ${CXXFLAGS} ${LDFLAGS} | sed 's/ /\n/g' > compile_flags.txt
 
 lint:
 	rm -f clang-tidy-fixes.yaml
