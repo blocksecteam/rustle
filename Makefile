@@ -11,7 +11,7 @@ TOP = $(shell pwd)
 ifeq ($(shell uname -s), Linux)
 	LLVM_DIR = $(shell llvm-config-15 --obj-root)
 else ifeq ($(shell uname -s), Darwin)
-	LLVM_DIR = $(shell llvm-config --obj-root)
+	LLVM_DIR = $(shell brew --prefix llvm@15)
 else
 	LLVM_DIR = $(shell llvm-config --obj-root)
 endif

@@ -52,3 +52,19 @@ jobs:
 
     - name: Run the Docker image for unit test
       run: docker run -v `pwd`:/rustle -w /rustle rustle scripts/unit_test.sh
+
+  unit-test-macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install tools
+      run: |
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.67.0
+        brew install llvm@15
+        pip3 install -r utils/requirements.txt
+        brew install figlet coreutils gsed
+        cargo install rustfilt
+
+    - name: Run test
+      run: scripts/unit_test.sh
