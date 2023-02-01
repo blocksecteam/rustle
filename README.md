@@ -14,7 +14,9 @@ According to [DefiLlama](https://defillama.com/chain/Near), among the top 10 DAp
 
 ### Prerequisite
 
-Install the required toolkits with the following commands for **Rustle**. Commands are tested in Ubuntu 20.04 LTS.
+#### Linux setup
+
+Install the required toolkits with the following commands for **Rustle** in Linux. Commands are tested in Ubuntu 20.04 LTS.
 
 ```bash
 # install Rust Toolchain
@@ -39,6 +41,8 @@ LLVM_VERSION=
 sudo apt install clangd-$LLVM_VERSION clang-format-$LLVM_VERSION clang-tidy-$LLVM_VERSION
 ```
 
+#### macOS setup
+
 The following commands are for users with macOS, they are only tested on Apple Silicon Mac, so use them carefully.
 
 ```bash
@@ -48,7 +52,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 # install LLVM 15
 brew install llvm@15
 
-# install Python toolchain
+# install Python packages
 pip3 install -r utils/requirements.txt  # you need to clone this repo first
                                         # using macOS default python3
 
