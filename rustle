@@ -156,7 +156,7 @@ fi
 export CSV_PATH=$(realpath $_arg_output)
 export TMP_DIR=$(realpath `pwd`/.rustle-tmp-`date +%s`)
 
-if [[ $(uname -s) -eq Darwin ]]
+if [[ $(uname -s) = Darwin ]]
 then
 	SED=gsed
 else
