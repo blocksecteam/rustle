@@ -80,7 +80,7 @@ ext-call-trait: tg_ir
 ext-call: tg_ir ext-call-trait
 	@make -C detectors ext_call.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -90,7 +90,7 @@ complex-loop: tg_ir
 	rm -f ${TMP_DIR}/.$@.tmp
 	make -C detectors complex_loop.so
 	if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -99,7 +99,7 @@ complex-loop: tg_ir
 unsafe-math: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp ${TMP_DIR}/.$@-toml.tmp
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -110,7 +110,7 @@ unsafe-math: tg_ir
 round: tg_ir
 	@make -C detectors round.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -119,7 +119,7 @@ round: tg_ir
 struct-member: tg_ir find-struct
 	@make -C detectors struct_member.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -129,7 +129,7 @@ reentrancy: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors reentrancy.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -139,7 +139,7 @@ div-before-mul: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors div_before_mul.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -149,7 +149,7 @@ transfer: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors transfer.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -159,7 +159,7 @@ timestamp: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors timestamp.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -169,7 +169,7 @@ promise-result: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors promise_result.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -179,7 +179,7 @@ upgrade-func: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors upgrade_func.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -189,7 +189,7 @@ self-transfer: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors self_transfer.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -199,7 +199,7 @@ prepaid-gas: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors prepaid_gas.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -209,7 +209,7 @@ all-call: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors all_call.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -219,7 +219,7 @@ unhandled-promise: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors unhandled_promise.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -229,7 +229,7 @@ yocto-attach: tg_ir callback
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors yocto_attach.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -239,7 +239,7 @@ storage-gas: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors storage_gas.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -249,7 +249,7 @@ unregistered-receiver: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors unregistered_receiver.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -259,7 +259,7 @@ unsaved-changes: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors unsaved_changes.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -269,7 +269,7 @@ nep%-interface: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors nep_interface.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -280,7 +280,7 @@ unclaimed-storage-fee: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors unclaimed_storage_fee.so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -290,7 +290,7 @@ nft-approval-check: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors $(subst -,_,$@).so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -300,7 +300,7 @@ nft-owner-check: tg_ir
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@make -C detectors $(subst -,_,$@).so
 	@if test $(shell cat ${TMP_DIR}/.bitcodes.tmp | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -309,7 +309,7 @@ nft-owner-check: tg_ir
 tautology:
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@if test $(shell find ${NEAR_SRC_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -318,7 +318,7 @@ tautology:
 unused-ret: all-call
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@if test $(shell find ${NEAR_SRC_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -327,7 +327,7 @@ unused-ret: all-call
 inconsistency:
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@if test $(shell find ${NEAR_SRC_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -336,7 +336,7 @@ inconsistency:
 lock-callback: callback
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@if test $(shell find ${NEAR_SRC_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -345,7 +345,7 @@ lock-callback: callback
 non-callback-private: callback
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@if test $(shell find ${NEAR_SRC_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -354,7 +354,7 @@ non-callback-private: callback
 non-private-callback: callback
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@if test $(shell find ${NEAR_SRC_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -363,7 +363,7 @@ non-private-callback: callback
 incorrect-json-type: find-struct
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@if test $(shell find ${NEAR_SRC_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -372,7 +372,7 @@ incorrect-json-type: find-struct
 public-interface:
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@if test $(shell find ${NEAR_SRC_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
@@ -381,7 +381,7 @@ public-interface:
 dup-collection-id:
 	@rm -f ${TMP_DIR}/.$@.tmp
 	@if test $(shell find ${NEAR_SRC_DIR}// -name '*.rs' | wc -c) -gt 0 ; then \
-		figlet $@ -w 200 ; \
+		figlet $@ ; \
 	else \
 		echo -e "\e[31m[!] Source not found\e[0m" ; \
 	fi  # ]]
