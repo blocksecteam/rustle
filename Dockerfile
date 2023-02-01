@@ -28,7 +28,7 @@ USER rustle
 WORKDIR /home/rustle
 
 # other components
-RUN curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain stable
+RUN curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain 1.67.0
 # RUN echo 'source /home/rustle/.cargo/env' >> /home/rustle/.bashrc
 
 ENV PATH="/home/rustle/.cargo/bin:/home/rustle/.local/bin:$PATH"
