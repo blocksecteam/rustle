@@ -156,59 +156,75 @@ fi
 export CSV_PATH=$(realpath $_arg_output)
 export TMP_DIR=$(realpath `pwd`/.rustle-tmp-`date +%s`)
 
+if [[ $(uname -s) -eq Darwin ]]
+then
+	SED=gsed
+else
+	SED=sed
+fi
+
 make -C $TOP echo
 
 # set built-in detector type array
-declare -A builtin_detectors
-# for detector in $(echo `ls $TOP/docs/detectors` | sed 's/.md//g')
-for detector in $DETECTORS
-do
-    builtin_detectors[$detector]=1
-done
+
+# declare -A builtin_detectors
+# # for detector in $(echo `ls $TOP/docs/detectors` | sed 's/.md//g')
+# for detector in $DETECTORS
+# do
+#     builtin_detectors[$detector]=1
+# done
+read -ra builtin_detectors <<< $DETECTORS
 
 # expand severity level
-_arg_detector=$(echo $_arg_detector | sed 's/\ball\b/high,medium,low,info/g')
-_arg_detector=$(echo $_arg_detector | sed 's/\bhigh\b/unhandled-promise,non-private-callback,reentrancy,unsafe-math,self-transfer,incorrect-json-type,unsaved-changes,nft-approval-check,nft-owner-check/g')
-_arg_detector=$(echo $_arg_detector | sed 's/\bmedium\b/div-before-mul,round,lock-callback,yocto-attach,dup-collection-id,unregistered-receiver/g')
-_arg_detector=$(echo $_arg_detector | sed 's/\blow\b/prepaid-gas,non-callback-private,unused-ret,upgrade-func,tautology,storage-gas,unclaimed-storage-fee/g')
-_arg_detector=$(echo $_arg_detector | sed 's/\binfo\b/inconsistency,timestamp,ext-call,promise-result,transfer,complex-loop,public-interface/g')
-_arg_detector=$(echo $_arg_detector | sed 's/\bnep-interface\b/nep141-interface,nep145-interface,nep148-interface,nep171-interface,nep177-interface,nep178-interface,nep181-interface,nep245-interface/g')
+_arg_detector=$(echo $_arg_detector | $SED 's/\ball\b/high,medium,low,info/g')
+_arg_detector=$(echo $_arg_detector | $SED 's/\bhigh\b/unhandled-promise,non-private-callback,reentrancy,unsafe-math,self-transfer,incorrect-json-type,unsaved-changes,nft-approval-check,nft-owner-check/g')
+_arg_detector=$(echo $_arg_detector | $SED 's/\bmedium\b/div-before-mul,round,lock-callback,yocto-attach,dup-collection-id,unregistered-receiver/g')
+_arg_detector=$(echo $_arg_detector | $SED 's/\blow\b/prepaid-gas,non-callback-private,unused-ret,upgrade-func,tautology,storage-gas,unclaimed-storage-fee/g')
+_arg_detector=$(echo $_arg_detector | $SED 's/\binfo\b/inconsistency,timestamp,ext-call,promise-result,transfer,complex-loop,public-interface/g')
+_arg_detector=$(echo $_arg_detector | $SED 's/\bnep-interface\b/nep141-interface,nep145-interface,nep148-interface,nep171-interface,nep177-interface,nep178-interface,nep181-interface,nep245-interface/g')
 
 # expand by NEP type
 ## NEP141
-_arg_detector=$(echo $_arg_detector | sed 's/\bnep-ft\b/nep141-interface,self-transfer,unregistered-receiver/g')
+_arg_detector=$(echo $_arg_detector | $SED 's/\bnep-ft\b/nep141-interface,self-transfer,unregistered-receiver/g')
 ## NEP145
-_arg_detector=$(echo $_arg_detector | sed 's/\bnep-storage\b/nep145-interface,unclaimed-storage-fee/g')
+_arg_detector=$(echo $_arg_detector | $SED 's/\bnep-storage\b/nep145-interface,unclaimed-storage-fee/g')
 ## NEP171,NEP178
-_arg_detector=$(echo $_arg_detector | sed 's/\bnep-nft\b/nep171-interface,nft-approval-check,nft-owner-check/g')
+_arg_detector=$(echo $_arg_detector | $SED 's/\bnep-nft\b/nep171-interface,nft-approval-check,nft-owner-check/g')
 
 # run audit
 
 make -C $TOP clean_tmp
 
 IFS=',' read -ra input_detectors <<< "$_arg_detector"
+
+HAS_RUNNED=false
 for i in "${input_detectors[@]}"
 do
     if [[ "$i" != "" ]]
     then
-        if [[ ${builtin_detectors[$i]} -eq 1 || $i =~ nep[0-9]+-interface ]]
+        # if [[ ${builtin_detectors[$i]} -eq 1 || $i =~ nep[0-9]+-interface ]]
+        if [[ ${builtin_detectors[*]} =~ $i || $i =~ nep[0-9]+-interface ]]
         then
             make -C $TOP $i
-            builtin_detectors[$i]=0  # mark as used
+            # builtin_detectors[$i]=0  # mark as used
+            HAS_RUNNED=true  # mark as used
         else
             echo -e "\e[31m[!] Invalid or repeated detector type: $i\e[0m"  # ]]
         fi
     fi
 done
 
-for detector in ${builtin_detectors[@]}
-do
-    if [[ $detector -eq 0 ]]  # has runned this detector
-    then
-        make -C $TOP audit-report
-        break
-    fi
-done
+# for detector in ${builtin_detectors[@]}
+# do
+#     if [[ $detector -eq 0 ]]  # has runned this detector
+#     then
+if [ $HAS_RUNNED = true ]
+then
+    make -C $TOP audit-report
+fi
+#         break
+#     fi
+# done
 
 make -C $TOP clean_tmp
 

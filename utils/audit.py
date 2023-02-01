@@ -72,7 +72,8 @@ non_pri_callback_set = set()   # func, file
 
 unique_collection_id_log = ''  # log can be printed without processing
 
-os.system("ls " + TMP_PATH + "/.*.tmp | xargs -i sh -c 'mv {} {}.org; rustfilt -i {}.org -o {}; rm {}.org'")
+for tmpFile in glob.glob(TMP_PATH + '/.*.tmp'):
+    os.system('mv {0} {0}.org; rustfilt -i {0}.org -o {0}; rm {0}.org'.format(tmpFile))
 
 PRINT_LOG_NOT_FOUND = False
 

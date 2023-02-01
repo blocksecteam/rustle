@@ -21,7 +21,7 @@ TMP_PATH = os.environ['TMP_DIR']
 os.makedirs(TMP_PATH, exist_ok=True)
 
 callback_func_set = set()
-os.system("ls " + TMP_PATH + "/.callback.tmp | xargs -i sh -c 'mv {} {}.org; rustfilt -i {}.org -o {}; rm {}.org'")
+os.system('mv {0} {0}.org; rustfilt -i {0}.org -o {0}; rm {0}.org'.format(TMP_PATH + '/.callback.tmp'))
 with open(TMP_PATH + '/.callback.tmp', 'r') as f:
     for line in f:
         func, file = line.strip().split('@')

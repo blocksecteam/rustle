@@ -39,6 +39,27 @@ LLVM_VERSION=
 sudo apt install clangd-$LLVM_VERSION clang-format-$LLVM_VERSION clang-tidy-$LLVM_VERSION
 ```
 
+The following commands are for users with macOS, they are only tested on Apple Silicon Mac, so use them carefully.
+
+```bash
+# install Rust Toolchain
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# install LLVM 15
+brew install llvm@15
+
+# install Python toolchain
+pip3 install -r utils/requirements.txt  # you need to clone this repo first
+                                        # using macOS default python3
+
+# add WASM target
+rustup target add wasm32-unknown-unknown
+
+# install other components
+brew install figlet coreutils gsed
+cargo install rustfilt
+```
+
 #### Docker
 
 We provide a docker solution.

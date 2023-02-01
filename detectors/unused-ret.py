@@ -25,7 +25,7 @@ for path in getFiles(PROJ_PATH):
     all_funcs += findFunc(path)
 
 all_calls = dict()  # {filename_line, {callee}}
-os.system("ls " + TMP_PATH + "/.all-call.tmp | xargs -i sh -c 'mv {} {}.org; rustfilt -i {}.org -o {}; rm {}.org'")
+os.system('mv {0} {0}.org; rustfilt -i {0}.org -o {0}; rm {0}.org'.format(TMP_PATH + '/.all-call.tmp'))
 with open(TMP_PATH + '/.all-call.tmp', 'r') as file:
     for line in file:
         callee_llvm, file, line_no = line.strip().split('@')
