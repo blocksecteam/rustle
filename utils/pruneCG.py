@@ -3,7 +3,7 @@ import sys
 import pydot
 import re
 
-DOT_PATH = '/root/tmp/1sol-protocol/target/debug/deps/onesol.bc.callgraph.dot'
+DOT_PATH = ''
 PROJECT_NAME = DOT_PATH.split('/')[-1].split('.')[0]
 
 if len(sys.argv) == 2:

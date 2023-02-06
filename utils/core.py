@@ -71,8 +71,9 @@ def defInFileWithDepth(filename) -> dict:
                 for i in range(line.count('}') - line.count('{')):
                     namespaces.pop(len(namespaces) - 1)
 
-            if re.match(pattern, line):
-                var_name = re.match(pattern, line).groupdict()['var_name']
+            matches = re.match(pattern, line)
+            if matches != None:
+                var_name = matches.groupdict()['var_name']
                 if var_name in results.keys():
                     results[var_name].append((line_number, line.rstrip(), depth, namespaces[len(namespaces) - 1]))
                 else:
@@ -92,13 +93,14 @@ def findPub(filename) -> dict:
             if re.match(r'\s*//.+', line):  # skip comments
                 continue
 
-            if re.match(pattern, line):
-                func_name = re.match(pattern, line).groupdict()['func_name']
+            matches = re.match(pattern, line)
+            if matches != None:
+                func_name = matches.groupdict()['func_name']
                 results[func_name] = (line_number, line.rstrip())
     return results
 
 
-def line2func(line, results) -> dict:
+def line2func(line, results) -> dict | None:
     '''Convert line number to function name
     '''
     closestDist = sys.maxsize
@@ -135,7 +137,7 @@ def _name2index(name, results) -> int:
     return -1
 
 
-def lineToStruct(line, impls) -> str:
+def lineToStruct(line, impls) -> dict:
     closestDist = sys.maxsize
     closestStruct = {'struct': '', 'trait': ''}
     for impl in impls:
@@ -211,7 +213,7 @@ def findFunc(filename, ignoreTest=False) -> list:
 
     line_number = 0
     with open(filename, 'r') as file:
-        func_name = ''  # since function name is redef every for loop, use this to keep the one before this line
+        func_name = ''  # since function name is re-def every for loop, use this to keep the one before this line
         last_impl_bindgen = False
         prev_line = ''
 
@@ -225,8 +227,9 @@ def findFunc(filename, ignoreTest=False) -> list:
             modify line number & visibility
             '''
             pattern = r'.+fn\s+(?P<func_name>\w+).+'
-            if re.match(pattern, line):
-                func_name = re.match(pattern, line).groupdict()['func_name']
+            matches = re.match(pattern, line)
+            if matches != None:
+                func_name = matches.groupdict()['func_name']
                 for i in range(len(results)):
                     if results[i]['name'] == func_name and abs(results[i]['line_number'] - line_number) <= 4:
                         results[i].update(line_number=line_number)  # correct line number
@@ -281,7 +284,7 @@ def findVar(filename) -> dict:
     with open(filename, 'r') as file:
         string = re.sub('//.+\n', '\n', file.read())
         matches = re.compile(
-            r'let\s+(?P<name>\w+)\s*(:\s*(?P<type>[^=]+))?\s*(=\s*(?P<initval>[^;]+))?;', re.MULTILINE | re.DOTALL)
+            r'let\s+(?P<name>\w+)\s*(:\s*(?P<type>[^=]+))?\s*(=\s*(?P<init_val>[^;]+))?;', re.MULTILINE | re.DOTALL)
         for match in matches.finditer(string):
             line_no = string[0:match.start()].count("\n")
             results[match.groupdict()['name']] = {'name': match.groupdict()['name'], 'type': match.groupdict()['type']}

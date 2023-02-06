@@ -29,5 +29,6 @@ with open(TMP_PATH + '/.tautology.tmp', 'w') as out_file:
             for line_no, line in results:
                 print("{}:{}:{}".format(path, line_no, line))
                 func = line2func(line_no, funcs)
-                out_file.write(func['struct'] + '::' + func['struct_trait'] + '::' + func['name'] + '@' + path + '@' + str(line_no) + '\n')
+                if func != None:
+                    out_file.write(func['struct'] + '::' + func['struct_trait'] + '::' + func['name'] + '@' + path + '@' + str(line_no) + '\n')
     out_file.close()

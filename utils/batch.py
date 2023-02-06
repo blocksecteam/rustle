@@ -18,11 +18,12 @@ os.makedirs(local_report_dir, exist_ok=True)
 Process csv and get the repo url data
 '''
 url_list = []
-with open('docs/analysis/near-dapp-collection.csv', newline='') as csvfile:
-    spamreader = csv.reader(csvfile, delimiter=',')
-    for row in spamreader:
-        if re.match(repo_regex, row[8]):
-            url_list.append(re.match(repo_regex, row[8]).groupdict())
+with open('docs/analysis/near-dapp-collection.csv', newline='') as csv_file:
+    spam_reader = csv.reader(csv_file, delimiter=',')
+    for row in spam_reader:
+        matches = re.match(repo_regex, row[8])
+        if matches != None:
+            url_list.append(matches.groupdict())
 print(url_list)
 
 '''
@@ -45,7 +46,7 @@ os.system('mkdir ' + local_report_dir)
 
 def analysis(repo):
     # repo = url['repo']
-    print('\n[*] Analysing {}'.format(repo))
+    print('\n[*] Analyzing {}'.format(repo))
     os.environ['NEAR_SRC_DIR'] = local_repo_dir + repo
     # os.system('make -C ~/near_core clean_tg')
     os.system('make -C ~/near analysis > ' + local_report_dir + repo + '.txt')
