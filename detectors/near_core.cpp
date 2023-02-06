@@ -265,14 +265,10 @@ namespace Rustle {
             } else if (isa<StoreInst>(user)) {
                 // outs() << "store\n";
                 return Mode::Write;
-            } else if (auto *mcpyInst = dyn_cast<MemCpyInst>(user)) {
-                // outs() << "mcpyInst: " << *mcpyInst << "\n";
-                // outs() << "prevUser:                 " << *prevUser << "\n";
-                // outs() << "mcpyInst->getRawDest():   " << *mcpyInst->getRawDest() << "\n";
-                // outs() << "mcpyInst->getRawSource(): " << *mcpyInst->getRawSource() << "\n";
-                if (mcpyInst->getRawDest() == prevUser)
+            } else if (auto *memcpyInst = dyn_cast<MemCpyInst>(user)) {
+                if (memcpyInst->getRawDest() == prevUser)
                     return Mode::Write;
-                else if (mcpyInst->getRawSource() == prevUser)
+                else if (memcpyInst->getRawSource() == prevUser)
                     return Mode::Read;
                 else
                     return Mode::Unknown;
