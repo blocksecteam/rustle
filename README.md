@@ -43,7 +43,7 @@ sudo apt install clangd-$LLVM_VERSION clang-format-$LLVM_VERSION clang-tidy-$LLV
 
 #### macOS setup
 
-The following commands are for users with macOS, they are only tested on Apple Silicon Mac, so use them carefully.
+The following commands are for users using macOS, they are tested only on Apple Silicon Mac, so use them with caution.
 
 ```bash
 # install Rust Toolchain
