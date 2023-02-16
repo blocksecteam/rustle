@@ -9,6 +9,8 @@ repos:
     -   id: check-toml
     -   id: check-json
     -   id: check-added-large-files
+    -   id: mixed-line-ending
+    -   id: requirements-txt-fixer
 
 -   repo: https://github.com/psf/black
     rev: 23.1.0
