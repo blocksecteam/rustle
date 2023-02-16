@@ -57,4 +57,3 @@ pub fn remove_guardians(&mut self, guardians: Vec<ValidAccountId>) -> Vec<ValidA
 ```
 
 In this version, `remove_guardians` will return a vector of all the `guardians` which are not in the `self.guardians`.
-

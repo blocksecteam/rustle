@@ -3,11 +3,11 @@ import sys
 import pydot
 import re
 
-DOT_PATH = ''
-PROJECT_NAME = DOT_PATH.split('/')[-1].split('.')[0]
+DOT_PATH = ""
+PROJECT_NAME = DOT_PATH.split("/")[-1].split(".")[0]
 
 if len(sys.argv) == 2:
-    if sys.argv[1] == '-h' or sys.argv[1] == '--help':
+    if sys.argv[1] == "-h" or sys.argv[1] == "--help":
         print("Usage: python3 utils/pruneCG.py [dot file]")
         sys.exit()
     else:
@@ -26,7 +26,7 @@ print(len(dot.get_nodes()), len(dot.get_edges()))
 # Find all unused nodes' names
 unused_nodes_names = set()
 for node in dot.get_nodes():
-    if PROJECT_NAME not in node.get_label() or PROJECT_NAME + '..' in node.get_label():
+    if PROJECT_NAME not in node.get_label() or PROJECT_NAME + ".." in node.get_label():
         dot.del_node(node)
         unused_nodes_names.add(node.get_name())
 
@@ -45,11 +45,11 @@ for edge in dot.get_edges():
 for node in dot.get_nodes():
     if node.get_name() not in used_nodes_names:
         dot.del_node(node)
-    node.set_label('"{' + re.sub("\\d+", '::', node.get_label()[6:-22]) + '}"')
+    node.set_label('"{' + re.sub("\\d+", "::", node.get_label()[6:-22]) + '}"')
 
 print(len(dot.get_nodes()), len(dot.get_edges()))
 
 dot.set_name('"Call Graph - ' + PROJECT_NAME + '"')
-dot.set_label('Call Graph - ' + PROJECT_NAME)
+dot.set_label("Call Graph - " + PROJECT_NAME)
 
-dot.write('Call Graph - ' + PROJECT_NAME + '.svg', format='svg')
+dot.write("Call Graph - " + PROJECT_NAME + ".svg", format="svg")

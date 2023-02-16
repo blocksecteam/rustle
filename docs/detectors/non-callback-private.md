@@ -22,4 +22,3 @@ impl Pool {
 ```
 
 `get_tokens` should be a public interface (a public function without `#[private]` macro decorated) for everyone to check all token types in a pool. It shouldn't be decorated with `#[private`]`.
-

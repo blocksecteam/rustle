@@ -1,25 +1,26 @@
 #!/usr/bin/env python3
 import sys
 import os
+
 sys.path.insert(0, os.getcwd())
 from utils.core import *
 import re
 from difflib import SequenceMatcher
 import json
 
-PROJ_PATH = os.environ['NEAR_SRC_DIR']
+PROJ_PATH = os.environ["NEAR_SRC_DIR"]
 
 if len(sys.argv) == 2:
-    if sys.argv[1] == '-h' or sys.argv[1] == '--help':
-        print('Usage: detectors/inconsistency.py [path to project]')
+    if sys.argv[1] == "-h" or sys.argv[1] == "--help":
+        print("Usage: detectors/inconsistency.py [path to project]")
         sys.exit()
     else:
         PROJ_PATH = sys.argv[1]
 elif len(sys.argv) > 2:
-    print('Usage: detectors/inconsistency.py [path to project]')
+    print("Usage: detectors/inconsistency.py [path to project]")
     sys.exit()
 
-TMP_PATH = os.environ['TMP_DIR']
+TMP_PATH = os.environ["TMP_DIR"]
 os.makedirs(TMP_PATH, exist_ok=True)
 
 all_vars = dict()
@@ -53,5 +54,5 @@ for i in global_vars.keys():
         fuzz_set.pop(i)
 print(json.dumps(fuzz_set, sort_keys=True, indent=4))
 
-with open(TMP_PATH + '/.inconsistency.tmp', 'w') as file:
+with open(TMP_PATH + "/.inconsistency.tmp", "w") as file:
     json.dump(fuzz_set, file, sort_keys=True, indent=4)

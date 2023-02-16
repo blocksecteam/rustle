@@ -22,4 +22,3 @@ let cross_call_result = match env::promise_result(0) {
 ```
 
 In this sample, the promise result is handled depending on its state (successful or not).
-
