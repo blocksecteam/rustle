@@ -429,3 +429,4 @@ lint-fix:
 
 format:
 	${LLVM_DIR}/bin/clang-format -i detectors/*.cpp detectors/*.h
+	 find . -name "Cargo.toml" | xargs -I {} cargo fmt --manifest-path={}
