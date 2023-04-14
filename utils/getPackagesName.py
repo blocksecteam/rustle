@@ -1,19 +1,14 @@
 #!/usr/bin/env python3
-import pytablewriter
-import sys
-from tqdm import tqdm
-from core import *
-import re
 import os
-import json
-
+from typing import Optional
 
 import toml
+from core import *
 
 TMP_PATH = os.environ["TMP_DIR"]
 
 
-def getName(path) -> str | None:
+def getName(path) -> Optional[str]:
     with open(path, "r") as cargo_file:
         parsed_cargo = toml.loads(cargo_file.read())
         package = parsed_cargo.get("package")

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-import sys
-import pydot
 import re
+import sys
+
+import pydot
 
 DOT_PATH = ""
 PROJECT_NAME = DOT_PATH.split("/")[-1].split(".")[0]

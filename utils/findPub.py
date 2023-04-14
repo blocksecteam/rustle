@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sys
+
 from core import *
-import re
 
 PROJ_PATH = "/root/tmp/ref-contracts/ref-exchange"
 

@@ -1,7 +1,7 @@
 import glob
 import re
-import json
 import sys
+from typing import Optional
 
 
 def getFiles(path, ignoreTest=False, ignoreMock=False) -> set:
@@ -76,9 +76,23 @@ def defInFileWithDepth(filename) -> dict:
             if matches != None:
                 var_name = matches.groupdict()["var_name"]
                 if var_name in results.keys():
-                    results[var_name].append((line_number, line.rstrip(), depth, namespaces[len(namespaces) - 1]))
+                    results[var_name].append(
+                        (
+                            line_number,
+                            line.rstrip(),
+                            depth,
+                            namespaces[len(namespaces) - 1],
+                        )
+                    )
                 else:
-                    results[var_name] = [(line_number, line.rstrip(), depth, namespaces[len(namespaces) - 1])]
+                    results[var_name] = [
+                        (
+                            line_number,
+                            line.rstrip(),
+                            depth,
+                            namespaces[len(namespaces) - 1],
+                        )
+                    ]
     return results
 
 
@@ -101,7 +115,7 @@ def findPub(filename) -> dict:
     return results
 
 
-def line2func(line, results) -> dict | None:
+def line2func(line, results) -> Optional[dict]:
     """Convert line number to function name"""
     closestDist = sys.maxsize
     closestFunc = None
@@ -155,7 +169,9 @@ def findImpl(filename, includeMod=False) -> list:
         #     string = re.sub(r'\n\s+\n', r'\n\n', string)
         # string = re.sub(r'#\[cfg\(test\)\]\n+mod\s+\w+\s*\{(.|\s)+\n\}', '', string)
 
-        pattern = r"(impl" + (r"|mod" if includeMod else r"") + r")\s+((?P<trait>[^\s]+)\s+for\s+)?(?P<struct>[^\s]+)\s*\{"
+        pattern = (
+            r"(impl" + (r"|mod" if includeMod else r"") + r")\s+((?P<trait>[^\s]+)\s+for\s+)?(?P<struct>[^\s]+)\s*\{"
+        )
         # for func in re.findall(pattern, re.sub('/\\*.+\\*/', '', re.sub('//.+\n', '\n', file.read()))):  # remove comment
         # for func in re.findall(pattern, re.sub('//.+\n', '\n', file.read())):  # remove comment
 
@@ -199,15 +215,33 @@ def findFunc(filename, ignoreTest=False) -> list:
                 {
                     "name": match.groupdict()["name"],
                     # only '\n' means the func has no indent
-                    "struct": lineToStruct(string[0 : match.start()].count("\n") + 2, impls)["struct"] if " " in match.groupdict()["indent"] else "",
-                    "struct_trait": lineToStruct(string[0 : match.start()].count("\n") + 2, impls)["trait"] if " " in match.groupdict()["indent"] else "",
+                    "struct": lineToStruct(string[0 : match.start()].count("\n") + 2, impls)["struct"]
+                    if " " in match.groupdict()["indent"]
+                    else "",
+                    "struct_trait": lineToStruct(string[0 : match.start()].count("\n") + 2, impls)["trait"]
+                    if " " in match.groupdict()["indent"]
+                    else "",
                     "line_number": string[0 : match.start()].count("\n") + 2,  # not accurate
                     "modifier": "",
-                    "macro": "" if match.groupdict()["macro"] == None else match.groupdict()["macro"].replace(" ", "").strip("\n").replace("\n", "; "),
+                    "macro": ""
+                    if match.groupdict()["macro"] == None
+                    else match.groupdict()["macro"].replace(" ", "").strip("\n").replace("\n", "; "),
                     "visibility": "internal"
-                    if (match.groupdict()["macro"] and "#[private]" in match.groupdict()["macro"] or match.groupdict()["hasCrate"])
-                    else ("public" if match.groupdict()["vis"] and match.groupdict()["vis"].startswith("pub") else "private"),
-                    "args": re.sub("//.+\n", "", match.groupdict()["args"]).replace(" ", "").replace("\n", "").replace(":", ": ").replace(",", ", "),
+                    if (
+                        match.groupdict()["macro"]
+                        and "#[private]" in match.groupdict()["macro"]
+                        or match.groupdict()["hasCrate"]
+                    )
+                    else (
+                        "public"
+                        if match.groupdict()["vis"] and match.groupdict()["vis"].startswith("pub")
+                        else "private"
+                    ),
+                    "args": re.sub("//.+\n", "", match.groupdict()["args"])
+                    .replace(" ", "")
+                    .replace("\n", "")
+                    .replace(":", ": ")
+                    .replace(",", ", "),
                     "return": match.groupdict()["return"].strip() if match.groupdict()["return"] else "",
                     # 'callback': '',
                 }
@@ -266,7 +300,9 @@ def findFunc(filename, ignoreTest=False) -> list:
             start, end = string[0 : match.start()].count("\n"), string[0 : match.end()].count("\n")
             func_name = line2funcName(start, results)
             results[_name2index(func_name, results)].update(
-                modifier=results[_name2index(func_name, results)]["modifier"] + re.sub("\n +", " ", match.group().strip()).replace('"', "").replace("'", "") + " "
+                modifier=results[_name2index(func_name, results)]["modifier"]
+                + re.sub("\n +", " ", match.group().strip()).replace('"', "").replace("'", "")
+                + " "
             )
 
     # '''
@@ -288,10 +324,16 @@ def findVar(filename) -> dict:
     results = dict()
     with open(filename, "r") as file:
         string = re.sub("//.+\n", "\n", file.read())
-        matches = re.compile(r"let\s+(?P<name>\w+)\s*(:\s*(?P<type>[^=]+))?\s*(=\s*(?P<init_val>[^;]+))?;", re.MULTILINE | re.DOTALL)
+        matches = re.compile(
+            r"let\s+(?P<name>\w+)\s*(:\s*(?P<type>[^=]+))?\s*(=\s*(?P<init_val>[^;]+))?;",
+            re.MULTILINE | re.DOTALL,
+        )
         for match in matches.finditer(string):
             line_no = string[0 : match.start()].count("\n")
-            results[match.groupdict()["name"]] = {"name": match.groupdict()["name"], "type": match.groupdict()["type"]}
+            results[match.groupdict()["name"]] = {
+                "name": match.groupdict()["name"],
+                "type": match.groupdict()["type"],
+            }
     return results
 
 
@@ -318,14 +360,24 @@ def findStruct(filename, only_near_bindgen=False) -> list:
     results = []
     with open(filename, "r") as file:
         # print(re.sub('//.+\n', '', file.read()))
-        struct_pat = (r"(#\[near_bindgen\]\s*)" if only_near_bindgen else "") + r"(#\[[^\]]+\]\s*)*pub\s+struct\s+(?P<name>\w+)\s*(?P<trait><[^>]+>)?\s*\{(?P<members>[^\}]+)\}"
+        struct_pat = (
+            r"(#\[near_bindgen\]\s*)" if only_near_bindgen else ""
+        ) + r"(#\[[^\]]+\]\s*)*pub\s+struct\s+(?P<name>\w+)\s*(?P<trait><[^>]+>)?\s*\{(?P<members>[^\}]+)\}"
         member_pat = r"(?P<name>\w+)\s*:\s*(?P<type>.+)\s*,"
         st_matches = re.compile(struct_pat, re.MULTILINE | re.DOTALL)
-        for struct in st_matches.finditer(re.sub(r"/\*.+\*/", "", re.sub("//.+\n", "\n", file.read()))):  # remove comment
+        for struct in st_matches.finditer(
+            re.sub(r"/\*.+\*/", "", re.sub("//.+\n", "\n", file.read()))
+        ):  # remove comment
             members = []
             for member in re.findall(member_pat, struct.groupdict()["members"]):
                 members.append({"name": member[0], "type": member[1]})
-            results.append({"name": struct.groupdict()["name"], "members": members, "file": filename})
+            results.append(
+                {
+                    "name": struct.groupdict()["name"],
+                    "members": members,
+                    "file": filename,
+                }
+            )
         # print(results)
     return results
 
@@ -334,13 +386,24 @@ def findCallbackFunc(filename) -> set:
     results = set()
     with open(filename, "r") as file:
         string = re.sub("//.+\n", "\n", file.read())
-        matches = re.compile(r"\.then\s*\(\s*(\w+::)?(?P<callback_func>\w+)\s*\(", re.MULTILINE | re.DOTALL)
+        matches = re.compile(
+            r"\.then\s*\(\s*(\w+::)?(?P<callback_func>\w+)\s*\(",
+            re.MULTILINE | re.DOTALL,
+        )
         for match in matches.finditer(string):
             results.add(match.groupdict()["callback_func"])
     return results
 
 
-def structFuncNameMatch(func_string, struct, trait, func, path, detector_path=None, rustle_format=False) -> bool:
+def structFuncNameMatch(
+    func_string,
+    struct,
+    trait,
+    func,
+    path,
+    detector_path=None,
+    rustle_format=False,
+) -> bool:
     """match func_string with provided args
 
     Args:
@@ -369,5 +432,8 @@ def structFuncNameMatch(func_string, struct, trait, func, path, detector_path=No
         if trait == None or trait == "":
             return func_string.endswith(struct + "::" + func) or func_string.endswith(struct + ">::" + func)
         return func_string.endswith("::" + func) and (
-            ("::" + struct + " as" in func_string) and ("::" + trait + ">" in func_string) or ("::" + trait + " for" in func_string) and ("::" + struct + ">" in func_string)
+            ("::" + struct + " as" in func_string)
+            and ("::" + trait + ">" in func_string)
+            or ("::" + trait + " for" in func_string)
+            and ("::" + struct + ">" in func_string)
         )

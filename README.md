@@ -27,7 +27,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)" 15
 
 # install Python toolchain
-sudo apt install python3 python3-pip
+sudo apt install python3 python3-pip    # requires python >= 3.8
 pip3 install -r utils/requirements.txt  # you need to clone this repo first
 
 # add WASM target

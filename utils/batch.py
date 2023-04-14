@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-import os
 import csv
+import os
 import re
 from multiprocessing.pool import ThreadPool
 
@@ -32,7 +32,11 @@ Clone the repo
 for url in url_list:
     print("\n[*] Cloning {}".format(url["repo"]))
     if not os.path.isdir(local_repo_dir + url["repo"]):
-        os.system(("git clone " + git_pattern + " {}").format(url["service"], url["user"], url["repo"], local_repo_dir + url["repo"]))
+        os.system(
+            ("git clone " + git_pattern + " {}").format(
+                url["service"], url["user"], url["repo"], local_repo_dir + url["repo"]
+            )
+        )
     else:
         print("[!] Repo {} already exists".format(url["repo"]))
 

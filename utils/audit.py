@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
+import json
+import os
+import re
+import sys
+
+from core import *
 from pytablewriter.writer.text._csv import CsvTableWriter
 from pytablewriter.writer.text._json import JsonTableWriter
-import sys
 from tqdm import tqdm
-from core import *
-import re
-import os
-import json
 
 CSV_PATH = "./audit-result"
 if "CSV_PATH" in os.environ.keys():
@@ -390,7 +391,20 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
     if "/src/" not in path:
         continue
     writer = CsvTableWriter()
-    writer.headers = ["name", "struct", "description", "modifier", "macro", "visibility", "status", "type", "high", "medium", "low", "info"]
+    writer.headers = [
+        "name",
+        "struct",
+        "description",
+        "modifier",
+        "macro",
+        "visibility",
+        "status",
+        "type",
+        "high",
+        "medium",
+        "low",
+        "info",
+    ]
     value_matrix = []
     results = findFunc(path)
     # print(results)
@@ -445,7 +459,9 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
 
         hasPrint = False
         for dbm_name_line in div_before_mul_set:
-            if structFuncNameMatch(dbm_name_line[0], func["struct"], func["struct_trait"], func_name, path, dbm_name_line[1]):
+            if structFuncNameMatch(
+                dbm_name_line[0], func["struct"], func["struct_trait"], func_name, path, dbm_name_line[1]
+            ):
                 note_medium += ("" if hasPrint else "div-before-mul at <") + "L" + str(dbm_name_line[2]) + " "
                 hasPrint = True
         if hasPrint:
@@ -453,7 +469,9 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
 
         hasPrint = False
         for sm_name_line in unsafe_math_set:
-            if structFuncNameMatch(sm_name_line[0], func["struct"], func["struct_trait"], func_name, path, sm_name_line[1]):
+            if structFuncNameMatch(
+                sm_name_line[0], func["struct"], func["struct_trait"], func_name, path, sm_name_line[1]
+            ):
                 note_high += ("" if hasPrint else "unsafe math at <") + "L" + str(sm_name_line[2]) + " "
                 hasPrint = True
         if hasPrint:
@@ -461,24 +479,32 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
 
         hasPrint = False
         for ts_name_line in timestamp_set:
-            if structFuncNameMatch(ts_name_line[0], func["struct"], func["struct_trait"], func_name, path, ts_name_line[1]):
+            if structFuncNameMatch(
+                ts_name_line[0], func["struct"], func["struct_trait"], func_name, path, ts_name_line[1]
+            ):
                 note_info += ("" if hasPrint else "timestamp use at <") + "L" + str(ts_name_line[2]) + " "
                 hasPrint = True
         if hasPrint:
             note_info = note_info.rstrip() + ">; "
 
         for uf_name_line in upgrade_func_set:
-            if structFuncNameMatch(uf_name_line[0], func["struct"], func["struct_trait"], func_name, path, uf_name_line[1]):
+            if structFuncNameMatch(
+                uf_name_line[0], func["struct"], func["struct_trait"], func_name, path, uf_name_line[1]
+            ):
                 note_info += "upgrade func; "
                 break
 
         for st_name_line in self_transfer_set:
-            if st_name_line[1] == False and structFuncNameMatch(st_name_line[0], func["struct"], func["struct_trait"], func_name, path):
+            if st_name_line[1] == False and structFuncNameMatch(
+                st_name_line[0], func["struct"], func["struct_trait"], func_name, path
+            ):
                 note_high += "require self-transfer check; "
                 break
 
         for pg_name_line in prepaid_gas_set:
-            if pg_name_line[1] == False and structFuncNameMatch(pg_name_line[0], func["struct"], func["struct_trait"], func_name, path):
+            if pg_name_line[1] == False and structFuncNameMatch(
+                pg_name_line[0], func["struct"], func["struct_trait"], func_name, path
+            ):
                 note_low += "require prepaid_gas check; "
                 break
 
@@ -512,22 +538,30 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
                 break
 
         for lc_line in lock_callback_set:
-            if structFuncNameMatch(lc_line[0], func["struct"], func["struct_trait"], func_name, path, lc_line[1], rustle_format=True):
+            if structFuncNameMatch(
+                lc_line[0], func["struct"], func["struct_trait"], func_name, path, lc_line[1], rustle_format=True
+            ):
                 note_medium += "assert in callback function may lock contract when failed; "
                 break
 
         for line in non_cb_private_set:
-            if structFuncNameMatch(line[0], func["struct"], func["struct_trait"], func_name, path, line[1], rustle_format=True):
+            if structFuncNameMatch(
+                line[0], func["struct"], func["struct_trait"], func_name, path, line[1], rustle_format=True
+            ):
                 note_low += "macro #[private] used in non-callback function; "
                 break
 
         for line in non_pri_callback_set:
-            if structFuncNameMatch(line[0], func["struct"], func["struct_trait"], func_name, path, line[1], rustle_format=True):
+            if structFuncNameMatch(
+                line[0], func["struct"], func["struct_trait"], func_name, path, line[1], rustle_format=True
+            ):
                 note_high += "missing #[private] macro for callback function; "
                 break
 
         for line in incorrect_json_set:
-            if structFuncNameMatch(line[0], func["struct"], func["struct_trait"], func_name, path, line[1], rustle_format=True):
+            if structFuncNameMatch(
+                line[0], func["struct"], func["struct_trait"], func_name, path, line[1], rustle_format=True
+            ):
                 note_high += line[2]
                 break
 
@@ -537,7 +571,9 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
         #         break
 
         for caller in unused_ret_dict.keys():
-            if structFuncNameMatch(caller, func["struct"], func["struct_trait"], func_name, path, None, rustle_format=True):
+            if structFuncNameMatch(
+                caller, func["struct"], func["struct_trait"], func_name, path, None, rustle_format=True
+            ):
                 note_low += "call to <"
                 for line, callee in unused_ret_dict[caller]:
                     note_low += callee + "(L" + line + ") "
@@ -545,17 +581,23 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
                 break
 
         for func_string, file in public_interface_set:
-            if structFuncNameMatch(func_string, func["struct"], func["struct_trait"], func_name, path, file, rustle_format=True):
+            if structFuncNameMatch(
+                func_string, func["struct"], func["struct_trait"], func_name, path, file, rustle_format=True
+            ):
                 note_info += "public interface; "
                 break
 
         for func_string, hasCheck in storage_gas_set:
-            if hasCheck == False and structFuncNameMatch(func_string, func["struct"], func["struct_trait"], func_name, path):
+            if hasCheck == False and structFuncNameMatch(
+                func_string, func["struct"], func["struct_trait"], func_name, path
+            ):
                 note_low += "require gas check for storage expansion; "
                 break
 
         for func_string, hasCheck in unregistered_receiver_set:
-            if hasCheck == False and structFuncNameMatch(func_string, func["struct"], func["struct_trait"], func_name, path):
+            if hasCheck == False and structFuncNameMatch(
+                func_string, func["struct"], func["struct_trait"], func_name, path
+            ):
                 note_medium += "should panic when the receiver is not registered; "
                 break
 
@@ -568,17 +610,23 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
             note_high = note_high.rstrip() + ">; "
 
         for func_string, hasCheck in unclaimed_storage_fee_set:
-            if hasCheck == False and structFuncNameMatch(func_string, func["struct"], func["struct_trait"], func_name, path):
+            if hasCheck == False and structFuncNameMatch(
+                func_string, func["struct"], func["struct_trait"], func_name, path
+            ):
                 note_low += "require balance check for storage fee; "
                 break
 
         for func_string, hasCheck in nft_approval_check_set:
-            if hasCheck == False and structFuncNameMatch(func_string, func["struct"], func["struct_trait"], func_name, path):
+            if hasCheck == False and structFuncNameMatch(
+                func_string, func["struct"], func["struct_trait"], func_name, path
+            ):
                 note_high += "require approval_id check; "
                 break
 
         for func_string, hasCheck in nft_owner_check_set:
-            if hasCheck == False and structFuncNameMatch(func_string, func["struct"], func["struct_trait"], func_name, path):
+            if hasCheck == False and structFuncNameMatch(
+                func_string, func["struct"], func["struct_trait"], func_name, path
+            ):
                 note_high += "require owner check; "
                 break
 
@@ -589,25 +637,69 @@ for path in tqdm(getFiles(PROJ_PATH, ignoreTest=True, ignoreMock=True)):
                     line_no = string[0 : match.start()].count("\n")
                     if line2funcName(line_no, results) != func_name:
                         continue
-                    note_info += "used of " + inconsistent_key + " at " + str(line_no) + " may be conflict with " + str(inconsistency_dict[inconsistent_key]).replace("'", "") + "; "
+                    note_info += (
+                        "used of "
+                        + inconsistent_key
+                        + " at "
+                        + str(line_no)
+                        + " may be conflict with "
+                        + str(inconsistency_dict[inconsistent_key]).replace("'", "")
+                        + "; "
+                    )
 
         note_high = note_high.strip()
         note_medium = note_medium.strip()
         note_low = note_low.strip()
         note_info = note_info.strip()
 
-        value_matrix.append([func_name, func["struct"], "", func["modifier"], func["macro"], func["visibility"], "working", func_type, note_high, note_medium, note_low, note_info])
+        value_matrix.append(
+            [
+                func_name,
+                func["struct"],
+                "",
+                func["modifier"],
+                func["macro"],
+                func["visibility"],
+                "working",
+                func_type,
+                note_high,
+                note_medium,
+                note_low,
+                note_info,
+            ]
+        )
         if note_high != "" or note_medium != "" or note_low != "" or note_info != "":
-            summary_value_matrix.append([path[len(PROJ_PATH) :].lstrip("/"), func_name, note_high, note_medium, note_low, note_info])
-            json_value_matrix.append([path[len(PROJ_PATH) :].lstrip("/"), func_name, note_high, note_medium, note_low, note_info])
+            summary_value_matrix.append(
+                [path[len(PROJ_PATH) :].lstrip("/"), func_name, note_high, note_medium, note_low, note_info]
+            )
+            json_value_matrix.append(
+                [path[len(PROJ_PATH) :].lstrip("/"), func_name, note_high, note_medium, note_low, note_info]
+            )
 
     var_results = findGlobalVar(path)
     for func_name in var_results.keys():
-        value_matrix.append([func_name, "", "", "N/A", "N/A", var_results[func_name]["visibility"], "working", var_results[func_name]["type"], "", "", "", ""])
+        value_matrix.append(
+            [
+                func_name,
+                "",
+                "",
+                "N/A",
+                "N/A",
+                var_results[func_name]["visibility"],
+                "working",
+                var_results[func_name]["type"],
+                "",
+                "",
+                "",
+                "",
+            ]
+        )
 
     writer.value_matrix = value_matrix
     # writer.write_table()
-    with open(CSV_PATH + "/near_audit-" + path.replace(PROJ_PATH, "").lstrip("/").replace("/", "-") + ".csv", "w") as file:
+    with open(
+        CSV_PATH + "/near_audit-" + path.replace(PROJ_PATH, "").lstrip("/").replace("/", "-") + ".csv", "w"
+    ) as file:
         writer.stream = file
         writer.write_table()
 
@@ -627,7 +719,9 @@ if len(unimplemented_interface_list) > 0:
         summary_medium += func + ", "
     summary_medium = summary_medium[:-2] + "; "
 
-summary_value_matrix.append(["global", "global", summary_high.strip(), summary_medium.strip(), summary_low.strip(), summary_info.strip()])
+summary_value_matrix.append(
+    ["global", "global", summary_high.strip(), summary_medium.strip(), summary_low.strip(), summary_info.strip()]
+)
 
 summary_writer.value_matrix = summary_value_matrix
 with open(CSV_PATH + "/summary.csv", "w") as sum_file:
