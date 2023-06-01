@@ -20,12 +20,15 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Add LLVM deb repository
+      uses: myci-actions/add-deb-repo@11
+      with:
+        repo: deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main
+        repo-name: llvm
+        keys-asc: https://apt.llvm.org/llvm-snapshot.gpg.key
+
     - name: Install tools
       run: |
-        sudo apt-get update
-        sudo apt-get install -y wget gnupg2
-        wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/keyrings/llvm.asc
-        sudo echo "deb [signed-by=/etc/apt/keyrings/llvm.asc] http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main" >> /etc/apt/sources.list
         sudo apt-get update
         sudo apt-get install -y clang-tidy-15
 
