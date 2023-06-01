@@ -168,7 +168,7 @@ Apart from the groups by severity level, **Rustle** provides some detector group
 ## Add new detectors
 
 1. Fork this repo to your account.
-2. Put the new detector under [/detectors](/detectors/) (for the LLVM detector written in C++, add a build target in [detectors/Makefile](/detectors/Makefile)).
+2. Put the new detector under [/detectors](/detectors/).
 3. Add a detection target in [/Makefile](/Makefile) with commands to run your detector.
 4. Add the target to the dependency of `audit` target and its name to [detector list](/rustle#L146) and [severity groups](/rustle#L169) in `./rustle` script.
 5. Add processing code in [utils/audit.py](/utils/audit.py) (refer to other detectors' code in `audit.py`).
