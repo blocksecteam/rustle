@@ -39,7 +39,8 @@ namespace Rustle {
     auto const regexRound           = llvm::Regex("[0-9]+std[0-9]+.+[0-9]+(try_round|round)[0-9]+");
     auto const regexPartialEq       = llvm::Regex("(core..cmp..PartialEq)");
     auto const regexPartialOrd      = llvm::Regex("(core[0-9]+cmp[0-9]+PartialOrd)");
-    auto const regexPromiseResult   = llvm::Regex("near_sdk[0-9]+environment[0-9]+env[0-9]+promise_result[0-9]+");
+    auto const regexPromiseResult =
+        llvm::Regex("(near_sdk[0-9]+environment[0-9]+env[0-9]+(promise_result|promise_results_count)[0-9]+)|(near_sdk[0-9]+utils[0-9]+(is_promise_success|promise_result_as_success)[0-9]+)");
 
     class Logger {
       private:

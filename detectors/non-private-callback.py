@@ -35,7 +35,7 @@ with open(TMP_PATH + "/.non-private-callback.tmp", "w") as out_file:
             func_name = func["name"]
             func_type = "Function"
             for cb_name in callback_func_set:
-                if structFuncNameMatch(cb_name[0], func["struct"], func["struct_trait"], func_name, path):
+                if func_name == cb_name[0] or structFuncNameMatch(cb_name[0], func["struct"], func["struct_trait"], func_name, path):
                     if " (callback)" not in func_type:
                         func_type += " (callback)"
                     break
